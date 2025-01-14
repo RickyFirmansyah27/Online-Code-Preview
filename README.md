@@ -21,3 +21,7 @@ LEMON_SQUEEZY_WEBHOOK_SECRET=
 ```shell
 npm run dev
 ```
+
+```shell
+bun run dev
+```
