@@ -97,7 +97,8 @@ function AiPlayground() {
           // Extract language and code
           const match = part.match(/```(\w+)?\n?([\s\S]*?)```/);
           if (match) {
-            const [_, language = '', code = ''] = match;
+            // Destructure while ignoring the full match
+            const [, language = '', code = ''] = match;
             const handleCopy = async () => {
               try {
                 await navigator.clipboard.writeText(code.trim());
