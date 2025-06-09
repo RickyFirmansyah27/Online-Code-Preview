@@ -3,7 +3,7 @@
 import NavigationHeader from "@/components/NavigationHeader";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Search, Download, Upload } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useGetFiles, useUploadFiles } from "@/service/storage-service";
 import { File } from "@/service/model-types";
