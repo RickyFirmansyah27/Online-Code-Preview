@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Code, Send, Loader, ChevronDown } from "lucide-react";
+import { BookOpen, Code, Send, Loader, ChevronDown, Copy, Check } from "lucide-react";
 import NavigationHeader from "@/components/NavigationHeader";
 import { useConservationAi } from "@/service/ai-service";
 import { MODEL_OPTIONS, ModelOption } from "@/service/model-types";
@@ -17,6 +17,7 @@ function AiPlayground() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedModel, setSelectedModel] = useState<ModelOption>(MODEL_OPTIONS[0]);
+  const [copiedCode, setCopiedCode] = useState<number | null>(null);
   
   // Use the AI mutation hook
   const { mutateAsync: sendMessage, status } = useConservationAi(selectedModel.model);
@@ -97,13 +98,36 @@ function AiPlayground() {
           const match = part.match(/```(\w+)?\n?([\s\S]*?)```/);
           if (match) {
             const [_, language = '', code = ''] = match;
+            const handleCopy = async () => {
+              try {
+                await navigator.clipboard.writeText(code.trim());
+                setCopiedCode(index);
+                setTimeout(() => setCopiedCode(null), 2000);
+              } catch (err) {
+                console.error('Failed to copy code:', err);
+              }
+            };
+
             return (
               <pre key={index} className="relative mt-2 mb-2">
-                {language && (
-                  <div className="absolute top-0 right-0 px-2 py-1 text-xs text-gray-400 bg-gray-800/50 rounded-bl">
-                    {language}
-                  </div>
-                )}
+                <div className="absolute top-0 right-0 flex items-center gap-2">
+                  {language && (
+                    <div className="px-2 py-1 text-xs text-gray-400 bg-gray-800/50">
+                      {language}
+                    </div>
+                  )}
+                  <button
+                    onClick={handleCopy}
+                    className="p-1 hover:bg-gray-700/50 rounded transition-colors"
+                    title="Copy code"
+                  >
+                    {copiedCode === index ? (
+                      <Check className="w-4 h-4 text-green-400" />
+                    ) : (
+                      <Copy className="w-4 h-4 text-gray-400" />
+                    )}
+                  </button>
+                </div>
                 <code className={`block p-4 bg-gray-800/50 rounded-lg overflow-x-auto font-mono text-sm ${
                   language ? `language-${language}` : ''
                 }`}>
@@ -142,9 +166,9 @@ function AiPlayground() {
                     : "bg-purple-500/20 text-purple-50"
                 }`}
               >
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                <div className="text-sm leading-relaxed whitespace-pre-wrap">
                   {formatMessageContent(message.content)}
-                </p>
+                </div>
               </div>
               {message.role === "user" && (
                 <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
