@@ -17,6 +17,7 @@
     "add": "^2.0.6",
     "axios": "^1.9.0",
     "convex": "^1.17.3",
+    "dotenv": "^16.5.0",
     "framer-motion": "^11.13.1",
     "lucide-react": "^0.464.0",
     "next": "15.0.3",
