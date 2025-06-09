@@ -19,12 +19,12 @@ interface ChatRequest {
   messages: ChatMessage[];
 }
 
-export const useConservationAi = () => {
+export const useConservationAi = ( model: string) => {
   return useMutation({
     ...DEFAULT_QUERY_OPTIONS,
     mutationFn: (content: string) => {
       const payload: ChatRequest = {
-        model: "llama-3.3-70b-versatile",
+        model: model || "llama-3.3-70b-versatile",
         messages: [
           {
             role: "user",

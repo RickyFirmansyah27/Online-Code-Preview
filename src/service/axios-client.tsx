@@ -16,11 +16,12 @@ const makeCallApi = ({
 
   callApi.interceptors.request.use(
     (config) => {
-      config.headers = {
-        ...config.headers,
-        "Content-Type": "application/json",
-        ...headers,
-      };
+      if (config.headers) {
+        Object.assign(config.headers, {
+          "Content-Type": "application/json",
+          ...headers,
+        });
+      }
       return config;
     },
     (error) => Promise.reject(error),

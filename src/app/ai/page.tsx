@@ -2,9 +2,10 @@
 
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Code, Send, Loader } from "lucide-react";
+import { BookOpen, Code, Send, Loader, ChevronDown } from "lucide-react";
 import NavigationHeader from "@/components/NavigationHeader";
 import { useConservationAi } from "@/service/ai-service";
+import { MODEL_OPTIONS, ModelOption } from "@/service/model-types";
 
 interface Message {
   role: "user" | "assistant";
@@ -15,9 +16,10 @@ function AiPlayground() {
   // State
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
+  const [selectedModel, setSelectedModel] = useState<ModelOption>(MODEL_OPTIONS[0]);
   
   // Use the AI mutation hook
-  const { mutateAsync: sendMessage, status } = useConservationAi();
+  const { mutateAsync: sendMessage, status } = useConservationAi(selectedModel.model);
   const isLoading = status === "pending";
 
   // Tambahkan useRef untuk auto-scroll
@@ -158,11 +160,62 @@ function AiPlayground() {
     </form>
   );
 
+  const renderModelSelector = () => {
+    // Group models by category
+    const groupedModels = MODEL_OPTIONS.reduce((acc, model) => {
+      if (!acc[model.category]) {
+        acc[model.category] = [];
+      }
+      acc[model.category].push(model);
+      return acc;
+    }, {} as Record<string, ModelOption[]>);
+
+    return (
+      <div className="max-w-3xl mx-auto mb-6">
+        <div className="relative">
+          <select
+            value={selectedModel.id}
+            onChange={(e) => {
+              const model = MODEL_OPTIONS.find(m => m.id === e.target.value);
+              if (model) setSelectedModel(model);
+            }}
+            className="w-full bg-gray-900/50 text-gray-200 px-4 py-3 rounded-xl appearance-none cursor-pointer 
+              focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700/50
+              hover:border-blue-500/50 transition-colors"
+          >
+            {Object.entries(groupedModels).map(([category, models]) => (
+              <optgroup 
+                key={`group-${category}`}
+                label={category}
+                className="bg-gray-900 text-gray-200"
+              >
+                {models.map((model) => (
+                  <option 
+                    key={model.id}
+                    value={model.id}
+                    className="bg-gray-800 text-gray-200 hover:bg-gray-700"
+                  >
+                    {model.name}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none
+            bg-gradient-to-l from-gray-900/50 via-gray-900/50 to-transparent pl-6">
+            <ChevronDown className="w-5 h-5 text-blue-400" />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       <NavigationHeader />
       <div className="relative max-w-7xl mx-auto px-4 py-12">
         {renderHeader()}
+        {renderModelSelector()}
         {renderInputForm()}
         {renderMessages()}
       </div>
