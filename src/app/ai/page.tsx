@@ -85,45 +85,79 @@ function AiPlayground() {
     </div>
   );
 
-  const renderMessages = () => (
-    <div className="max-w-3xl mx-auto bg-gray-900/50 rounded-xl p-6 mb-4 h-[500px] overflow-y-auto">
-      <AnimatePresence>
-        {messages.map((message, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`flex items-start gap-3 mb-6 ${
-              message.role === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            {message.role === "assistant" && (
-              <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                <Code className="w-4 h-4 text-purple-300" />
-              </div>
-            )}
-            <div
-              className={`p-4 rounded-lg max-w-[80%] ${
-                message.role === "user" 
-                  ? "bg-blue-500/20 text-blue-50" 
-                  : "bg-purple-500/20 text-purple-50"
+  const renderMessages = () => {
+    const formatMessageContent = (content: string) => {
+      // Split content by code block markers
+      const parts = content.split(/(```[\s\S]*?```)/);
+      
+      return parts.map((part, index) => {
+        // Check if this part is a code block
+        if (part.startsWith('```')) {
+          // Extract language and code
+          const match = part.match(/```(\w+)?\n?([\s\S]*?)```/);
+          if (match) {
+            const [_, language = '', code = ''] = match;
+            return (
+              <pre key={index} className="relative mt-2 mb-2">
+                {language && (
+                  <div className="absolute top-0 right-0 px-2 py-1 text-xs text-gray-400 bg-gray-800/50 rounded-bl">
+                    {language}
+                  </div>
+                )}
+                <code className={`block p-4 bg-gray-800/50 rounded-lg overflow-x-auto font-mono text-sm ${
+                  language ? `language-${language}` : ''
+                }`}>
+                  {code.trim()}
+                </code>
+              </pre>
+            );
+          }
+        }
+        // Regular text
+        return <span key={index}>{part}</span>;
+      });
+    };
+
+    return (
+      <div className="max-w-3xl mx-auto bg-gray-900/50 rounded-xl p-6 mb-4 h-[500px] overflow-y-auto">
+        <AnimatePresence>
+          {messages.map((message, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`flex items-start gap-3 mb-6 ${
+                message.role === "user" ? "justify-end" : "justify-start"
               }`}
             >
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">
-                {message.content}
-              </p>
-            </div>
-            {message.role === "user" && (
-              <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-                <BookOpen className="w-4 h-4 text-blue-300" />
+              {message.role === "assistant" && (
+                <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                  <Code className="w-4 h-4 text-purple-300" />
+                </div>
+              )}
+              <div
+                className={`p-4 rounded-lg max-w-[80%] ${
+                  message.role === "user" 
+                    ? "bg-blue-500/20 text-blue-50" 
+                    : "bg-purple-500/20 text-purple-50"
+                }`}
+              >
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                  {formatMessageContent(message.content)}
+                </p>
               </div>
-            )}
-          </motion.div>
-        ))}
-        <div ref={messagesEndRef} />
-      </AnimatePresence>
-    </div>
-  );
+              {message.role === "user" && (
+                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                  <BookOpen className="w-4 h-4 text-blue-300" />
+                </div>
+              )}
+            </motion.div>
+          ))}
+          <div ref={messagesEndRef} />
+        </AnimatePresence>
+      </div>
+    );
+  };
 
   const renderInputForm = () => (
     <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
