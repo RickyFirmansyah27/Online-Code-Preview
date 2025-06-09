@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Code, Send, Loader } from "lucide-react";
 import NavigationHeader from "@/components/NavigationHeader";
@@ -19,6 +19,17 @@ function AiPlayground() {
   // Use the AI mutation hook
   const { mutateAsync: sendMessage, status } = useConservationAi();
   const isLoading = status === "pending";
+
+  // Tambahkan useRef untuk auto-scroll
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // Event Handlers
   const handleSubmit = async (e: React.FormEvent) => {
@@ -73,45 +84,77 @@ function AiPlayground() {
   );
 
   const renderMessages = () => (
-    <div className="max-w-3xl mx-auto bg-gray-900/50 rounded-xl p-4 mb-4 h-[400px] overflow-y-auto">
+    <div className="max-w-3xl mx-auto bg-gray-900/50 rounded-xl p-6 mb-4 h-[500px] overflow-y-auto">
       <AnimatePresence>
         {messages.map((message, index) => (
           <motion.div
             key={index}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`mb-4 p-3 rounded-lg ${
-              message.role === "user" ? "bg-blue-500/20 ml-auto" : "bg-purple-500/20"
-            } max-w-[80%]`}
+            className={`flex items-start gap-3 mb-6 ${
+              message.role === "user" ? "justify-end" : "justify-start"
+            }`}
           >
-            <p className="text-gray-200">{message.content}</p>
+            {message.role === "assistant" && (
+              <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
+                <Code className="w-4 h-4 text-purple-300" />
+              </div>
+            )}
+            <div
+              className={`p-4 rounded-lg max-w-[80%] ${
+                message.role === "user" 
+                  ? "bg-blue-500/20 text-blue-50" 
+                  : "bg-purple-500/20 text-purple-50"
+              }`}
+            >
+              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                {message.content}
+              </p>
+            </div>
+            {message.role === "user" && (
+              <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                <BookOpen className="w-4 h-4 text-blue-300" />
+              </div>
+            )}
           </motion.div>
         ))}
+        <div ref={messagesEndRef} />
       </AnimatePresence>
     </div>
   );
 
   const renderInputForm = () => (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto relative">
-      <input
-        type="text"
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        className="w-full bg-gray-900/50 rounded-xl px-4 py-3 pr-12 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        placeholder="Type your message..."
-        disabled={isLoading}
-      />
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="absolute right-3 top-1/2 -translate-y-1/2"
-      >
-        {isLoading ? (
-          <Loader className="w-6 h-6 text-gray-400 animate-spin" />
-        ) : (
-          <Send className="w-6 h-6 text-gray-400" />
-        )}
-      </button>
+    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+      <div className="relative bg-gray-900/50 rounded-xl p-1 focus-within:ring-2 focus-within:ring-blue-500 mb-5">
+        <textarea
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          rows={1}
+          className="w-full bg-transparent px-4 py-3 text-gray-200 focus:outline-none resize-none overflow-hidden font-mono"
+          placeholder="Type your message..."
+          disabled={isLoading}
+          style={{
+            minHeight: '44px',
+            maxHeight: '200px'
+          }}
+          onInput={(e) => {
+            const target = e.target as HTMLTextAreaElement;
+            target.style.height = 'auto';
+            target.style.height = `${target.scrollHeight}px`;
+          }}
+        />
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="absolute right-2 bottom-2 p-2 hover:bg-gray-800 rounded-lg transition-colors"
+        >
+          {isLoading ? (
+            <Loader className="w-5 h-5 text-gray-400 animate-spin" />
+          ) : (
+            <Send className="w-5 h-5 text-gray-400" />
+          )}
+        </button>
+      </div>
     </form>
   );
 
@@ -120,8 +163,8 @@ function AiPlayground() {
       <NavigationHeader />
       <div className="relative max-w-7xl mx-auto px-4 py-12">
         {renderHeader()}
-        {renderMessages()}
         {renderInputForm()}
+        {renderMessages()}
       </div>
     </div>
   );
