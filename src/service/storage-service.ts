@@ -6,7 +6,7 @@ const DEFAULT_QUERY_OPTIONS = {
   refetchOnWindowFocus: false,
 };
 
-const baseURL = "https://storage-bucket-hono.vercel.app";
+const baseURL = "https://storage-bucket-express.vercel.app";
 const basePath = "api/v1/s3";
 
 export const useUploadFiles = () => {
