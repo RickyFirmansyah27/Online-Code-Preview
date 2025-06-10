@@ -3,7 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { get } from "lodash";
-import { BookOpen, Search, Download, Upload } from "lucide-react";
+import { BookOpen, Search, Download, Upload, Trash2 } from "lucide-react";
 import NavigationHeader from "@/components/NavigationHeader";
 import {
   useGetFiles,
@@ -21,7 +21,7 @@ const FileManagement = () => {
   const { mutate: downloadFile } = useDownloadFiles();
   const { data: filesResponse, isLoading, refetch } = useGetFiles();
 
-  const filesData = get(filesResponse, 'data.data', []);
+  const filesData = get(filesResponse, "data.data", []);
 
   const filteredFiles = useMemo(
     () =>
@@ -51,7 +51,7 @@ const FileManagement = () => {
         });
       } catch (error) {
         setIsUploading(false);
-        console.error("Upload failed:", error);       
+        console.error("Upload failed:", error);
       }
     },
     [uploadFile, refetch]
@@ -114,7 +114,11 @@ const FileManagement = () => {
             </div>
 
             {/* File Type Filter */}
-            <div className="flex gap-2" role="group" aria-label="File type filters">
+            <div
+              className="flex gap-2"
+              role="group"
+              aria-label="File type filters"
+            >
               {["All", "pdf", "csv", "xlsx", "docx"].map((type) => (
                 <button
                   key={type}
@@ -150,7 +154,7 @@ const FileManagement = () => {
                   setIsUploading(true);
                 }}
                 disabled={isUploading}
-                multiple 
+                multiple
                 aria-label="Upload file"
               />
             </label>
@@ -174,27 +178,32 @@ const FileManagement = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
-                    className="p-4 bg-[#1a1a22] rounded-lg border border-gray-700"
+                    className="p-4 bg-[#1a1a22] rounded-lg border border-gray-700 flex justify-between items-center overflow-hidden"
                     role="listitem"
+                    style={{ maxWidth: "100%" }} // Ensure card doesn't exceed parent width
                   >
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h2 className="text-gray-200 font-medium text-sm truncate">
-                          {file.name}
-                        </h2>
-                        <p className="text-sm text-gray-400">
-                          {(file.size / 1024 / 1024).toFixed(2)} MB
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {new Date(file.lastModified).toLocaleDateString()}
-                        </p>
-                      </div>
+                    <div className="flex-1 min-w-0 m-1">
+                      <h2 className="text-gray-200 font-medium text-sm truncate">
+                        {file.name}
+                      </h2>
+                      <p className="text-sm text-gray-500 mt-1">
+                        {new Date(file.lastModified).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex gap-2 shrink-0">
                       <button
                         onClick={() => downloadFile(file.name)}
                         className="p-2 hover:bg-gray-700 rounded-full transition-colors"
                         aria-label={`Download ${file.name}`}
                       >
                         <Download className="w-5 h-5 text-gray-400" />
+                      </button>
+                      <button
+                        onClick={() => {}}
+                        className="p-2 hover:bg-red-700/20 rounded-full transition-colors"
+                        aria-label={`Delete ${file.name}`}
+                      >
+                        <Trash2 className="w-5 h-5 text-red-400" />
                       </button>
                     </div>
                   </motion.article>
