@@ -5,44 +5,44 @@ import NavigationHeader from "@/components/NavigationHeader";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Search, Download, Upload } from "lucide-react";
 import { useState } from "react";
-// import Link from "next/link";
-import { useGetFiles, useUploadFiles, useDownloadFiles } from "@/service/storage-service";
+import {
+  useGetFiles,
+  useUploadFiles,
+  useDownloadFiles,
+} from "@/service/storage-service";
 import { File } from "@/service/model-types";
 
 function FileManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string | null>(null);
-  const { mutate: uploadFile } = useUploadFiles();
-  const { refetch: refetchFiles } = useGetFiles(); // Refetch files after upload
-
+  const [refreshKey, setRefreshKey] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
 
-  // Handle file download
-  const { mutate: downloadFile } = useDownloadFiles();
 
-  // Fetch files from the server
-  const { data: filesResponse } = useGetFiles();
+  const { mutate: uploadFile } = useUploadFiles();
+  const { mutate: downloadFile } = useDownloadFiles();
+  const { data: filesResponse } = useGetFiles(refreshKey);
   const filesData = filesResponse?.data?.data ?? [];
 
-  // Handle file upload
   async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
 
     setIsUploading(true);
     try {
-      uploadFile([file]); // Upload the file
-      refetchFiles(); // Refresh the file list after upload
+      await uploadFile([file]);
+      setRefreshKey((prev) => prev + 1);
     } catch (error) {
-      console.error('Error uploading file:', error);
+      console.error("Gagal upload file:", error);
     } finally {
       setIsUploading(false);
     }
   }
 
-  // Filter files based on search and type
   const filteredFiles = filesData.filter((file: File) => {
-    const matchesSearch = file.name.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = file.name
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
     const matchesType = filterType
       ? file.name.toLowerCase().endsWith(`.${filterType.toLowerCase()}`)
       : true;
@@ -77,7 +77,8 @@ function FileManagement() {
             transition={{ delay: 0.2 }}
             className="text-lg text-gray-400 mb-8"
           >
-            Explore, share, and manage your files with ease. Find what you need quickly and efficiently.
+            Explore, share, and manage your files with ease. Find what you need
+            quickly and efficiently.
           </motion.p>
         </div>
 
@@ -149,8 +150,8 @@ function FileManagement() {
                     </div>
                     <button
                       onClick={() => {
-                        downloadFile(file.name); // Trigger the download
-                        refetchFiles(); // Refresh the list of files after downloading
+                        downloadFile(file.name); // Trigger download
+                        setRefreshKey((prev) => prev + 1); // Refresh data setelah download
                       }}
                       className="p-2 hover:bg-gray-700 rounded-full"
                     >
