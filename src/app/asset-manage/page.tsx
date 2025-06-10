@@ -1,24 +1,28 @@
+// components/FileManagement.js
 "use client";
 
 import NavigationHeader from "@/components/NavigationHeader";
 import { AnimatePresence, motion } from "framer-motion";
 import { BookOpen, Search, Download, Upload } from "lucide-react";
 import { useState } from "react";
-import Link from "next/link";
-import { useGetFiles, useUploadFiles } from "@/service/storage-service";
+// import Link from "next/link";
+import { useGetFiles, useUploadFiles, useDownloadFiles } from "@/service/storage-service";
 import { File } from "@/service/model-types";
 
 function FileManagement() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string | null>(null);
   const { mutate: uploadFile } = useUploadFiles();
+  const { refetch: refetchFiles } = useGetFiles(); // Refetch files after upload
 
   const [isUploading, setIsUploading] = useState(false);
 
-  // fetch files from the server
-  const { data: filesResponse, refetch } = useGetFiles();
-  const filesData = filesResponse?.data?.data ?? [];
+  // Handle file download
+  const { mutate: downloadFile } = useDownloadFiles();
 
+  // Fetch files from the server
+  const { data: filesResponse } = useGetFiles();
+  const filesData = filesResponse?.data?.data ?? [];
 
   // Handle file upload
   async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
@@ -28,7 +32,7 @@ function FileManagement() {
     setIsUploading(true);
     try {
       uploadFile([file]); // Upload the file
-      refetch(); // Refresh the file list after upload
+      refetchFiles(); // Refresh the file list after upload
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {
@@ -36,6 +40,7 @@ function FileManagement() {
     }
   }
 
+  // Filter files based on search and type
   const filteredFiles = filesData.filter((file: File) => {
     const matchesSearch = file.name.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesType = filterType
@@ -43,6 +48,7 @@ function FileManagement() {
       : true;
     return matchesSearch && matchesType;
   });
+
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       <NavigationHeader />
@@ -52,8 +58,7 @@ function FileManagement() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r
-             from-blue-500/10 to-purple-500/10 text-sm text-gray-400 mb-6"
+            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-sm text-gray-400 mb-6"
           >
             <BookOpen className="w-4 h-4" />
             Files Management
@@ -142,13 +147,15 @@ function FileManagement() {
                         {new Date(file.lastModified).toLocaleDateString()}
                       </p>
                     </div>
-                    <Link
-                      href={file.url}
-                      download
+                    <button
+                      onClick={() => {
+                        downloadFile(file.name); // Trigger the download
+                        refetchFiles(); // Refresh the list of files after downloading
+                      }}
                       className="p-2 hover:bg-gray-700 rounded-full"
                     >
                       <Download className="w-5 h-5 text-gray-400" />
-                    </Link>
+                    </button>
                   </div>
                 </motion.div>
               ))}

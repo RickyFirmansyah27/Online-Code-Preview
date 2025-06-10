@@ -36,3 +36,30 @@ export const useGetFiles = (query = {}) => {
     },
   });
 };
+
+
+export const useDownloadFiles = () => {
+  return useMutation<string, Error, string>({
+    mutationFn: async (filename) => {
+      try {
+        const response = await axios.get(`${baseURL}/${basePath}/supabase/download?filename=${filename}`, {
+          responseType: 'blob',
+        });
+
+        const blob = new Blob([response.data]);
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', filename);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        return filename;
+      } catch (error) {
+        console.error('Download Error:', error);
+        throw error;
+      }
+    },
+  });
+};
