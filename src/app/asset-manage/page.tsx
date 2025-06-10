@@ -9,6 +9,7 @@ import {
   useGetFiles,
   useUploadFiles,
   useDownloadFiles,
+  useDeleteFile,
 } from "@/service/storage-service";
 import type { File } from "@/service/model-types"; // Ensure this type is defined
 
@@ -19,6 +20,7 @@ const FileManagement = () => {
 
   const { mutate: uploadFile } = useUploadFiles();
   const { mutate: downloadFile } = useDownloadFiles();
+  const { mutate: deleteFile } = useDeleteFile();
   const { data: filesResponse, isLoading, refetch } = useGetFiles();
 
   const filesData = get(filesResponse, "data.data", []);
@@ -56,6 +58,17 @@ const FileManagement = () => {
     },
     [uploadFile, refetch]
   );
+
+    const handleDelete = useCallback(
+      async (filename: string) => {
+        deleteFile(filename, {
+          onSuccess: () => {
+            refetch();
+          },
+        });
+      },
+      [deleteFile, refetch]
+    );
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
@@ -199,7 +212,7 @@ const FileManagement = () => {
                         <Download className="w-5 h-5 text-gray-400" />
                       </button>
                       <button
-                        onClick={() => {}}
+                        onClick={() => handleDelete(file.name)}
                         className="p-2 hover:bg-red-700/20 rounded-full transition-colors"
                         aria-label={`Delete ${file.name}`}
                       >

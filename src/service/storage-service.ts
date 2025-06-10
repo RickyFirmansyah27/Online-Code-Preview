@@ -63,3 +63,20 @@ export const useDownloadFiles = () => {
     },
   });
 };
+
+export const useDeleteFile = () => {
+  return useMutation<string, Error, string>({
+    mutationFn: async (filename) => {
+      try {
+        const response = await axios.delete(`${baseURL}/${basePath}/supabase/delete`, {
+          params: { filename }
+        });
+        
+        return response.data;
+      } catch (error) {
+        console.error('Gagal menghapus file:', error);
+        throw error;
+      }
+    },
+  });
+};
