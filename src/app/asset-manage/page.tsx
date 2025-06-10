@@ -1,67 +1,75 @@
-// components/FileManagement.js
 "use client";
 
-import NavigationHeader from "@/components/NavigationHeader";
+import { useCallback, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { get } from "lodash";
 import { BookOpen, Search, Download, Upload } from "lucide-react";
-import { useState } from "react";
+import NavigationHeader from "@/components/NavigationHeader";
 import {
   useGetFiles,
   useUploadFiles,
   useDownloadFiles,
 } from "@/service/storage-service";
-import { File } from "@/service/model-types";
+import type { File } from "@/service/model-types"; // Ensure this type is defined
 
-function FileManagement() {
+const FileManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<string | null>(null);
-  const [refreshKey, setRefreshKey] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
-
 
   const { mutate: uploadFile } = useUploadFiles();
   const { mutate: downloadFile } = useDownloadFiles();
-  const { data: filesResponse } = useGetFiles(refreshKey);
-  const filesData = filesResponse?.data?.data ?? [];
+  const { data: filesResponse, isLoading, refetch } = useGetFiles();
 
-  async function handleFileUpload(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
+  const filesData = get(filesResponse, 'data.data', []);
 
-    setIsUploading(true);
-    try {
-      await uploadFile([file]);
-      setRefreshKey((prev) => prev + 1);
-    } catch (error) {
-      console.error("Gagal upload file:", error);
-    } finally {
-      setIsUploading(false);
-    }
-  }
+  const filteredFiles = useMemo(
+    () =>
+      filesData.filter((file: File) => {
+        const matchesSearch = file.name
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase());
+        const matchesType = filterType
+          ? file.name.toLowerCase().endsWith(`.${filterType.toLowerCase()}`)
+          : true;
+        return matchesSearch && matchesType;
+      }),
+    [filesData, searchQuery, filterType]
+  );
 
-  const filteredFiles = filesData.filter((file: File) => {
-    const matchesSearch = file.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    const matchesType = filterType
-      ? file.name.toLowerCase().endsWith(`.${filterType.toLowerCase()}`)
-      : true;
-    return matchesSearch && matchesType;
-  });
+  const handleFileUpload = useCallback(
+    async (event: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(event.target.files ?? []);
+      if (!files.length) return;
+
+      try {
+        uploadFile(files, {
+          onSuccess: () => {
+            refetch();
+            setIsUploading(false);
+          },
+        });
+      } catch (error) {
+        setIsUploading(false);
+        console.error("Upload failed:", error);       
+      }
+    },
+    [uploadFile, refetch]
+  );
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
       <NavigationHeader />
 
-      <div className="relative max-w-7xl mx-auto px-4 py-12">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+      <main className="mx-auto max-w-7xl px-4 py-12">
+        <header className="mb-16 text-center max-w-3xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-sm text-gray-400 mb-6"
           >
             <BookOpen className="w-4 h-4" />
-            Files Management
+            File Management
           </motion.div>
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -69,7 +77,7 @@ function FileManagement() {
             transition={{ delay: 0.1 }}
             className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-300 text-transparent bg-clip-text mb-6"
           >
-            Discover and Manage your files
+            Discover and Manage Your Files
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
@@ -80,34 +88,43 @@ function FileManagement() {
             Explore, share, and manage your files with ease. Find what you need
             quickly and efficiently.
           </motion.p>
-        </div>
+        </header>
 
         {/* Filters and Upload Section */}
-        <div className="relative max-w-5xl mx-auto mb-12 space-y-6">
+        <section className="mb-12 max-w-5xl mx-auto space-y-6">
           <div className="flex flex-col md:flex-row gap-4">
             {/* Search Bar */}
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 w-5 h-5" />
+              <label htmlFor="search-files" className="sr-only">
+                Search files
+              </label>
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5"
+                aria-hidden="true"
+              />
               <input
+                id="search-files"
                 type="text"
                 placeholder="Search files..."
-                className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#1a1a22] text-gray-200 border border-gray-700 focus:outline-none focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 rounded-lg bg-[#1a1a22] text-gray-200 border border-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search files"
               />
             </div>
 
             {/* File Type Filter */}
-            <div className="flex gap-2">
+            <div className="flex gap-2" role="group" aria-label="File type filters">
               {["All", "pdf", "csv", "xlsx", "docx"].map((type) => (
                 <button
                   key={type}
                   onClick={() => setFilterType(type === "All" ? null : type)}
-                  className={`px-4 py-2 rounded-lg ${
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                     filterType === (type === "All" ? null : type)
                       ? "bg-blue-500 text-white"
-                      : "bg-[#1a1a22] text-gray-400"
+                      : "bg-[#1a1a22] text-gray-400 hover:bg-gray-700"
                   }`}
+                  aria-pressed={filterType === (type === "All" ? null : type)}
                 >
                   {type}
                 </button>
@@ -115,57 +132,80 @@ function FileManagement() {
             </div>
 
             {/* Upload Button */}
-            <label className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg cursor-pointer hover:bg-blue-600">
-              <Upload className="w-5 h-5" />
+            <label
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg cursor-pointer transition-colors ${
+                isUploading
+                  ? "bg-blue-400 text-white/80 cursor-not-allowed"
+                  : "bg-blue-500 text-white hover:bg-blue-600"
+              }`}
+              aria-disabled={isUploading}
+            >
+              <Upload className="w-5 h-5" aria-hidden="true" />
               <span>{isUploading ? "Uploading..." : "Upload File"}</span>
               <input
                 type="file"
                 className="hidden"
-                onChange={handleFileUpload}
+                onChange={(e) => {
+                  handleFileUpload(e);
+                  setIsUploading(true);
+                }}
                 disabled={isUploading}
+                multiple 
+                aria-label="Upload file"
               />
             </label>
           </div>
 
           {/* File List */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <AnimatePresence>
-              {filteredFiles.map((file: File) => (
-                <motion.div
-                  key={file.url}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -20 }}
-                  className="p-4 bg-[#1a1a22] rounded-lg border border-gray-700"
-                >
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="text-gray-200 font-medium">{file.name}</p>
-                      <p className="text-sm text-gray-400">
-                        {(file.size / 1024 / 1024).toFixed(2)} MB
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(file.lastModified).toLocaleDateString()}
-                      </p>
+            {isLoading ? (
+              <p className="text-gray-400 col-span-full text-center">
+                Loading files...
+              </p>
+            ) : filteredFiles.length === 0 ? (
+              <p className="text-gray-400 col-span-full text-center">
+                No files found.
+              </p>
+            ) : (
+              <AnimatePresence>
+                {filteredFiles.map((file: File) => (
+                  <motion.article
+                    key={file.url}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    className="p-4 bg-[#1a1a22] rounded-lg border border-gray-700"
+                    role="listitem"
+                  >
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h2 className="text-gray-200 font-medium text-sm truncate">
+                          {file.name}
+                        </h2>
+                        <p className="text-sm text-gray-400">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          {new Date(file.lastModified).toLocaleDateString()}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => downloadFile(file.name)}
+                        className="p-2 hover:bg-gray-700 rounded-full transition-colors"
+                        aria-label={`Download ${file.name}`}
+                      >
+                        <Download className="w-5 h-5 text-gray-400" />
+                      </button>
                     </div>
-                    <button
-                      onClick={() => {
-                        downloadFile(file.name); // Trigger download
-                        setRefreshKey((prev) => prev + 1); // Refresh data setelah download
-                      }}
-                      className="p-2 hover:bg-gray-700 rounded-full"
-                    >
-                      <Download className="w-5 h-5 text-gray-400" />
-                    </button>
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
+                  </motion.article>
+                ))}
+              </AnimatePresence>
+            )}
           </div>
-        </div>
-      </div>
+        </section>
+      </main>
     </div>
   );
-}
+};
 
 export default FileManagement;
