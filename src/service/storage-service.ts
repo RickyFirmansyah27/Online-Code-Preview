@@ -68,7 +68,7 @@ export const useDeleteFile = () => {
   return useMutation<string, Error, string>({
     mutationFn: async (filename) => {
       try {
-        const response = await axios.delete(`${baseURL}/${basePath}/supabase/delete`, {
+        const response = await axios.get(`${baseURL}/${basePath}/supabase/delete`, {
           params: { filename }
         });
         
