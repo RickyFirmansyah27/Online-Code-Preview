@@ -2,9 +2,21 @@
 
 import { useState, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { BookOpen, Code, Send, Loader, ChevronDown, Copy, Check } from "lucide-react";
+import {
+  BookOpen,
+  Code,
+  Send,
+  Loader,
+  ChevronDown,
+  Copy,
+  Check,
+} from "lucide-react";
 import NavigationHeader from "@/components/NavigationHeader";
-import { useConservationAi } from "@/service/ai-service";
+import {
+  useCodingAssistant,
+  useCodeAnalyzer,
+  useConversationAi,
+} from "@/service/ai-service";
 import { MODEL_OPTIONS, ModelOption } from "@/service/model-types";
 
 interface Message {
@@ -16,11 +28,30 @@ function AiPlayground() {
   // State
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
-  const [selectedModel, setSelectedModel] = useState<ModelOption>(MODEL_OPTIONS[0]);
+  const [selectedModel, setSelectedModel] = useState<ModelOption>(
+    MODEL_OPTIONS[0]
+  );
   const [copiedCode, setCopiedCode] = useState<number | null>(null);
-  
+
   // Use the AI mutation hook
-  const { mutateAsync: sendMessage, status } = useConservationAi(selectedModel.model);
+  const [mode, setMode] = useState<"default" | "ask" | "analyzer">("default");
+
+  const coding = useCodingAssistant(selectedModel.model);
+  const conversation = useConversationAi(selectedModel.model);
+  const analyzer = useCodeAnalyzer(selectedModel.model);
+
+  const getHookByMode = () => {
+    switch (mode) {
+      case "ask":
+        return conversation;
+      case "analyzer":
+        return analyzer;
+      default:
+        return coding;
+    }
+  };
+
+  const { mutateAsync: sendMessage, status } = getHookByMode();
   const isLoading = status === "pending";
 
   // Tambahkan useRef untuk auto-scroll
@@ -39,28 +70,37 @@ function AiPlayground() {
     e.preventDefault();
     if (!input.trim()) return;
 
-    const newMessages: Message[] = [...messages, { role: "user" as const, content: input }];
+    const newMessages: Message[] = [
+      ...messages,
+      { role: "user" as const, content: input },
+    ];
     setMessages(newMessages);
     setInput("");
 
     try {
       const response = await sendMessage(input);
       const data = response.data;
-      
+
       if (!data.choices || !data.choices[0]?.message?.content) {
         throw new Error("Unexpected API response format");
       }
 
-      setMessages([...newMessages, { 
-        role: "assistant", 
-        content: data.choices[0].message.content 
-      }]);
+      setMessages([
+        ...newMessages,
+        {
+          role: "assistant",
+          content: data.choices[0].message.content,
+        },
+      ]);
     } catch (error) {
       console.error("Error:", error);
-      setMessages([...newMessages, { 
-        role: "assistant", 
-        content: "Sorry, something went wrong. Please try again." 
-      }]);
+      setMessages([
+        ...newMessages,
+        {
+          role: "assistant",
+          content: "Sorry, something went wrong. Please try again.",
+        },
+      ]);
     }
   };
 
@@ -90,22 +130,22 @@ function AiPlayground() {
     const formatMessageContent = (content: string) => {
       // Split content by code block markers
       const parts = content.split(/(```[\s\S]*?```)/);
-      
+
       return parts.map((part, index) => {
         // Check if this part is a code block
-        if (part.startsWith('```')) {
+        if (part.startsWith("```")) {
           // Extract language and code
           const match = part.match(/```(\w+)?\n?([\s\S]*?)```/);
           if (match) {
             // Destructure while ignoring the full match
-            const [, language = '', code = ''] = match;
+            const [, language = "", code = ""] = match;
             const handleCopy = async () => {
               try {
                 await navigator.clipboard.writeText(code.trim());
                 setCopiedCode(index);
                 setTimeout(() => setCopiedCode(null), 2000);
               } catch (err) {
-                console.error('Failed to copy code:', err);
+                console.error("Failed to copy code:", err);
               }
             };
 
@@ -129,9 +169,11 @@ function AiPlayground() {
                     )}
                   </button>
                 </div>
-                <code className={`block p-4 bg-gray-800/50 rounded-lg overflow-x-auto font-mono text-sm ${
-                  language ? `language-${language}` : ''
-                }`}>
+                <code
+                  className={`block p-4 bg-gray-800/50 rounded-lg overflow-x-auto font-mono text-sm ${
+                    language ? `language-${language}` : ""
+                  }`}
+                >
                   {code.trim()}
                 </code>
               </pre>
@@ -162,8 +204,8 @@ function AiPlayground() {
               )}
               <div
                 className={`p-4 rounded-lg max-w-[80%] ${
-                  message.role === "user" 
-                    ? "bg-blue-500/20 text-blue-50" 
+                  message.role === "user"
+                    ? "bg-blue-500/20 text-blue-50"
                     : "bg-purple-500/20 text-purple-50"
                 }`}
               >
@@ -195,12 +237,12 @@ function AiPlayground() {
           placeholder="Type your message..."
           disabled={isLoading}
           style={{
-            minHeight: '44px',
-            maxHeight: '200px'
+            minHeight: "44px",
+            maxHeight: "200px",
           }}
           onInput={(e) => {
             const target = e.target as HTMLTextAreaElement;
-            target.style.height = 'auto';
+            target.style.height = "auto";
             target.style.height = `${target.scrollHeight}px`;
           }}
         />
@@ -220,50 +262,66 @@ function AiPlayground() {
   );
 
   const renderModelSelector = () => {
-    // Group models by category
-    const groupedModels = MODEL_OPTIONS.reduce((acc, model) => {
-      if (!acc[model.category]) {
-        acc[model.category] = [];
-      }
-      acc[model.category].push(model);
-      return acc;
-    }, {} as Record<string, ModelOption[]>);
+    const groupedModels = MODEL_OPTIONS.reduce(
+      (acc, model) => {
+        if (!acc[model.category]) acc[model.category] = [];
+        acc[model.category].push(model);
+        return acc;
+      },
+      {} as Record<string, ModelOption[]>
+    );
 
     return (
       <div className="max-w-3xl mx-auto mb-6">
-        <div className="relative">
-          <select
-            value={selectedModel.id}
-            onChange={(e) => {
-              const model = MODEL_OPTIONS.find(m => m.id === e.target.value);
-              if (model) setSelectedModel(model);
-            }}
-            className="w-full bg-gray-900/50 text-gray-200 px-4 py-3 rounded-xl appearance-none cursor-pointer 
+        <div className="flex items-center gap-4">
+          <div className="relative flex-1">
+            <select
+              value={selectedModel.id}
+              onChange={(e) => {
+                const model = MODEL_OPTIONS.find(
+                  (m) => m.id === e.target.value
+                );
+                if (model) setSelectedModel(model);
+              }}
+              className="w-full bg-gray-900/50 text-gray-200 px-4 py-3 rounded-xl appearance-none cursor-pointer 
               focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700/50
               hover:border-blue-500/50 transition-colors"
-          >
-            {Object.entries(groupedModels).map(([category, models]) => (
-              <optgroup 
-                key={`group-${category}`}
-                label={category}
-                className="bg-gray-900 text-gray-200"
-              >
-                {models.map((model) => (
-                  <option 
-                    key={model.id}
-                    value={model.id}
-                    className="bg-gray-800 text-gray-200 hover:bg-gray-700"
-                  >
-                    {model.name}
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-          </select>
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none
-            bg-gradient-to-l from-gray-900/50 via-gray-900/50 to-transparent pl-6">
-            <ChevronDown className="w-5 h-5 text-blue-400" />
+            >
+              {Object.entries(groupedModels).map(([category, models]) => (
+                <optgroup key={`group-${category}`} label={category} className="bg-gray-900 text-gray-200">
+                  {models.map((model) => (
+                    <option key={model.id} value={model.id} className="bg-gray-800 text-white">
+                      {model.name}
+                    </option>
+                  ))}
+                </optgroup>
+              ))}
+            </select>
+            <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <ChevronDown className="w-5 h-5 text-blue-400" />
+            </div>
           </div>
+
+          <button
+            onClick={() => setMode("ask")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors border ${
+              mode === "ask"
+                ? "bg-blue-600 text-white border-blue-700"
+                : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700"
+            }`}
+          >
+            Ask
+          </button>
+          <button
+            onClick={() => setMode("analyzer")}
+            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors border ${
+              mode === "analyzer"
+                ? "bg-purple-600 text-white border-purple-700"
+                : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700"
+            }`}
+          >
+            Analyzer
+          </button>
         </div>
       </div>
     );

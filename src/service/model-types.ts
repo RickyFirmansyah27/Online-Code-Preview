@@ -16,13 +16,13 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "Live Coding Cepat, Responsif",
     id: "llama3-liveCode",
     name: "Llama 3 8B 8192",
-    model: "llama-3-8b-8192"
+    model: "llama3-8b-8192"
   },
   {
     category: "Refactor Besar / File Panjang",
     id: "gemma-logngFile",
     name: "Gemma 2 9B IT",
-    model: "gemma-2-9b-it"
+    model: "gemma2-9b-it"
   },
   {
     category: "Refactor Besar / File Panjang",
@@ -35,7 +35,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
     id: "deepseek-aiCoding",
     name: "Deepseek R1 Distill Llama 70B",
     model: "deepseek-r1-distill-llama-70b"
-  }
+  },
 ];
 
 export interface File {
