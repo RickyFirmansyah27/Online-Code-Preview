@@ -40,7 +40,6 @@ export const useConversationAi = (model: string) => {
         role: "system",
         content: `You are an expert coding assistant. Always provide:
                   1. Clear, well-commented code solutions
-                  2. Explanations of your approach
                   3. Best practices and potential optimizations
                   4. Error handling considerations
                   5. Testing suggestions when applicable
@@ -61,7 +60,6 @@ export const useConversationAi = (model: string) => {
           role: "system",
           content: `You are an expert coding assistant. Always provide:
                     1. Clear, well-commented code solutions
-                    2. Explanations of your approach
                     3. Best practices and potential optimizations
                     4. Error handling considerations
                     5. Testing suggestions when applicable
@@ -87,7 +85,7 @@ export const useConversationAi = (model: string) => {
           model: model || "llama-3.3-70b-versatile",
           messages: updatedHistory,
           temperature: 0.1,
-          max_tokens: 4000,
+          max_tokens: 2000,
           top_p: 0.9,
           stream: false,
         };
@@ -137,15 +135,10 @@ export const useCodingAssistant = (
   const systemPrompt = `You are a senior software engineer and coding mentor specializing in ${programmingLanguage || "multiple programming languages"}. 
 
   Your responses should:
-  1. Provide working, production-ready code
-  2. Include comprehensive error handling
-  3. Follow industry best practices and design patterns
-  4. Include performance considerations
-  5. Suggest testing approaches
-  6. Explain complex concepts clearly
-  7. Offer alternative solutions when applicable
+  1. Provide working, production-ready code with comprehensive error handling, industry best practices, and performance considerations
+  2. Offer testing suggestions
 
-  Always format code properly with syntax highlighting and include comments explaining key logic.`;
+  Format your responses with proper code blocks and be concise but thorough.`;
 
   const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>(
     [
@@ -208,12 +201,9 @@ export const useCodeAnalyzer = (model: string) => {
     ...DEFAULT_QUERY_OPTIONS,
     mutationFn: async (code: string) => {
       const analysisPrompt = `Analyze the following code and provide:
-      1. Code quality assessment
-      2. Potential bugs or issues
-      3. Security vulnerabilities
-      4. Performance improvements
-      5. Best practices suggestions
-      6. Refactoring recommendations
+      1. Potential bugs or issues
+      2. Performance improvements
+      3. Refactoring recommendations
 
       Code to analyze:
       \`\`\`
@@ -226,7 +216,7 @@ export const useCodeAnalyzer = (model: string) => {
           {
             role: "system",
             content:
-              "You are a code review expert. Provide thorough, constructive analysis focusing on code quality, security, and performance.",
+              "You are a code review expert. Provide thorough, constructive analysis focusing on code quality, security, and performance",
           },
           {
             role: "user",
@@ -234,7 +224,7 @@ export const useCodeAnalyzer = (model: string) => {
           },
         ],
         temperature: 0.1,
-        max_tokens: 4000,
+        max_tokens: 3000,
         top_p: 0.9,
         stream: false,
       };

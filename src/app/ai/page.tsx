@@ -128,8 +128,13 @@ function AiPlayground() {
 
   const renderMessages = () => {
     const formatMessageContent = (content: string) => {
+      // Remove <think>...</think> content
+      const cleanContent = content
+        .replace(/<think>[\s\S]*?<\/think>/g, "")
+        .trim();
+
       // Split content by code block markers
-      const parts = content.split(/(```[\s\S]*?```)/);
+      const parts = cleanContent.split(/(```[\s\S]*?```)/);
 
       return parts.map((part, index) => {
         // Check if this part is a code block
