@@ -2,39 +2,52 @@ export interface ModelOption {
   id: string;
   name: string;
   category: string;
-  model: string; 
+  model: string;
+  max_request: string;
 }
 
 export const MODEL_OPTIONS: ModelOption[] = [
-  {
-    category: "Live Coding Cepat, Responsif",
-    id: "llamaInstant-liveCode",
-    name: "Llama 3.1 8B Instant",
-    model: "llama-3.1-8b-instant"
+    {
+    category: "Refactor Besar / File Panjang",
+    id: "mistral-large",
+    name: "Mistral Large",
+    model: "meta-llama/llama-4-scout-17b-16e-instruct",
+    max_request: "1000"
   },
   {
     category: "Live Coding Cepat, Responsif",
-    id: "llama3-liveCode",
-    name: "Llama 3 8B 8192",
-    model: "llama3-8b-8192"
+    id: "gemini-3-pro",
+    name: "Gemini 3 Pro",
+    model: "llama-3.3-70b-versatile",
+    max_request: "1000"
   },
   {
     category: "Refactor Besar / File Panjang",
-    id: "gemma-logngFile",
-    name: "Gemma 2 9B IT",
-    model: "gemma2-9b-it"
-  },
-  {
-    category: "Refactor Besar / File Panjang",
-    id: "llama-lingFile",
-    name: "Llama 3.3 70B Versatile",
-    model: "llama-3.3-70b-versatile"
+    id: "deepseek-v3",
+    name: "Deepseek V3",
+    model: "deepseek-r1-distill-llama-70b",
+    max_request: "1000"
   },
   {
     category: "AI Coding Assistant Pintar",
-    id: "deepseek-aiCoding",
-    name: "Deepseek R1 Distill Llama 70B",
-    model: "deepseek-r1-distill-llama-70b"
+    id: "gpt-4o",
+    name: "GTP 4o",
+    model: "compound-beta-mini",
+    max_request: "200"
+  },
+  {
+    category: "AI Coding Assistant Pintar",
+    id: "claude-sonnet-3-7",
+    name: "Claude Sonnet 3.7",
+    model: "compound-beta",
+    max_request: "200"
+  },
+  {
+    category: "Live Coding Cepat, Responsif",
+    id: "llama-3-1",
+    name: "LLaMA 3.1",
+    model: "meta-llama/llama-4-maverick-17b-128e-instruct",
+    max_request: "1000"
   },
 ];
 
