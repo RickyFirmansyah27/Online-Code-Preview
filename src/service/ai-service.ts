@@ -10,7 +10,7 @@ const DEFAULT_QUERY_OPTIONS = {
 const basePath = "/v1/chat";
 const GROQ_API_KEY =
   process.env.GROQ_API_KEY ||
-  "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";
+  "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";
 
 
 interface ChatMessage {
