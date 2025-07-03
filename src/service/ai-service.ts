@@ -8,10 +8,6 @@ const DEFAULT_QUERY_OPTIONS = {
 };
 
 const basePath = "/v1/chat";
-const GROQ_API_KEY =
-  process.env.GROQ_API_KEY ||
-  "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";
-
 
 interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -82,7 +78,7 @@ export const useConversationAi = (model: string) => {
         const updatedHistory = [...conversationHistory, userMessage];
 
         const payload: ChatRequest = {
-          model: model || "llama-3.3-70b-versatile",
+          model: model,
           messages: updatedHistory,
           temperature: 0.1,
           max_tokens: 2000,
@@ -92,7 +88,7 @@ export const useConversationAi = (model: string) => {
 
         try {
           const response = await apiPost(`${basePath}/completions`, payload, {
-            Authorization: `Bearer ${GROQ_API_KEY}`,
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
             "Content-Type": "application/json",
           });
 
@@ -170,7 +166,7 @@ export const useCodingAssistant = (
 
       try {
         const response = await apiPost(`${basePath}/completions`, payload, {
-          Authorization: `Bearer ${GROQ_API_KEY}`,
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
           "Content-Type": "application/json",
         });
 
@@ -230,7 +226,7 @@ export const useCodeAnalyzer = (model: string) => {
       };
 
       return apiPost(`${basePath}/completions`, payload, {
-        Authorization: `Bearer ${GROQ_API_KEY}`,
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
         "Content-Type": "application/json",
       });
     },
