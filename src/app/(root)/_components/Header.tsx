@@ -74,15 +74,9 @@ async function Header() {
 
           {/* Navigation */}
           <nav className="flex items-center space-x-1">
-            {user?.firstName === "Zephyrion" ? (
-              <FileManagementLink href="/asset-manage">
+            <FileManagementLink href="/asset-manage">
                 File Management
               </FileManagementLink>
-            ) : (
-              <FileManagementLink href="/files-edge">
-                File Management
-              </FileManagementLink>
-            )}
             <Link
               href="/ai"
               className="relative group flex items-center gap-2 px-4 py-1.5 rounded-lg text-gray-300 bg-gray-800/50 

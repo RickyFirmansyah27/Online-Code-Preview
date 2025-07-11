@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { get } from "lodash";
 import { BookOpen, Search, Download, Upload, Trash2 } from "lucide-react";
 import NavigationHeader from "@/components/NavigationHeader";
+import { useUser } from "@clerk/nextjs";
 import {
   useGetFiles,
   useUploadFiles,
@@ -18,12 +19,16 @@ const FileManagement = () => {
   const [filterType, setFilterType] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
 
-  const { mutate: uploadFile } = useUploadFiles();
-  const { mutate: downloadFile } = useDownloadFiles();
-  const { mutate: deleteFile } = useDeleteFile();
-  const { data: filesResponse, isLoading, refetch } = useGetFiles();
+  const { user } = useUser();
 
-  const filesData = get(filesResponse, "data.data", []);
+  const userParam = { firstName: user?.firstName || undefined };
+
+  const { mutate: uploadFile } = useUploadFiles(userParam);
+  const { mutate: downloadFile } = useDownloadFiles(userParam);
+  const { mutate: deleteFile } = useDeleteFile(userParam);
+  const { data: filesResponse, isLoading, refetch } = useGetFiles({}, userParam);
+
+  const filesData = get(filesResponse, "data.files", []);
 
   const filteredFiles = useMemo(
     () =>
@@ -59,16 +64,16 @@ const FileManagement = () => {
     [uploadFile, refetch]
   );
 
-    const handleDelete = useCallback(
-      async (filename: string) => {
-        deleteFile(filename, {
-          onSuccess: () => {
-            refetch();
-          },
-        });
-      },
-      [deleteFile, refetch]
-    );
+  const handleDelete = useCallback(
+    async (filename: string) => {
+      deleteFile(filename, {
+        onSuccess: () => {
+          refetch();
+        },
+      });
+    },
+    [deleteFile, refetch]
+  );
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
