@@ -6,6 +6,7 @@ import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../../convex/_generated/api";
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 import ThemeSelector from "./ThemeSelector";
 import LanguageSelector from "./LanguageSelector";
@@ -17,6 +18,7 @@ import AI from "./AI";
 
 function Header() {
   const { user, isLoaded } = useUser();
+  const pathname = usePathname();
   const [convexUser, setConvexUser] = useState<{ isPro?: boolean } | null>(
     null
   );
@@ -56,23 +58,23 @@ function Header() {
         <div className="w-full flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3">
           {/* Theme + Language + Run + Profile */}
           <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3">
-            <div className="sm:border-l border-gray-800 pl-0 sm:pl-3">
-              <ThemeSelector />
-            </div>
+            {pathname === "/" && (
+              <>
+                <div className="sm:border-l border-gray-800 pl-0 sm:pl-3">
+                  <ThemeSelector />
+                </div>
 
-            <div className="sm:border-l border-gray-800 pl-0 sm:pl-3">
-              <LanguageSelector hasAccess={!!convexUser?.isPro} />
-            </div>
+                <div className="sm:border-l border-gray-800 pl-0 sm:pl-3">
+                  <LanguageSelector hasAccess={!!convexUser?.isPro} />
+                </div>
+              </>
+            )}
 
             <SignedIn>
-              <RunButton />
-            </SignedIn>
-
-            <div className="sm:border-l border-gray-800 pl-0 sm:pl-3">
-              <HeaderProfileBtn />
-            </div>
-
-            <div className="flex justify-center min-w-[120px]">
+                {pathname === "/" && (
+                    <RunButton />
+                )}
+            
               {(!convexUser || !convexUser.isPro) && (
                 <Link
                   href="/pricing"
@@ -80,10 +82,14 @@ function Header() {
                 >
                   <Sparkles className="w-4 h-4 text-amber-400 hover:text-amber-300" />
                   <span className="text-sm font-medium text-amber-400/90 hover:text-amber-300">
-                    Pro
+                    Upgrade
                   </span>
                 </Link>
               )}
+            </SignedIn>
+
+            <div className="sm:border-l border-gray-800 pl-0 sm:pl-3">
+              <HeaderProfileBtn />
             </div>
           </div>
         </div>
