@@ -1,19 +1,19 @@
-import { Boxes, Globe, RefreshCcw, Shield } from "lucide-react";
+import { Boxes, Code2, Folder, Globe, RefreshCcw, Shield } from "lucide-react";
 
 export const ENTERPRISE_FEATURES = [
   {
     icon: Globe,
-    label: "Global Infrastructure",
+    label: "Realtime Execution",
     desc: "Lightning-fast execution across worldwide edge nodes",
   },
   {
     icon: Shield,
-    label: "Enterprise Security",
+    label: "Private Workspace",
     desc: "Bank-grade encryption and security protocols",
   },
   {
     icon: RefreshCcw,
-    label: "Real-time Sync",
+    label: "Real-time AI Conversation",
     desc: "Instant synchronization across all devices",
   },
   {
@@ -21,7 +21,18 @@ export const ENTERPRISE_FEATURES = [
     label: "Unlimited Storage",
     desc: "Store unlimited snippets and projects",
   },
+  {
+    icon: Code2,
+    label: "Collaborative Coding",
+    desc: "Run and share code instantly with team members in real-time",
+  },
+  {
+    icon: Folder,
+    label: "Integrated File Manager",
+    desc: "Organize, browse, and edit files seamlessly within your workspace",
+  },
 ];
+
 
 export const FEATURES = {
   development: [

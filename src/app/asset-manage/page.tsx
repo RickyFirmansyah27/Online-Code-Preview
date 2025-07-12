@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { get } from "lodash";
 import { BookOpen, Search, Download, Upload, Trash2 } from "lucide-react";
-import NavigationHeader from "@/components/NavigationHeader";
+import Header from "../(root)/_components/Header";
 import { useUser } from "@clerk/nextjs";
 import {
   useGetFiles,
@@ -76,8 +76,8 @@ const FileManagement = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
-      <NavigationHeader />
+    <div className="min-h-screen bg-[#0a0a0f] overflow-x-hidden">
+      <Header />
 
       <main className="mx-auto max-w-7xl px-4 py-12">
         <header className="mb-16 text-center max-w-3xl mx-auto">
@@ -109,8 +109,8 @@ const FileManagement = () => {
         </header>
 
         {/* Filters and Upload Section */}
-        <section className="mb-12 max-w-5xl mx-auto space-y-6">
-          <div className="flex flex-col md:flex-row gap-4">
+        <section className="mb-12 max-w-5xl mx-auto space-y-6 px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             {/* Search Bar */}
             <div className="relative flex-1">
               <label htmlFor="search-files" className="sr-only">
@@ -179,7 +179,7 @@ const FileManagement = () => {
           </div>
 
           {/* File List */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {isLoading ? (
               <p className="text-gray-400 col-span-full text-center">
                 Loading files...

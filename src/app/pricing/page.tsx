@@ -2,7 +2,7 @@ import { currentUser } from "@clerk/nextjs/server";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../convex/_generated/api";
 import ProPlanView from "./_components/ProPlanView";
-import NavigationHeader from "@/components/NavigationHeader";
+import NavigationHeader from "../(root)/_components/Header";
 import { ENTERPRISE_FEATURES, FEATURES } from "./_constants";
 import { Star } from "lucide-react";
 import FeatureCategory from "./_components/FeatureCategory";
@@ -29,27 +29,27 @@ async function PricingPage() {
 
       {/* main content */}
 
-      <main className="relative pt-32 pb-24 px-4">
+      <main className="relative pt-16 pb-12 px-4 sm:pt-20 sm:pb-16">
         <div className="max-w-7xl mx-auto">
           {/* Hero   */}
-          <div className="text-center mb-24">
+          <div className="text-center mb-16 sm:mb-20">
             <div className="relative inline-block">
               <div className="absolute -inset-px bg-gradient-to-r from-blue-500 to-purple-500 blur-xl opacity-10" />
               <h1
-                className="relative text-5xl md:text-6xl lg:text-7xl font-semibold bg-gradient-to-r
+                className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold bg-gradient-to-r
                from-gray-100 to-gray-300 text-transparent bg-clip-text mb-8"
               >
                 Elevate Your <br />
                 Development Experience
               </h1>
             </div>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-sm sm:text-base text-gray-400 max-w-lg mx-auto leading-relaxed">
               Join the next generation of developers with our professional suite of tools
             </p>
           </div>
 
           {/* Enterprise Features */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-24">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-12 sm:mb-16">
             {ENTERPRISE_FEATURES.map((feature) => (
               <div
                 key={feature.label}
@@ -84,7 +84,7 @@ async function PricingPage() {
               />
               <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-purple-500/50 to-transparent" />
 
-              <div className="relative p-8 md:p-12">
+              <div className="relative p-4 sm:p-6 md:p-8">
                 {/* header */}
                 <div className="text-center mb-12">
                   <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-blue-500/10 to-purple-500/10 ring-1 ring-gray-800/60 mb-6">
@@ -102,7 +102,7 @@ async function PricingPage() {
                 </div>
 
                 {/* Features grid */}
-                <div className="grid md:grid-cols-3 gap-12 mb-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 mb-6 sm:mb-8 md:mb-10">
                   <FeatureCategory label="Development">
                     {FEATURES.development.map((feature, idx) => (
                       <FeatureItem key={idx}>{feature}</FeatureItem>

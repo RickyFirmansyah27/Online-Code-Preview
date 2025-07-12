@@ -11,7 +11,7 @@ import {
   Copy,
   Check,
 } from "lucide-react";
-import NavigationHeader from "@/components/NavigationHeader";
+import NavigationHeader from "../(root)/_components/Header";
 import {
   useCodingAssistant,
   useCodeAnalyzer,
