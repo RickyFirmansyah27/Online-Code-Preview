@@ -13,6 +13,7 @@ import {
   useDeleteFile,
 } from "@/service/storage-service";
 import type { File } from "@/service/model-types"; // Ensure this type is defined
+import toast from "react-hot-toast";
 
 const FileManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -54,6 +55,7 @@ const FileManagement = () => {
           onSuccess: () => {
             refetch();
             setIsUploading(false);
+            toast.success("Files uploaded successfully!");
           },
         });
       } catch (error) {
@@ -69,6 +71,7 @@ const FileManagement = () => {
       deleteFile(filename, {
         onSuccess: () => {
           refetch();
+          toast.success("File deleted successfully!");
         },
       });
     },
