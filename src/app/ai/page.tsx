@@ -76,23 +76,15 @@ function AiPlayground() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
-
-    let finalInput = input;
-    if (mode === "debug") {
-      finalInput = `Fix the following code:\n\`\`\`\n${input}\n\`\`\``;
-    } else if (mode === "code") {
-      finalInput = `Help me with the following code:\n\`\`\`\n${input}\n\`\`\``;
-    }
-
     const newMessages: Message[] = [
       ...messages,
-      { role: "user" as const, content: finalInput },
+      { role: "user" as const, content: input },
     ];
     setMessages(newMessages);
     setInput("");
 
     try {
-      const response = await sendMessage(finalInput);
+      const response = await sendMessage(input);
       const data = response.data;
 
       if (!data.choices || !data.choices[0]?.message?.content) {
