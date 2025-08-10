@@ -16,8 +16,8 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "Live Coding Cepat, Responsif",
-    id: "gemini-3-pro",
-    name: "Gemini 3 Pro",
+    id: "gemini-2.5-pro",
+    name: "Gemini 2.5 Pro",
     model: "llama-3.3-70b-versatile",
     max_request: "1000"
   },
@@ -30,16 +30,16 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "AI Coding Assistant Pintar",
-    id: "gpt-4o",
-    name: "GTP 4o",
-    model: "compound-beta-mini",
+    id: "gpt-5",
+    name: "GTP 5",
+    model: "openai/gpt-oss-120b",
     max_request: "200"
   },
   {
     category: "AI Coding Assistant Pintar",
-    id: "claude-sonnet-3-7",
-    name: "Claude Sonnet 3.7",
-    model: "compound-beta",
+    id: "claude-sonnet-4",
+    name: "Claude Sonnet 4",
+    model: "moonshotai/kimi-k2-instruct",
     max_request: "200"
   },
   {

@@ -327,6 +327,12 @@ function AiPlayground() {
           >
             Analyzer
           </button>
+          <button
+            onClick={() => setMessages([])}
+            className="px-4 py-2 rounded-xl text-sm font-medium bg-red-600/20 text-red-400 border border-red-700/50 hover:bg-red-600/30 transition-colors"
+          >
+            Reset Chat
+          </button>
         </div>
       </div>
     );
