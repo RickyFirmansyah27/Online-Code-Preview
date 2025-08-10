@@ -31,21 +31,21 @@ export const MODEL_OPTIONS: ModelOption[] = [
   {
     category: "AI Coding Assistant Pintar",
     id: "gpt-5",
-    name: "GTP 5",
+    name: "GPT 5",
     model: "openai/gpt-oss-120b",
-    max_request: "200"
+    max_request: "1000"
   },
   {
     category: "AI Coding Assistant Pintar",
     id: "claude-sonnet-4",
     name: "Claude Sonnet 4",
     model: "moonshotai/kimi-k2-instruct",
-    max_request: "200"
+    max_request: "1000"
   },
   {
     category: "Live Coding Cepat, Responsif",
-    id: "llama-3-1",
-    name: "LLaMA 3.1",
+    id: "llama-4",
+    name: "LLaMA 4",
     model: "meta-llama/llama-4-maverick-17b-128e-instruct",
     max_request: "1000"
   },

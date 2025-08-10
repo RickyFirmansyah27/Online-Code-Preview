@@ -175,7 +175,7 @@ function AiPlayground() {
                   </button>
                 </div>
                 <code
-                  className={`block p-4 bg-gray-800/50 rounded-lg overflow-x-auto font-mono text-sm ${
+                  className={`block p-4 bg-gray-800/50 rounded-lg overflow-x-auto font-mono text-sm custom-scrollbar ${
                     language ? `language-${language}` : ""
                   }`}
                 >
@@ -191,7 +191,7 @@ function AiPlayground() {
     };
 
     return (
-      <div className="max-w-3xl mx-auto bg-gray-900/50 rounded-xl p-6 mb-4 h-[500px] overflow-y-auto">
+      <div className="max-w-3xl mx-auto bg-gray-900/50 rounded-xl p-6 mb-4 h-[500px] overflow-y-auto custom-scrollbar">
         <AnimatePresence>
           {messages.map((message, index) => (
             <motion.div
