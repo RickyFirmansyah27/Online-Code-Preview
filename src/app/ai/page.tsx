@@ -40,8 +40,9 @@ function AiPlayground() {
   const [copiedCode, setCopiedCode] = useState<number | null>(null);
 
   // Use the AI mutation hook
-  const [mode, setMode] = useState<"ask" | "debug" | "code">("code");
+  const [mode, setMode] = useState<"ask" | "debug" | "code">("ask");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const coding = useCodingAssistant(selectedModel.model);
   const conversation = useConversationAi(selectedModel.model);
@@ -67,10 +68,27 @@ function AiPlayground() {
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
+useEffect(() => {
+  scrollToBottom();
+}, [messages]);
 
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+// Handle click outside dropdown
+useEffect(() => {
+  const handleClickOutside = (event: MouseEvent) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  if (isDropdownOpen) {
+    document.addEventListener("mousedown", handleClickOutside);
+  }
+
+  return () => {
+    document.removeEventListener("mousedown", handleClickOutside);
+  };
+}, [isDropdownOpen]);
+
 
   // Event Handlers
   const handleSubmit = async (e: React.FormEvent) => {
@@ -357,6 +375,7 @@ function AiPlayground() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
                   className="absolute top-full right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-xl shadow-lg z-10"
+                  ref={dropdownRef}
                 >
                   {modes.map((m) => (
                     <button
