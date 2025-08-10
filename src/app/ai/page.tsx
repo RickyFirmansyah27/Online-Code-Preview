@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import "katex/dist/katex.min.css";
+import { BlockMath } from "react-katex";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   BookOpen,
@@ -10,6 +12,10 @@ import {
   ChevronDown,
   Copy,
   Check,
+  MessageCircleQuestion,
+  Bug,
+  Code2,
+  Trash2,
 } from "lucide-react";
 import NavigationHeader from "../(root)/_components/Header";
 import {
@@ -34,7 +40,8 @@ function AiPlayground() {
   const [copiedCode, setCopiedCode] = useState<number | null>(null);
 
   // Use the AI mutation hook
-  const [mode, setMode] = useState<"default" | "ask" | "analyzer">("default");
+  const [mode, setMode] = useState<"ask" | "debug" | "code">("code");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const coding = useCodingAssistant(selectedModel.model);
   const conversation = useConversationAi(selectedModel.model);
@@ -44,9 +51,9 @@ function AiPlayground() {
     switch (mode) {
       case "ask":
         return conversation;
-      case "analyzer":
+      case "debug":
         return analyzer;
-      default:
+      case "code":
         return coding;
     }
   };
@@ -70,15 +77,22 @@ function AiPlayground() {
     e.preventDefault();
     if (!input.trim()) return;
 
+    let finalInput = input;
+    if (mode === "debug") {
+      finalInput = `Fix the following code:\n\`\`\`\n${input}\n\`\`\``;
+    } else if (mode === "code") {
+      finalInput = `Help me with the following code:\n\`\`\`\n${input}\n\`\`\``;
+    }
+
     const newMessages: Message[] = [
       ...messages,
-      { role: "user" as const, content: input },
+      { role: "user" as const, content: finalInput },
     ];
     setMessages(newMessages);
     setInput("");
 
     try {
-      const response = await sendMessage(input);
+      const response = await sendMessage(finalInput);
       const data = response.data;
 
       if (!data.choices || !data.choices[0]?.message?.content) {
@@ -134,7 +148,7 @@ function AiPlayground() {
         .trim();
 
       // Split content by code block markers
-      const parts = cleanContent.split(/(```[\s\S]*?```)/);
+      const parts = cleanContent.split(/(```[\s\S]*?```|\\\[[\s\S]*?\\\])/);
 
       return parts.map((part, index) => {
         // Check if this part is a code block
@@ -184,6 +198,10 @@ function AiPlayground() {
               </pre>
             );
           }
+        }
+        if (part.startsWith("\\[")) {
+          const math = part.substring(2, part.length - 2);
+          return <BlockMath key={index}>{math}</BlockMath>;
         }
         // Regular text
         return <span key={index}>{part}</span>;
@@ -276,6 +294,26 @@ function AiPlayground() {
       {} as Record<string, ModelOption[]>
     );
 
+    const modes = [
+      {
+        id: "code",
+        label: "Code",
+        icon: <Code2 className="w-4 h-4" />,
+      },
+      {
+        id: "debug",
+        label: "Debug",
+        icon: <Bug className="w-4 h-4" />,
+      },
+      {
+        id: "ask",
+        label: "Ask",
+        icon: <MessageCircleQuestion className="w-4 h-4" />,
+      },
+    ];
+
+    const activeMode = modes.find((m) => m.id === mode);
+
     return (
       <div className="max-w-3xl mx-auto mb-6">
         <div className="flex items-center gap-4">
@@ -288,7 +326,7 @@ function AiPlayground() {
                 );
                 if (model) setSelectedModel(model);
               }}
-              className="w-full bg-gray-900/50 text-gray-200 px-4 py-3 rounded-xl appearance-none cursor-pointer 
+              className="w-full bg-gray-900/50 text-gray-200 px-4 py-3 rounded-xl appearance-none cursor-pointer
               focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-700/50
               hover:border-blue-500/50 transition-colors"
             >
@@ -307,31 +345,50 @@ function AiPlayground() {
             </div>
           </div>
 
-          <button
-            onClick={() => setMode("ask")}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors border ${
-              mode === "ask"
-                ? "bg-blue-600 text-white border-blue-700"
-                : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700"
-            }`}
-          >
-            Ask
-          </button>
-          <button
-            onClick={() => setMode("analyzer")}
-            className={`px-4 py-2 rounded-xl text-sm font-medium transition-colors border ${
-              mode === "analyzer"
-                ? "bg-purple-600 text-white border-purple-700"
-                : "bg-gray-800 text-gray-300 border-gray-700 hover:bg-gray-700"
-            }`}
-          >
-            Analyzer
-          </button>
+          <div className="relative">
+            <button
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-gray-800 text-gray-300 border border-gray-700 hover:bg-gray-700 transition-colors"
+            >
+              {activeMode?.icon}
+              <span>{activeMode?.label}</span>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform ${
+                  isDropdownOpen ? "rotate-180" : ""
+                }`}
+              />
+            </button>
+            <AnimatePresence>
+              {isDropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="absolute top-full right-0 mt-2 w-48 bg-gray-800 border border-gray-700 rounded-xl shadow-lg z-10"
+                >
+                  {modes.map((m) => (
+                    <button
+                      key={m.id}
+                      onClick={() => {
+                        setMode(m.id as "ask" | "debug" | "code");
+                        setIsDropdownOpen(false);
+                      }}
+                      className="w-full flex items-center gap-3 px-4 py-2 text-left text-sm text-gray-300 hover:bg-gray-700"
+                    >
+                      {m.icon}
+                      <span>{m.label}</span>
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           <button
             onClick={() => setMessages([])}
-            className="px-4 py-2 rounded-xl text-sm font-medium bg-red-600/20 text-red-400 border border-red-700/50 hover:bg-red-600/30 transition-colors"
+            className="p-2 rounded-xl text-sm font-medium bg-red-600/20 text-red-400 border border-red-700/50 hover:bg-red-600/30 transition-colors"
           >
-            Reset Chat
+            <Trash2 className="w-5 h-5" />
           </button>
         </div>
       </div>
