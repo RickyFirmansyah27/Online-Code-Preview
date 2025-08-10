@@ -51,16 +51,17 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
 ];
 
-export interface File {
+export interface ApiFile {
   name: string;
-  size: number;
+  size: number | null;
   lastModified: string;
   url: string;
+  type: string | null;
 }
 
 export interface FileResponse {
   statusCode: number;
   status: boolean;
   message: string;
-  data: File[];
+  data: ApiFile[];
 }
