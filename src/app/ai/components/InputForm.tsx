@@ -6,7 +6,7 @@ import { useRef } from "react";
 interface InputFormProps {
   input: string;
   isLoading: boolean;
-  handleSubmit: (e: React.FormEvent) => void;
+  handleSubmit: (e: React.FormEvent, hasImage: boolean) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onImageUpload?: (imageData: string | null) => void;
   previewImage: string | null;
@@ -56,7 +56,7 @@ export function InputForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+    <form onSubmit={(e) => handleSubmit(e, !!previewImage)} className="max-w-3xl mx-auto">
       {previewImage && (
         <div className="relative mb-3">
           <img

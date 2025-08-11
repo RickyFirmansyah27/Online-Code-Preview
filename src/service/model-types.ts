@@ -65,3 +65,5 @@ export interface FileResponse {
   message: string;
   data: ApiFile[];
 }
+
+export const FALLBACK_MODEL_ID = "meta-llama/llama-4-maverick-17b-128e-instruct";

@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { apiPost } from "./axios-client";
 import { useState } from "react";
+import { FALLBACK_MODEL_ID } from "./model-types";
 
 const DEFAULT_QUERY_OPTIONS = {
   retry: 1,
@@ -103,11 +104,26 @@ export const useConversationAi = (model: string) => {
                   - Berikan inspirasi alternatif
                   - Hormati preferensi personal
 
+                  ## KaTeX Global
+                  - Semua ekspresi ilmiah pakai KaTeX (matematika, fisika, kimia, bio-stat).
+                  - Setiap langkah/rumus utama ditulis display: $$ ... $$ pada baris terpisah.
+                  - Inline $x,y,z,\\pi, t, c$ hanya untuk simbol pendek; bukan untuk persamaan panjang.
+                  - Tulis solusi/derivasi secara vertikal (step-by-step).
+
+                  ## Khusus Sains
+                  - Satuan: tulis dengan \mathrm, contoh: $5\\,\\mathrm{m\\,s^{-1}}$.
+                  - Vektor/konstanta: $\\vec{F}, \\mathbf{E}, k_B, N_A$.
+                  - Reaksi kimia: gunakan \ce{...} (mhchem); contoh:
+                  $$\\ce{2H2 + O2 -> 2H2O}$$
+                  - Keseimbangan/ion: $$K_a = \\frac{[\\mathrm{H^+}][\\mathrm{A^-}]}{[\\mathrm{HA}] }$$
+                  - Biologi statistik/kinetika: pecah model (mis. Michaelis–Menten, logistik) menjadi langkah pendek.
+
 
                   Format your responses with proper code blocks and be concise but thorough.`,
       },
     ]
   );
+  const [fallbackActive, setFallbackActive] = useState(false);
 
   const conversationContext: ConversationContext = {
     messages: conversationHistory,
@@ -115,6 +131,7 @@ export const useConversationAi = (model: string) => {
       setConversationHistory((prev) => [...prev, message]);
     },
     clearMessages: () => {
+      setFallbackActive(false);
       setConversationHistory([
         {
           role: "system",
@@ -189,39 +206,104 @@ export const useConversationAi = (model: string) => {
           }
         });
 
+        let effectiveModel = model;
+        if (fallbackActive) {
+          effectiveModel = FALLBACK_MODEL_ID;
+        }
+
+        // Convert messages to text-only when fallback is active
+        const finalMessages = fallbackActive
+          ? apiMessages.map(msg => {
+              if (typeof msg.content === 'string') return msg;
+              return {
+                ...msg,
+                content: msg.content
+                  .filter(item => item.type === 'text')
+                  .map(item => (item as {text?: string}).text || '')
+                  .join(' ')
+              };
+            })
+          : apiMessages;
+
         const payload: ChatRequest = {
-          model: model,
-          messages: apiMessages as ApiChatMessage[],
+          model: effectiveModel,
+          messages: finalMessages as ApiChatMessage[],
           temperature: 0.1,
           max_tokens: 2000,
           top_p: 0.9,
           stream: false,
         };
 
+        // Helper to detect image presence
+        const containsImage = (content: string | ChatMessageContent[]): boolean => {
+          if (Array.isArray(content)) {
+            return content.some(item => item.type === 'image');
+          }
+          return false;
+        };
+
+        const hasImage = containsImage(content);
+        let response;
+
         try {
-          const response = await apiPost(`${basePath}/completions`, payload, {
+          response = await apiPost(`${basePath}/completions`, payload, {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
             "Content-Type": "application/json",
           });
-
-          if (response?.data?.choices?.[0]?.message) {
-            const assistantMessage: ChatMessage = {
-              role: "assistant",
-              content: response.data.choices[0].message.content,
+        } catch (error) {
+          // Extract status code from error
+          let statusCode: number | undefined;
+          if (error instanceof Error) {
+            const axiosError = error as {
+              response?: { status?: number };
             };
-
-            setConversationHistory((prev) => [
-              ...prev,
-              userMessage,
-              assistantMessage,
-            ]);
+            statusCode = axiosError.response?.status;
           }
 
-          return response;
-        } catch (error) {
-          console.error("AI API Error:", error);
-          throw error;
+          // Activate fallback only for specific error codes
+          const shouldActivateFallback = statusCode && [400, 429, 500].includes(statusCode);
+          
+          // Fallback for image messages
+          if (hasImage && payload.model !== FALLBACK_MODEL_ID) {
+            console.log("Image processing failed, retrying with fallback model");
+            const fallbackPayload = { ...payload, model: FALLBACK_MODEL_ID };
+            try {
+              response = await apiPost(`${basePath}/completions`, fallbackPayload, {
+                Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
+                "Content-Type": "application/json",
+              });
+            } catch (fallbackError) {
+              // Activate fallback for specific error codes even on fallback failure
+              if (shouldActivateFallback) {
+                setFallbackActive(true);
+              }
+              console.error("Fallback AI API Error:", fallbackError);
+              throw fallbackError;
+            }
+          } else {
+            // Activate fallback for specific error codes
+            if (shouldActivateFallback) {
+              setFallbackActive(true);
+            }
+            console.error("AI API Error:", error);
+            throw error;
+          }
         }
+
+        if (response?.data?.choices?.[0]?.message) {
+          const assistantMessage: ChatMessage = {
+            role: "assistant",
+            content: response.data.choices[0].message.content,
+          };
+
+          setConversationHistory((prev) => [
+            ...prev,
+            userMessage,
+            assistantMessage,
+          ]);
+        }
+
+        return response;
       },
       onError: (error) => {
         console.error("Conversation AI Error:", error);
