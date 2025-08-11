@@ -3,7 +3,7 @@
 import { useState, useRef } from "react";
 import "katex/dist/katex.min.css";
 import { BookOpen } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import NavigationHeader from "../(root)/_components/Header";
 import {
   useCodingAssistant,

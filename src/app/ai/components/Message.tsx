@@ -3,15 +3,14 @@
 import { useState } from "react";
 import { BlockMath } from "react-katex";
 import { BookOpen, Code, Copy, Check } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 
 interface MessageProps {
   role: "user" | "assistant";
   content: string;
-  isLast: boolean;
 }
 
-export function Message({ role, content, isLast }: MessageProps) {
+export function Message({ role, content }: MessageProps) {
   const [copiedCode, setCopiedCode] = useState<number | null>(null);
 
   const formatMessageContent = (content: string) => {
@@ -77,7 +76,7 @@ export function Message({ role, content, isLast }: MessageProps) {
         return <BlockMath key={index}>{math}</BlockMath>;
       }
       // Regular text
-      return <span key={index}>{part}</span>;
+      return part;
     });
   };
 
@@ -102,7 +101,7 @@ export function Message({ role, content, isLast }: MessageProps) {
         }`}
       >
         <div className="text-sm leading-relaxed whitespace-pre-wrap">
-          {formatMessageContent(content)}
+          {role === "assistant" ? formatMessageContent(content) : content}
         </div>
       </div>
       {role === "user" && (
