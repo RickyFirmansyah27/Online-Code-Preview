@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Message } from "./Message";
 import { AnimatePresence } from "framer-motion";
 
 interface MessageListProps {
-  messages: { role: "user" | "assistant"; content: string }[];
+  messages: { role: "user" | "assistant"; content: { type: "text" | "image"; content: string }[] }[];
 }
 
 export function MessageList({ messages }: MessageListProps) {
@@ -28,7 +28,6 @@ export function MessageList({ messages }: MessageListProps) {
             key={index}
             role={message.role}
             content={message.content}
-            isLast={index === messages.length - 1}
           />
         ))}
         <div ref={messagesEndRef} />

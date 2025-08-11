@@ -7,76 +7,94 @@ import { motion } from "framer-motion";
 
 interface MessageProps {
   role: "user" | "assistant";
-  content: string;
+  content: { type: "text" | "image"; content: string }[];
 }
 
 export function Message({ role, content }: MessageProps) {
   const [copiedCode, setCopiedCode] = useState<number | null>(null);
 
-  const formatMessageContent = (content: string) => {
-    // Remove <tool_call>... think> content
-    const cleanContent = content
-      .replace(/<tool_call>[\s\S]*?<\/think>/g, "")
-      .trim();
+  const formatMessageContent = (contentItems: { type: "text" | "image"; content: string }[]) => {
+    return contentItems.map((item, index) => {
+      if (item.type === "image") {
+        return (
+          <div key={index} className="my-2">
+            <img
+              src={item.content}
+              alt="Uploaded image"
+              className="max-w-full rounded-lg"
+              style={{ maxHeight: "300px" }}
+            />
+          </div>
+        );
+      }
+      
+      // Handle text content
+      const textContent = item.content;
+      
+      // Remove <think> content
+      const cleanContent = textContent
+        .replace(/<think>[\s\S]*?<\/think>/g, "")
+        .trim();
 
-    // Split content by code block markers
-    const parts = cleanContent.split(/(```[\s\S]*?```|\\\[[\s\S]*?\\\])/);
+      // Split content by code block markers
+      const parts = cleanContent.split(/(```[\s\S]*?```|\\\[[\s\S]*?\\\])/);
 
-    return parts.map((part, index) => {
-      // Check if this part is a code block
-      if (part.startsWith("```")) {
-        // Extract language and code
-        const match = part.match(/```(\w+)?\n?([\s\S]*?)```/);
-        if (match) {
-          // Destructure while ignoring the full match
-          const [, language = "", code = ""] = match;
-          const handleCopy = async () => {
-            try {
-              await navigator.clipboard.writeText(code.trim());
-              setCopiedCode(index);
-              setTimeout(() => setCopiedCode(null), 2000);
-            } catch (err) {
-              console.error("Failed to copy code:", err);
-            }
-          };
+      return parts.map((part, partIndex) => {
+        // Check if this part is a code block
+        if (part.startsWith("```")) {
+          // Extract language and code
+          const match = part.match(/```(\w+)?\n?([\s\S]*?)```/);
+          if (match) {
+            // Destructure while ignoring the full match
+            const [, language = "", code = ""] = match;
+            const handleCopy = async () => {
+              try {
+                await navigator.clipboard.writeText(code.trim());
+                setCopiedCode(partIndex);
+                setTimeout(() => setCopiedCode(null), 2000);
+              } catch (err) {
+                console.error("Failed to copy code:", err);
+              }
+            };
 
-          return (
-            <pre key={index} className="relative mt-2 mb-2">
-              <div className="absolute top-0 right-0 flex items-center gap-2">
-                {language && (
-                  <div className="px-2 py-1 text-xs text-gray-400 bg-gray-800/50">
-                    {language}
-                  </div>
-                )}
-                <button
-                  onClick={handleCopy}
-                  className="p-1 hover:bg-gray-700/50 rounded transition-colors"
-                  title="Copy code"
-                >
-                  {copiedCode === index ? (
-                    <Check className="w-4 h-4 text-green-400" />
-                  ) : (
-                    <Copy className="w-4 h-4 text-gray-400" />
+            return (
+              <pre key={`${index}-${partIndex}`} className="relative mt-2 mb-2">
+                <div className="absolute top-0 right-0 flex items-center gap-2">
+                  {language && (
+                    <div className="px-2 py-1 text-xs text-gray-400 bg-gray-800/50">
+                      {language}
+                    </div>
                   )}
-                </button>
-              </div>
-              <code
-                className={`block p-4 bg-gray-800/50 rounded-lg overflow-x-auto font-mono text-sm custom-scrollbar ${
-                  language ? `language-${language}` : ""
-                }`}
-              >
-                {code.trim()}
-              </code>
-            </pre>
-          );
+                  <button
+                    onClick={handleCopy}
+                    className="p-1 hover:bg-gray-700/50 rounded transition-colors"
+                    title="Copy code"
+                  >
+                    {copiedCode === partIndex ? (
+                      <Check className="w-4 h-4 text-green-400" />
+                    ) : (
+                      <Copy className="w-4 h-4 text-gray-400" />
+                    )}
+                  </button>
+                </div>
+                <code
+                  className={`block p-4 bg-gray-800/50 rounded-lg overflow-x-auto font-mono text-sm custom-scrollbar ${
+                    language ? `language-${language}` : ""
+                  }`}
+                >
+                  {code.trim()}
+                </code>
+              </pre>
+            );
+          }
         }
-      }
-      if (part.startsWith("\\[")) {
-        const math = part.substring(2, part.length - 2);
-        return <BlockMath key={index}>{math}</BlockMath>;
-      }
-      // Regular text
-      return part;
+        if (part.startsWith("\\[")) {
+          const math = part.substring(2, part.length - 2);
+          return <BlockMath key={`${index}-${partIndex}`}>{math}</BlockMath>;
+        }
+        // Regular text
+        return part;
+      });
     });
   };
 
@@ -101,7 +119,7 @@ export function Message({ role, content }: MessageProps) {
         }`}
       >
         <div className="text-sm leading-relaxed whitespace-pre-wrap">
-          {role === "assistant" ? formatMessageContent(content) : content}
+          {formatMessageContent(content)}
         </div>
       </div>
       {role === "user" && (

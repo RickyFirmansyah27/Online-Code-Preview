@@ -9,14 +9,32 @@ const DEFAULT_QUERY_OPTIONS = {
 
 const basePath = "/v1/chat";
 
+interface ChatMessageContent {
+  type: "text" | "image";
+  content: string;
+}
+
 interface ChatMessage {
   role: "user" | "assistant" | "system";
-  content: string;
+  content: string | ChatMessageContent[];
+}
+
+interface ApiMessageContent {
+  type: "text" | "image_url";
+  text?: string;
+  image_url?: {
+    url: string;
+  };
+}
+
+interface ApiChatMessage {
+  role: "user" | "assistant" | "system";
+  content: string | ApiMessageContent[];
 }
 
 interface ChatRequest {
   model: string;
-  messages: ChatMessage[];
+  messages: ApiChatMessage[];
   temperature?: number;
   max_tokens?: number;
   top_p?: number;
@@ -115,7 +133,7 @@ export const useConversationAi = (model: string) => {
   return {
     ...useMutation({
       ...DEFAULT_QUERY_OPTIONS,
-      mutationFn: async (content: string) => {
+      mutationFn: async (content: string | ChatMessageContent[]) => {
         const userMessage: ChatMessage = {
           role: "user",
           content: content,
@@ -123,9 +141,57 @@ export const useConversationAi = (model: string) => {
 
         const updatedHistory = [...conversationHistory, userMessage];
 
+        // Convert message content for API
+        const apiMessages = updatedHistory.map(msg => {
+          if (typeof msg.content === 'string') {
+            return msg;
+          } else {
+            // For multimodal content, we need to format it appropriately
+            const textContent = msg.content
+              .filter(item => item.type === 'text')
+              .map(item => item.content)
+              .join(' ');
+           
+            const imageContent = msg.content
+              .filter(item => item.type === 'image')
+              .map(item => item.content);
+           
+            // If there are images, we need to format the message differently
+            if (imageContent.length > 0) {
+              const apiContent: ApiMessageContent[] = [];
+              
+              if (textContent.trim()) {
+                apiContent.push({
+                  type: "text",
+                  text: textContent
+                });
+              }
+              
+              imageContent.forEach(img => {
+                apiContent.push({
+                  type: "image_url",
+                  image_url: {
+                    url: img
+                  }
+                });
+              });
+              
+              return {
+                role: msg.role,
+                content: apiContent
+              };
+            }
+           
+            return {
+              role: msg.role,
+              content: textContent
+            };
+          }
+        });
+
         const payload: ChatRequest = {
           model: model,
-          messages: updatedHistory,
+          messages: apiMessages as ApiChatMessage[],
           temperature: 0.1,
           max_tokens: 2000,
           top_p: 0.9,
@@ -202,8 +268,8 @@ export const useCodingAssistant = (
       const updatedHistory = [...conversationHistory, userMessage];
 
       const payload: ChatRequest = {
-        model: model || "llama-3.3-70b-versatile",
-        messages: updatedHistory,
+        model: model || "meta-llama/llama-4-maverick-17b-128e-instruct",
+        messages: updatedHistory as ApiChatMessage[],
         temperature: 0.2,
         max_tokens: 6000,
         top_p: 0.95,
@@ -290,7 +356,7 @@ export const useCodeAnalyzer = (model: string) => {
             role: "user",
             content: analysisPrompt,
           },
-        ],
+        ] as ApiChatMessage[],
         temperature: 0.1,
         max_tokens: 3000,
         top_p: 0.9,
