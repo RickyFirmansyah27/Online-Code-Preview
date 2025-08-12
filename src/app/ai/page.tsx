@@ -127,46 +127,52 @@ function AiPlayground() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f]">
+    <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
       <NavigationHeader />
-      <div className="relative max-w-7xl mx-auto px-4 py-12">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-sm text-gray-400 mb-6"
-          >
-            <BookOpen className="w-4 h-4" />
-            AI Chat Interface
-          </motion.div>
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-300 text-transparent bg-clip-text mb-6"
-          >
-            Chat with AI Assistant
-          </motion.h1>
+      <div className="flex-1 overflow-hidden">
+        <div className="relative max-w-7xl mx-auto px-4 py-4 h-full flex flex-col">
+          <div className="text-center max-w-3xl mx-auto mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-blue-500/10 to-purple-500/10 text-sm text-gray-400 mb-6"
+            >
+              <BookOpen className="w-4 h-4" />
+              AI Chat Interface
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-gray-100 to-gray-300 text-transparent bg-clip-text mb-6"
+            >
+              Chat with AI Assistant
+            </motion.h1>
+          </div>
+          <ModelSelector
+            selectedModel={selectedModel}
+            mode={mode}
+            isDropdownOpen={isDropdownOpen}
+            dropdownRef={dropdownRef}
+            setSelectedModel={setSelectedModel}
+            setMode={setMode}
+            setIsDropdownOpen={setIsDropdownOpen}
+            handleClearMessages={handleClearMessages}
+          />
+          <div className="flex-1 overflow-y-auto mb-4">
+            <MessageList messages={messages} />
+          </div>
+          <div className="sticky bottom-0 bg-[#0a0a0f] pt-4 pb-8">
+            <InputForm
+              input={input}
+              isLoading={isLoading}
+              handleSubmit={handleSubmit}
+              handleInputChange={handleInputChange}
+              onImageUpload={handleImageUpload}
+              previewImage={uploadedImage}
+            />
+          </div>
         </div>
-        <ModelSelector
-          selectedModel={selectedModel}
-          mode={mode}
-          isDropdownOpen={isDropdownOpen}
-          dropdownRef={dropdownRef}
-          setSelectedModel={setSelectedModel}
-          setMode={setMode}
-          setIsDropdownOpen={setIsDropdownOpen}
-          handleClearMessages={handleClearMessages}
-        />
-        <InputForm
-          input={input}
-          isLoading={isLoading}
-          handleSubmit={handleSubmit}
-          handleInputChange={handleInputChange}
-          onImageUpload={handleImageUpload}
-          previewImage={uploadedImage}
-        />
-        <MessageList messages={messages} />
       </div>
     </div>
   );

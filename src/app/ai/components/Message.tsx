@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { BlockMath } from "react-katex";
+import { BlockMath, InlineMath } from "react-katex";
 import { BookOpen, Code, Copy, Check } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -37,7 +37,7 @@ export function Message({ role, content }: MessageProps) {
         .trim();
 
       // Split content by code block markers
-      const parts = cleanContent.split(/(```[\s\S]*?```|\\\[[\s\S]*?\\\])/);
+      const parts = cleanContent.split(/(```[\s\S]*?```|\\\[[\s\S]*?\\\]|\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/);
 
       return parts.map((part, partIndex) => {
         // Check if this part is a code block
@@ -88,9 +88,50 @@ export function Message({ role, content }: MessageProps) {
             );
           }
         }
+        // Handle KaTeX display math (\[...\])
         if (part.startsWith("\\[")) {
           const math = part.substring(2, part.length - 2);
-          return <BlockMath key={`${index}-${partIndex}`}>{math}</BlockMath>;
+          return (
+            <BlockMath
+              key={`${index}-${partIndex}`}
+              errorColor="#ff5555"
+              renderError={(error) => (
+                <span className="text-red-400">Error: {error.message}</span>
+              )}
+            >
+              {math}
+            </BlockMath>
+          );
+        }
+        // Handle KaTeX display math ($$...$$)
+        if (part.startsWith("$$")) {
+          const math = part.substring(2, part.length - 2);
+          return (
+            <BlockMath
+              key={`${index}-${partIndex}`}
+              errorColor="#ff5555"
+              renderError={(error) => (
+                <span className="text-red-400">Error: {error.message}</span>
+              )}
+            >
+              {math}
+            </BlockMath>
+          );
+        }
+        // Handle KaTeX inline math ($...$)
+        if (part.startsWith("$")) {
+          const math = part.substring(1, part.length - 1);
+          return (
+            <InlineMath
+              key={`${index}-${partIndex}`}
+              errorColor="#ff5555"
+              renderError={(error) => (
+                <span className="text-red-400">Error: {error.message}</span>
+              )}
+            >
+              {math}
+            </InlineMath>
+          );
         }
         // Regular text
         return part;
