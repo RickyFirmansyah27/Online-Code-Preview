@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { useUser } from "@clerk/nextjs";
 import { get } from "lodash";
 import Header from "../(root)/_components/Header";
 import { useGetFiles } from "@/service/storage-service";
@@ -21,9 +22,14 @@ const FileManagement = () => {
     isOpen: boolean;
     filename: string;
   }>({ isOpen: false, filename: "" });
+  const { user } = useUser();
+  console.log("User:", user);
 
   // Data fetching
-  const { data: filesResponse, isLoading, refetch } = useGetFiles({});
+  const { data: filesResponse, isLoading, refetch } = useGetFiles(
+    { firstName: user?.firstName ?? "Other" },
+    { enabled: user === null || !!user?.firstName }
+  );
   const filesData: ApiFile[] = get(filesResponse, "data.files", []);
   console.log("Files Data:", filesResponse);
   // File operations

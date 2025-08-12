@@ -27,13 +27,16 @@ export const useUploadFiles = (user?: { firstName?: string }) => {
   });
 };
 
-export const useGetFiles = (query: Record<string, unknown> = {}, user?: { firstName?: string }) => {
-  const mergedQuery = { ...query, firstName: user?.firstName || "Other" };
+export const useGetFiles = (
+  query: Record<string, unknown> = {},
+  options: Record<string, unknown> = {}
+) => {
   return useQuery({
     ...DEFAULT_QUERY_OPTIONS,
-    queryKey: ["get all files", mergedQuery],
+    ...options,
+    queryKey: ["get all files", query],
     queryFn: async () => {
-      const params = new URLSearchParams(mergedQuery as Record<string, string>).toString();
+      const params = new URLSearchParams(query as Record<string, string>).toString();
       const response = await axios.get(`${baseURL}/${basePath}/supabase?${params}`);
       return response.data;
     },
