@@ -9,17 +9,13 @@ interface MessageListProps {
 }
 
 export function MessageList({ messages }: MessageListProps) {
-  // Tambahkan useRef untuk auto-scroll
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    console.log("scrollToBottom called, messagesEndRef.current:", messagesEndRef.current);
-    console.log("Parent container:", messagesEndRef.current?.parentElement);
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    console.log("useEffect triggered, messages length:", messages.length);
     scrollToBottom();
   }, [messages]);
 
