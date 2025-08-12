@@ -24,7 +24,7 @@ export function Message({ role, content }: MessageProps) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex items-start gap-3 mb-6 ${
+      className={`flex items-start gap-3 mb-4 ${
         isUser ? "justify-end" : "justify-start"
       }`}
     >
@@ -35,7 +35,7 @@ export function Message({ role, content }: MessageProps) {
       )}
       
       <div className={`p-4 rounded-lg sm:max-w-[80%] max-w-full ${bgColor} ${textColor}`}>
-        <div className="text-sm leading-relaxed whitespace-pre-wrap">
+        <div className="text-sm whitespace-pre-wrap">
           <MessageContent content={content} />
         </div>
       </div>
