@@ -22,11 +22,6 @@ export function MessageList({ messages }: MessageListProps) {
   return (
     <div
       className="max-w-3xl mx-auto bg-gray-900/50 rounded-xl p-6 mb-4 h-[500px] overflow-y-auto custom-scrollbar"
-      ref={(el) => {
-        if (el) {
-          console.log("MessageList container mounted, scrollHeight:", el.scrollHeight, "clientHeight:", el.clientHeight);
-        }
-      }}
     >
       <AnimatePresence>
         {messages.map((message, index) => (
