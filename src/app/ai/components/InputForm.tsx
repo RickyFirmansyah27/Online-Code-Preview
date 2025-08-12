@@ -58,21 +58,23 @@ export function InputForm({
   return (
     <form onSubmit={(e) => handleSubmit(e, !!previewImage)} className="max-w-3xl mx-auto">
       {previewImage && (
-        <div className="relative mb-3">
-          <img
-            src={previewImage}
-            alt="Preview"
-            className="max-w-full h-32 object-contain rounded-lg border border-gray-700"
-          />
-          <button
-            type="button"
-            onClick={removePreviewImage}
-            className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+        <div className="mb-3">
+          <div className="relative inline-block">
+            <img
+              src={previewImage}
+              alt="Preview"
+              className="max-w-full h-32 object-contain rounded-lg border border-gray-700"
+            />
+            <button
+              type="button"
+              onClick={removePreviewImage}
+              className="absolute top-0 right-0 mt-1 mr-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
       )}
       
