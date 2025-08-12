@@ -1,7 +1,12 @@
 "use client";
 
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
+
 import { useState } from "react";
-import { BlockMath, InlineMath } from "react-katex";
 import { BookOpen, Code, Copy, Check } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -13,7 +18,9 @@ interface MessageProps {
 export function Message({ role, content }: MessageProps) {
   const [copiedCode, setCopiedCode] = useState<number | null>(null);
 
-  const formatMessageContent = (contentItems: { type: "text" | "image"; content: string }[]) => {
+  const formatMessageContent = (
+    contentItems: { type: "text" | "image"; content: string }[]
+  ) => {
     return contentItems.map((item, index) => {
       if (item.type === "image") {
         return (
@@ -27,115 +34,64 @@ export function Message({ role, content }: MessageProps) {
           </div>
         );
       }
-      
-      // Handle text content
-      const textContent = item.content;
-      
-      // Remove <think> content
-      const cleanContent = textContent
-        .replace(/<think>[\s\S]*?<\/think>/g, "")
-        .trim();
 
-      // Split content by code block markers
-      const parts = cleanContent.split(/(```[\s\S]*?```|\\\[[\s\S]*?\\\]|\$\$[\s\S]*?\$\$|\$[\s\S]*?\$)/);
-
-      return parts.map((part, partIndex) => {
-        // Check if this part is a code block
-        if (part.startsWith("```")) {
-          // Extract language and code
-          const match = part.match(/```(\w+)?\n?([\s\S]*?)```/);
-          if (match) {
-            // Destructure while ignoring the full match
-            const [, language = "", code = ""] = match;
-            const handleCopy = async () => {
-              try {
-                await navigator.clipboard.writeText(code.trim());
-                setCopiedCode(partIndex);
-                setTimeout(() => setCopiedCode(null), 2000);
-              } catch (err) {
-                console.error("Failed to copy code:", err);
-              }
-            };
-
-            return (
-              <pre key={`${index}-${partIndex}`} className="relative mt-2 mb-2">
-                <div className="absolute top-0 right-0 flex items-center gap-2">
-                  {language && (
-                    <div className="px-2 py-1 text-xs text-gray-400 bg-gray-800/50">
-                      {language}
-                    </div>
-                  )}
-                  <button
-                    onClick={handleCopy}
-                    className="p-1 hover:bg-gray-700/50 rounded transition-colors"
-                    title="Copy code"
-                  >
-                    {copiedCode === partIndex ? (
-                      <Check className="w-4 h-4 text-green-400" />
-                    ) : (
-                      <Copy className="w-4 h-4 text-gray-400" />
+      return (
+        <div key={index} className="whitespace-pre-wrap">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm, remarkMath]}
+            rehypePlugins={[rehypeKatex]}
+            components={{
+              code(props) {
+                const { className, children } = props;
+                const match = /language-(\w+)/.exec(className || "");
+                const language = match ? match[1] : undefined;
+                const codeString = String(children).replace(/\n$/, "");
+                const handleCopy = async () => {
+                  try {
+                    await navigator.clipboard.writeText(codeString);
+                    setCopiedCode(index);
+                    setTimeout(() => setCopiedCode(null), 2000);
+                  } catch (err) {
+                    console.error("Failed to copy code:", err);
+                  }
+                };
+                if (!language) {
+                  return <code>{children}</code>;
+                }
+                return (
+                  <pre className="relative my-2">
+                    {language && (
+                      <div className="absolute top-0 right-0 px-2 py-1 text-xs text-gray-400 bg-gray-800/50">
+                        {language}
+                      </div>
                     )}
-                  </button>
-                </div>
-                <code
-                  className={`block p-4 bg-gray-800/50 rounded-lg overflow-x-auto font-mono text-sm custom-scrollbar ${
-                    language ? `language-${language}` : ""
-                  }`}
-                >
-                  {code.trim()}
-                </code>
-              </pre>
-            );
-          }
-        }
-        // Handle KaTeX display math (\[...\])
-        if (part.startsWith("\\[")) {
-          const math = part.substring(2, part.length - 2);
-          return (
-            <BlockMath
-              key={`${index}-${partIndex}`}
-              errorColor="#ff5555"
-              renderError={(error) => (
-                <span className="text-red-400">Error: {error.message}</span>
-              )}
-            >
-              {math}
-            </BlockMath>
-          );
-        }
-        // Handle KaTeX display math ($$...$$)
-        if (part.startsWith("$$")) {
-          const math = part.substring(2, part.length - 2);
-          return (
-            <BlockMath
-              key={`${index}-${partIndex}`}
-              errorColor="#ff5555"
-              renderError={(error) => (
-                <span className="text-red-400">Error: {error.message}</span>
-              )}
-            >
-              {math}
-            </BlockMath>
-          );
-        }
-        // Handle KaTeX inline math ($...$)
-        if (part.startsWith("$")) {
-          const math = part.substring(1, part.length - 1);
-          return (
-            <InlineMath
-              key={`${index}-${partIndex}`}
-              errorColor="#ff5555"
-              renderError={(error) => (
-                <span className="text-red-400">Error: {error.message}</span>
-              )}
-            >
-              {math}
-            </InlineMath>
-          );
-        }
-        // Regular text
-        return part;
-      });
+                    <button
+                      onClick={handleCopy}
+                      className="absolute top-0 right-0 p-1 hover:bg-gray-700/50 rounded transition-colors"
+                      title="Copy code"
+                    >
+                      {copiedCode === index ? (
+                        <Check className="w-4 h-4 text-green-400" />
+                      ) : (
+                        <Copy className="w-4 h-4 text-gray-400" />
+                      )}
+                    </button>
+                    <code
+                      className={`block p-4 bg-gray-800/50 rounded-lg overflow-x-auto font-mono text-sm custom-scrollbar ${
+                        language ? `language-${language}` : ""
+                      }`}
+                    >
+                      {codeString}
+                    </code>
+                  </pre>
+                );
+              },
+            }}
+          >
+            {item.content}
+          </ReactMarkdown>
+        </div>
+      );
     });
   };
 
