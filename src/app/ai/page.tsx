@@ -64,20 +64,20 @@ function AiPlayground() {
 
     // Prepare message content
     const messageContent: MessageContent[] = [];
-    
+
     if (input.trim()) {
       messageContent.push({ type: "text" as const, content: input });
     }
-    
+
     if (uploadedImage) {
       messageContent.push({ type: "image" as const, content: uploadedImage });
     }
 
     const newMessages: Message[] = [
       ...messages,
-      { 
-        role: "user" as const, 
-        content: messageContent
+      {
+        role: "user" as const,
+        content: messageContent,
       },
     ];
     setMessages(newMessages);
@@ -98,7 +98,9 @@ function AiPlayground() {
         ...newMessages,
         {
           role: "assistant",
-          content: [{ type: "text" as const, content: data.choices[0].message.content }],
+          content: [
+            { type: "text" as const, content: data.choices[0].message.content },
+          ],
         },
       ]);
     } catch (error) {
@@ -107,12 +109,16 @@ function AiPlayground() {
         ...newMessages,
         {
           role: "assistant",
-          content: [{ type: "text" as const, content: "Sorry, something went wrong. Please try again." }],
+          content: [
+            {
+              type: "text" as const,
+              content: "Sorry, something went wrong. Please try again.",
+            },
+          ],
         },
       ]);
     }
   };
-
 
   const handleImageUpload = (imageData: string | null) => {
     setUploadedImage(imageData);
@@ -149,20 +155,17 @@ function AiPlayground() {
               Chat with AI Assistant
             </motion.h1>
           </div>
-          <ModelSelector
-            selectedModel={selectedModel}
-            mode={mode}
-            isDropdownOpen={isDropdownOpen}
-            dropdownRef={dropdownRef}
-            setSelectedModel={setSelectedModel}
-            setMode={setMode}
-            setIsDropdownOpen={setIsDropdownOpen}
-            handleClearMessages={handleClearMessages}
-          />
-          <div className="flex-1 overflow-y-auto mb-4">
-            <MessageList messages={messages} />
-          </div>
-          <div className="sticky bottom-0 bg-[#0a0a0f] pt-4 pb-8">
+          <div className="sticky top-0 bg-[#0a0a0f] z-10 pb-4">
+            <ModelSelector
+              selectedModel={selectedModel}
+              mode={mode}
+              isDropdownOpen={isDropdownOpen}
+              dropdownRef={dropdownRef}
+              setSelectedModel={setSelectedModel}
+              setMode={setMode}
+              setIsDropdownOpen={setIsDropdownOpen}
+              handleClearMessages={handleClearMessages}
+            />{" "}
             <InputForm
               input={input}
               isLoading={isLoading}
@@ -171,6 +174,9 @@ function AiPlayground() {
               onImageUpload={handleImageUpload}
               previewImage={uploadedImage}
             />
+          </div>
+          <div className="flex-1 overflow-y-auto mb-4">
+            <MessageList messages={messages} />
           </div>
         </div>
       </div>
