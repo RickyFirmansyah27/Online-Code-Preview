@@ -13,7 +13,7 @@ interface TextContentProps {
 
 export function TextContent({ content }: TextContentProps) {
   return (
-    <div className="whitespace-pre-wrap">
+    <div className="whitespace-pre-wrap overflow-x-auto">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
