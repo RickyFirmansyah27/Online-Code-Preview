@@ -29,19 +29,19 @@ export function Message({ role, content }: MessageProps) {
       }`}
     >
       {!isUser && (
-        <div className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center`}>
+        <div className={`w-8 h-8 rounded-full ${bgColor} hidden sm:flex items-center justify-center`}>
           <Icon className={`w-4 h-4 ${iconColor}`} />
         </div>
       )}
       
-      <div className={`p-4 rounded-lg max-w-[80%] ${bgColor} ${textColor}`}>
+      <div className={`p-4 rounded-lg sm:max-w-[80%] max-w-full ${bgColor} ${textColor}`}>
         <div className="text-sm leading-relaxed whitespace-pre-wrap">
           <MessageContent content={content} />
         </div>
       </div>
 
       {isUser && (
-        <div className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center`}>
+        <div className={`w-8 h-8 rounded-full ${bgColor} hidden sm:flex items-center justify-center`}>
           <Icon className={`w-4 h-4 ${iconColor}`} />
         </div>
       )}
