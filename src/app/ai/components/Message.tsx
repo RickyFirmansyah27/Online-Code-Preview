@@ -38,13 +38,21 @@ export function Message({ role, content }: MessageProps) {
   const bgColor = isUser ? "bg-blue-500/20" : "bg-purple-500/20";
   const textColor = isUser ? "text-blue-50" : "text-purple-50";
 
-  // Process content to handle JSON
+  // Simplified JSON formatting - only format if entire content is valid JSON
   const processedContent = content.map((item) => {
-    if (item.type === "text" && isJSON(item.content)) {
-      return {
-        ...item,
-        content: `\`\`\`json\n${formatJSON(item.content)}\n\`\`\``,
-      };
+    if (item.type === "text") {
+      const text = item.content.trim();
+      
+      // Only check if the entire text is valid JSON
+      if (isJSON(text)) {
+        return {
+          ...item,
+          content: `\`\`\`json\n${formatJSON(text)}\n\`\`\``,
+        };
+      }
+      
+      // Return as-is if not entirely JSON
+      return item;
     }
     return item;
   });
