@@ -13,7 +13,7 @@ interface TextContentProps {
 
 export function TextContent({ content }: TextContentProps) {
   return (
-    <div className="prose prose-invert prose-p:m-0 prose-headings:m-0 whitespace-pre-wrap overflow-x-auto">
+    <div className="prose prose-invert prose-p:m-0 prose-headings:m-0 prose-headings:mb-2 whitespace-pre-wrap overflow-x-auto">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
