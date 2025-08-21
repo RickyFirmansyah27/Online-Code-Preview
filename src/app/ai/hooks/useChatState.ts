@@ -19,10 +19,19 @@ export function useChatState() {
   const [input, setInput] = useState("");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [conversationHistories, setConversationHistories] = useState<Record<ChatMode, Message[]>>({
+    ask: [],
+    debug: [],
+    code: [],
+  });
   const [selectedModel, setSelectedModel] = useState<ModelOption>(MODEL_OPTIONS[0]);
   const [mode, setMode] = useState<ChatMode>("ask");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef(messages);
+
+  // Keep ref updated with latest messages
+  messagesRef.current = messages;
 
   // AI hooks
   const coding = useCodingAssistant(selectedModel.model);
@@ -62,12 +71,19 @@ export function useChatState() {
 
     const newMessages: Message[] = [
       ...messages,
-      { 
-        role: "user" as const, 
+      {
+        role: "user" as const,
         content: messageContent
       },
     ];
+    
+    // Update both current messages and mode-specific history
     setMessages(newMessages);
+    setConversationHistories(prev => ({
+      ...prev,
+      [mode]: newMessages
+    }));
+    
     setInput("");
     setUploadedImage(null);
 
@@ -81,22 +97,31 @@ export function useChatState() {
         throw new Error("Unexpected API response format");
       }
 
-      setMessages([
+      const updatedMessages: Message[] = [
         ...newMessages,
         {
-          role: "assistant",
+          role: "assistant" as const,
           content: [{ type: "text" as const, content: data.choices[0].message.content }],
         },
-      ]);
+      ];
+      
+      setMessages(updatedMessages);
+      setConversationHistories(prev => ({
+        ...prev,
+        [mode]: updatedMessages
+      }));
     } catch (error) {
       console.error("Error:", error);
-      setMessages([
-        ...newMessages,
-        {
-          role: "assistant",
-          content: [{ type: "text" as const, content: "Sorry, something went wrong. Please try again." }],
-        },
-      ]);
+      const errorMessage: Message = {
+        role: "assistant" as const,
+        content: [{ type: "text" as const, content: "Sorry, something went wrong. Please try again." }],
+      };
+      const errorMessages: Message[] = [...newMessages, errorMessage];
+      setMessages(errorMessages);
+      setConversationHistories(prev => ({
+        ...prev,
+        [mode]: errorMessages
+      }));
     }
   };
 
@@ -105,11 +130,34 @@ export function useChatState() {
   };
 
   const handleClearMessages = () => {
+    setConversationHistories(prev => ({
+      ...prev,
+      [mode]: []
+    }));
+    
     setMessages([]);
+    
+    // Reset AI service hook states
+    conversation.resetConversation();
+    coding.resetConversation();
+    // Note: analyzer doesn't need reset as it doesn't maintain conversation history
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
+  };
+
+  const handleModeChange = (newMode: ChatMode) => {
+    // Save current conversation to history
+    setConversationHistories(prev => ({
+      ...prev,
+      [mode]: messages
+    }));
+    
+    // Switch to new mode and load its conversation
+    setMode(newMode);
+    const newMessages = conversationHistories[newMode] || [];
+    setMessages(newMessages);
   };
 
   return {
@@ -126,7 +174,7 @@ export function useChatState() {
     // Actions
     setInput,
     setSelectedModel,
-    setMode,
+    setMode: handleModeChange,
     setIsDropdownOpen,
     handleSubmit,
     handleImageUpload,

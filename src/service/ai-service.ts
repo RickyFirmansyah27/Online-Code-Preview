@@ -322,7 +322,7 @@ export const useCodingAssistant = (
   model: string,
   programmingLanguage?: string
 ) => {
-  const systemPrompt = `You are a senior software engineer and coding mentor specializing in ${programmingLanguage || "multiple programming languages"}. 
+  const systemPrompt = `You are a senior software engineer and coding mentor specializing in ${programmingLanguage || "multiple programming languages"}.
 
   Your responses should:
   1. Provide working, production-ready code with comprehensive error handling, industry best practices, and performance considerations
@@ -339,127 +339,141 @@ export const useCodingAssistant = (
     ]
   );
 
-  return useMutation({
-    ...DEFAULT_QUERY_OPTIONS,
-    mutationFn: async (content: string) => {
-      const userMessage: ChatMessage = {
-        role: "user",
-        content: content,
-      };
+  const conversationContext = {
+    clearMessages: () => {
+      setConversationHistory([
+        {
+          role: "system",
+          content: systemPrompt,
+        },
+      ]);
+    },
+  };
 
-      const updatedHistory = [...conversationHistory, userMessage];
+  return {
+    ...useMutation({
+      ...DEFAULT_QUERY_OPTIONS,
+      mutationFn: async (content: string) => {
+        const userMessage: ChatMessage = {
+          role: "user",
+          content: content,
+        };
 
-// Convert message content for API
-      const apiMessages = updatedHistory.map(msg => {
-        if (typeof msg.content === 'string') {
-          return {
-            role: msg.role,
-            content: msg.content
-          };
-        } else {
-          // For multimodal content, we need to format it appropriately
-          const textContent = msg.content
-            .filter(item => item.type === 'text')
-            .map(item => item.content)
-            .join(' ');
-         
-          const imageContent = msg.content
-            .filter(item => item.type === 'image')
-            .map(item => item.content);
-         
-          // If there are images, we need to format the message differently
-          if (imageContent.length > 0) {
-            const apiContent: ApiMessageContent[] = [];
-            
-            if (textContent.trim()) {
-              apiContent.push({
-                type: "text",
-                text: textContent
-              });
-            }
-            
-            imageContent.forEach(img => {
-              apiContent.push({
-                type: "image_url",
-                image_url: {
-                  url: img
-                }
-              });
-            });
-            
+        const updatedHistory = [...conversationHistory, userMessage];
+
+        // Convert message content for API
+        const apiMessages = updatedHistory.map(msg => {
+          if (typeof msg.content === 'string') {
             return {
               role: msg.role,
-              content: apiContent
+              content: msg.content
+            };
+          } else {
+            // For multimodal content, we need to format it appropriately
+            const textContent = msg.content
+              .filter(item => item.type === 'text')
+              .map(item => item.content)
+              .join(' ');
+           
+            const imageContent = msg.content
+              .filter(item => item.type === 'image')
+              .map(item => item.content);
+           
+            // If there are images, we need to format the message differently
+            if (imageContent.length > 0) {
+              const apiContent: ApiMessageContent[] = [];
+              
+              if (textContent.trim()) {
+                apiContent.push({
+                  type: "text",
+                  text: textContent
+                });
+              }
+              
+              imageContent.forEach(img => {
+                apiContent.push({
+                  type: "image_url",
+                  image_url: {
+                    url: img
+                  }
+                });
+              });
+              
+              return {
+                role: msg.role,
+                content: apiContent
+              };
+            }
+           
+            return {
+              role: msg.role,
+              content: textContent
             };
           }
-         
-          return {
-            role: msg.role,
-            content: textContent
-          };
-        }
-      });
-      const payload: ChatRequest = {
-        model: model || "meta-llama/llama-4-maverick-17b-128e-instruct",
-        messages: apiMessages,
-        temperature: 0.2,
-        max_tokens: 6000,
-        top_p: 0.95,
-        stream: false,
-      };
-
-      try {
-        const response = await apiPost(`${basePath}/completions`, payload, {
-          Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
-          "Content-Type": "application/json",
         });
+        const payload: ChatRequest = {
+          model: model || "meta-llama/llama-4-maverick-17b-128e-instruct",
+          messages: apiMessages,
+          temperature: 0.2,
+          max_tokens: 6000,
+          top_p: 0.95,
+          stream: false,
+        };
 
-        if (response?.data?.choices?.[0]?.message) {
-          const assistantMessage: ChatMessage = {
-            role: "assistant",
-            content: response.data.choices[0].message.content,
-          };
+        try {
+          const response = await apiPost(`${basePath}/completions`, payload, {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
+            "Content-Type": "application/json",
+          });
 
-          setConversationHistory((prev) => [
-            ...prev,
-            userMessage,
-            assistantMessage,
-          ]);
-        }
+          if (response?.data?.choices?.[0]?.message) {
+            const assistantMessage: ChatMessage = {
+              role: "assistant",
+              content: response.data.choices[0].message.content,
+            };
 
-        return response;
-      } catch (error) {
-        let errorMessage = "Unknown error occurred";
-        let errorCode: string | undefined;
-        let statusCode: number | undefined;
-
-        if (error instanceof Error) {
-          errorMessage = error.message;
-          // Type-safe error property access
-          const axiosError = error as {
-            code?: string;
-            response?: { status?: number };
-          };
-          errorCode = axiosError.code;
-          statusCode = axiosError.response?.status;
-        } else if (typeof error === 'object' && error !== null) {
-          errorMessage = String(error);
-        }
-
-        console.error("Coding Assistant Error:", {
-          message: errorMessage,
-          code: errorCode,
-          status: statusCode,
-          request: {
-            model: payload.model,
-            messages: payload.messages.slice(0, 2),
-            temperature: payload.temperature,
+            setConversationHistory((prev) => [
+              ...prev,
+              userMessage,
+              assistantMessage,
+            ]);
           }
-        });
-        throw error;
-      }
-    },
-  });
+
+          return response;
+        } catch (error) {
+          let errorMessage = "Unknown error occurred";
+          let errorCode: string | undefined;
+          let statusCode: number | undefined;
+
+          if (error instanceof Error) {
+            errorMessage = error.message;
+            // Type-safe error property access
+            const axiosError = error as {
+              code?: string;
+              response?: { status?: number };
+            };
+            errorCode = axiosError.code;
+            statusCode = axiosError.response?.status;
+          } else if (typeof error === 'object' && error !== null) {
+            errorMessage = String(error);
+          }
+
+          console.error("Coding Assistant Error:", {
+            message: errorMessage,
+            code: errorCode,
+            status: statusCode,
+            request: {
+              model: payload.model,
+              messages: payload.messages.slice(0, 2),
+              temperature: payload.temperature,
+            }
+          });
+          throw error;
+        }
+      },
+    }),
+    resetConversation: () => conversationContext.clearMessages(),
+  };
 };
 
 export const useCodeAnalyzer = (model: string) => {
