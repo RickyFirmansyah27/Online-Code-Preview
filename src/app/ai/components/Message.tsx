@@ -13,12 +13,41 @@ interface MessageProps {
   }>;
 }
 
+function isJSON(str: string): boolean {
+  try {
+    JSON.parse(str);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function formatJSON(jsonString: string): string {
+  try {
+    const parsed = JSON.parse(jsonString);
+    return JSON.stringify(parsed, null, 2);
+  } catch {
+    return jsonString;
+  }
+}
+
 export function Message({ role, content }: MessageProps) {
   const isUser = role === "user";
   const Icon = isUser ? BookOpen : Code;
   const iconColor = isUser ? "text-blue-300" : "text-purple-300";
   const bgColor = isUser ? "bg-blue-500/20" : "bg-purple-500/20";
   const textColor = isUser ? "text-blue-50" : "text-purple-50";
+
+  // Process content to handle JSON
+  const processedContent = content.map((item) => {
+    if (item.type === "text" && isJSON(item.content)) {
+      return {
+        ...item,
+        content: `\`\`\`json\n${formatJSON(item.content)}\n\`\`\``,
+      };
+    }
+    return item;
+  });
 
   return (
     <motion.div
@@ -29,19 +58,25 @@ export function Message({ role, content }: MessageProps) {
       }`}
     >
       {!isUser && (
-        <div className={`w-8 h-8 rounded-full ${bgColor} hidden sm:flex items-center justify-center`}>
+        <div
+          className={`w-8 h-8 rounded-full ${bgColor} hidden sm:flex items-center justify-center`}
+        >
           <Icon className={`w-4 h-4 ${iconColor}`} />
         </div>
       )}
-      
-      <div className={`p-4 rounded-lg sm:max-w-[80%] max-w-full ${bgColor} ${textColor}`}>
+
+      <div
+        className={`p-4 rounded-lg sm:max-w-[80%] max-w-full ${bgColor} ${textColor}`}
+      >
         <div className="text-sm whitespace-pre-wrap">
-          <MessageContent content={content} />
+          <MessageContent content={processedContent} />
         </div>
       </div>
 
       {isUser && (
-        <div className={`w-8 h-8 rounded-full ${bgColor} hidden sm:flex items-center justify-center`}>
+        <div
+          className={`w-8 h-8 rounded-full ${bgColor} hidden sm:flex items-center justify-center`}
+        >
           <Icon className={`w-4 h-4 ${iconColor}`} />
         </div>
       )}
