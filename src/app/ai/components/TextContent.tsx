@@ -21,7 +21,17 @@ export function TextContent({ content }: TextContentProps) {
         remarkPlugins={[remarkGfm, remarkMath]}
         rehypePlugins={[rehypeKatex]}
         components={{
-          code: CodeBlock,
+          code: ({ className, children, ...props }) => {
+            const match = /language-(\w+)/.exec(className || "");
+            const language = match ? match[1] : undefined;
+            
+            if (!language) {
+              // For inline code, ensure whitespace is preserved
+              return <code className={`${className} whitespace-pre-wrap font-mono bg-gray-700/50 px-1 py-0.5 rounded`} {...props}>{children}</code>;
+            }
+            
+            return <CodeBlock className={className} {...props}>{children}</CodeBlock>;
+          },
         }}
       >
         {filteredContent}
