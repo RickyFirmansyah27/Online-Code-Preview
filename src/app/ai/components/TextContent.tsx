@@ -12,6 +12,9 @@ interface TextContentProps {
 }
 
 export function TextContent({ content }: TextContentProps) {
+  // Filter out <think>...</think> tags from the content
+  const filteredContent = content.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+  
   return (
     <div className="prose prose-invert prose-p:m-0 prose-headings:m-0 prose-headings:mb-2 whitespace-pre-wrap overflow-x-auto">
       <ReactMarkdown
@@ -21,7 +24,7 @@ export function TextContent({ content }: TextContentProps) {
           code: CodeBlock,
         }}
       >
-        {content}
+        {filteredContent}
       </ReactMarkdown>
     </div>
   );

@@ -43,16 +43,22 @@ export function Message({ role, content }: MessageProps) {
     if (item.type === "text") {
       const text = item.content.trim();
       
+      // Filter out <think>...</think> tags
+      const filteredText = text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
+      
       // Only check if the entire text is valid JSON
-      if (isJSON(text)) {
+      if (isJSON(filteredText)) {
         return {
           ...item,
-          content: `\`\`\`json\n${formatJSON(text)}\n\`\`\``,
+          content: `\`\`\`json\n${formatJSON(filteredText)}\n\`\`\``,
         };
       }
       
-      // Return as-is if not entirely JSON
-      return item;
+      // Return filtered text if not entirely JSON
+      return {
+        ...item,
+        content: filteredText
+      };
     }
     return item;
   });
