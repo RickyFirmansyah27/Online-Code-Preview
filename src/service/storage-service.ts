@@ -7,6 +7,7 @@ const DEFAULT_QUERY_OPTIONS = {
 };
 
 const baseURL = "https://storage-bucket-express.vercel.app";
+// const baseURL = "http://localhost:8000";
 const basePath = "api/v1/s3";
 
 export const useUploadFiles = (user?: { firstName?: string }) => {
