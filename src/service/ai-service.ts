@@ -229,7 +229,7 @@ export const useConversationAi = (model: string) => {
           model: effectiveModel,
           messages: finalMessages as ApiChatMessage[],
           temperature: 0.1,
-          max_tokens: 2000,
+          max_tokens: 10000,
           top_p: 0.9,
           stream: false,
         };
@@ -246,10 +246,20 @@ export const useConversationAi = (model: string) => {
         let response;
 
         try {
-          response = await apiPost(`${basePath}/completions`, payload, {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
-            "Content-Type": "application/json",
-          });
+          if (!hasImage) {
+            // Use Vercel AI Gateway for chat-only
+            const vercelPayload = { ...payload, model: "stealth/sonoma-sky-alpha" };
+            response = await apiPost("https://ai-gateway.vercel.sh/v1/chat/completions", vercelPayload, {
+              Authorization: `Bearer ${process.env.NEXT_PUBLIC_VERCEL_TOKEN}`,
+              "Content-Type": "application/json",
+            });
+          } else {
+            // Use Groq for image requests
+            response = await apiPost(`${basePath}/completions`, payload, {
+              Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
+              "Content-Type": "application/json",
+            });
+          }
         } catch (error) {
           // Extract status code from error
           let statusCode: number | undefined;
@@ -262,31 +272,48 @@ export const useConversationAi = (model: string) => {
 
           // Activate fallback only for specific error codes
           const shouldActivateFallback = statusCode && [400, 429, 500].includes(statusCode);
-          
-          // Fallback for image messages
-          if (hasImage && payload.model !== FALLBACK_MODEL_ID) {
-            console.log("Image processing failed, retrying with fallback model");
+
+          if (!hasImage) {
+            // For chat-only, if Vercel fails, try Groq with fallback model
             const fallbackPayload = { ...payload, model: FALLBACK_MODEL_ID };
             try {
               response = await apiPost(`${basePath}/completions`, fallbackPayload, {
                 Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
                 "Content-Type": "application/json",
               });
-            } catch (fallbackError) {
-              // Activate fallback for specific error codes even on fallback failure
+            } catch (groqError) {
               if (shouldActivateFallback) {
                 setFallbackActive(true);
               }
-              console.error("Fallback AI API Error:", fallbackError);
-              throw fallbackError;
+              console.error("Vercel fallback to Groq Error:", groqError);
+              throw groqError;
             }
           } else {
-            // Activate fallback for specific error codes
-            if (shouldActivateFallback) {
-              setFallbackActive(true);
+            // Fallback for image messages
+            if (hasImage && payload.model !== FALLBACK_MODEL_ID) {
+              console.log("Image processing failed, retrying with fallback model");
+              const fallbackPayload = { ...payload, model: FALLBACK_MODEL_ID };
+              try {
+                response = await apiPost(`${basePath}/completions`, fallbackPayload, {
+                  Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
+                  "Content-Type": "application/json",
+                });
+              } catch (fallbackError) {
+                // Activate fallback for specific error codes even on fallback failure
+                if (shouldActivateFallback) {
+                  setFallbackActive(true);
+                }
+                console.error("Fallback AI API Error:", fallbackError);
+                throw fallbackError;
+              }
+            } else {
+              // Activate fallback for specific error codes
+              if (shouldActivateFallback) {
+                setFallbackActive(true);
+              }
+              console.error("AI API Error:", error);
+              throw error;
             }
-            console.error("AI API Error:", error);
-            throw error;
           }
         }
 
@@ -412,17 +439,17 @@ export const useCodingAssistant = (
           }
         });
         const payload: ChatRequest = {
-          model: model || "meta-llama/llama-4-maverick-17b-128e-instruct",
+          model: "stealth/sonoma-sky-alpha",
           messages: apiMessages,
           temperature: 0.2,
-          max_tokens: 6000,
+          max_tokens: 10000,
           top_p: 0.95,
           stream: false,
         };
 
         try {
-          const response = await apiPost(`${basePath}/completions`, payload, {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
+          const response = await apiPost("https://ai-gateway.vercel.sh/v1/chat/completions", payload, {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_VERCEL_TOKEN}`,
             "Content-Type": "application/json",
           });
 
@@ -476,7 +503,7 @@ export const useCodingAssistant = (
   };
 };
 
-export const useCodeAnalyzer = (model: string) => {
+export const useCodeAnalyzer = (model: string) => { // eslint-disable-line @typescript-eslint/no-unused-vars
   return useMutation({
     ...DEFAULT_QUERY_OPTIONS,
     mutationFn: async (code: string) => {
@@ -491,7 +518,7 @@ export const useCodeAnalyzer = (model: string) => {
       \`\`\``;
 
       const payload: ChatRequest = {
-        model: model || "llama-3.3-70b-versatile",
+        model: "stealth/sonoma-sky-alpha",
         messages: [
           {
             role: "system",
@@ -504,13 +531,13 @@ export const useCodeAnalyzer = (model: string) => {
           },
         ] as ApiChatMessage[],
         temperature: 0.1,
-        max_tokens: 3000,
+        max_tokens: 10000,
         top_p: 0.9,
         stream: false,
       };
 
-      return apiPost(`${basePath}/completions`, payload, {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
+      return apiPost("https://ai-gateway.vercel.sh/v1/chat/completions", payload, {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_VERCEL_TOKEN}`,
         "Content-Type": "application/json",
       });
     },
