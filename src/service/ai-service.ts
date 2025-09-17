@@ -534,10 +534,12 @@ export const useCodeAnalyzer = (model: string) => { // eslint-disable-line @type
         stream: false,
       };
 
-      await apiPost(`${basePath}/completions`, payload, {
+      const response = await apiPost(`${basePath}/completions`, payload, {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
       });
+
+      return response;
     },
   });
 };
