@@ -228,7 +228,7 @@ export const useConversationAi = (model: string) => {
         const payload: ChatRequest = {
           model: effectiveModel,
           messages: finalMessages as ApiChatMessage[],
-          temperature: 0.1,
+          temperature: 0.3,
           max_tokens: 10000,
           top_p: 0.9,
           stream: false,
@@ -246,17 +246,15 @@ export const useConversationAi = (model: string) => {
         let response;
 
         try {
-          if (!hasImage) {
-            // Use Vercel AI Gateway for chat-only
-            const vercelPayload = { ...payload, model: "stealth/sonoma-sky-alpha" };
-            response = await apiPost("https://ai-gateway.vercel.sh/v1/chat/completions", vercelPayload, {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_VERCEL_TOKEN}`,
+          if (hasImage) {
+            const vercelPayload = { ...payload, model: "openrouter/sonoma-sky-alpha" };
+            response = await apiPost(`${basePath}/completions`, vercelPayload, {
+              Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
               "Content-Type": "application/json",
             });
           } else {
-            // Use Groq for image requests
             response = await apiPost(`${basePath}/completions`, payload, {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
+              Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
               "Content-Type": "application/json",
             });
           }
@@ -439,17 +437,17 @@ export const useCodingAssistant = (
           }
         });
         const payload: ChatRequest = {
-          model: "stealth/sonoma-sky-alpha",
+          model: model,
           messages: apiMessages,
-          temperature: 0.2,
+          temperature: 0.3,
           max_tokens: 10000,
           top_p: 0.95,
           stream: false,
         };
 
         try {
-          const response = await apiPost("https://ai-gateway.vercel.sh/v1/chat/completions", payload, {
-            Authorization: `Bearer ${process.env.NEXT_PUBLIC_VERCEL_TOKEN}`,
+          const response =await apiPost(`${basePath}/completions`, payload, {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
             "Content-Type": "application/json",
           });
 
@@ -518,7 +516,7 @@ export const useCodeAnalyzer = (model: string) => { // eslint-disable-line @type
       \`\`\``;
 
       const payload: ChatRequest = {
-        model: "stealth/sonoma-sky-alpha",
+        model: model,
         messages: [
           {
             role: "system",
@@ -530,14 +528,14 @@ export const useCodeAnalyzer = (model: string) => { // eslint-disable-line @type
             content: analysisPrompt,
           },
         ] as ApiChatMessage[],
-        temperature: 0.1,
+        temperature: 0.3,
         max_tokens: 10000,
         top_p: 0.9,
         stream: false,
       };
 
-      return apiPost("https://ai-gateway.vercel.sh/v1/chat/completions", payload, {
-        Authorization: `Bearer ${process.env.NEXT_PUBLIC_VERCEL_TOKEN}`,
+      await apiPost(`${basePath}/completions`, payload, {
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
       });
     },

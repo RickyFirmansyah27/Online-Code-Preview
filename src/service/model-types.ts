@@ -11,42 +11,42 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "AI Coding Assistant Pintar",
     id: "gpt-5",
     name: "GPT 5",
-    model: "openai/gpt-oss-120b",
+    model: "openrouter/sonoma-sky-alpha",
     max_request: "1000",
   },
   {
     category: "AI Coding Assistant Pintar",
     id: "claude-sonnet-4",
     name: "Claude Sonnet 4",
-    model: "moonshotai/kimi-k2-instruct",
+    model: "qwen/qwen3-coder:free",
     max_request: "1000",
   },
   {
     category: "Refactor Besar / File Panjang",
-    id: "mistral-large",
-    name: "Mistral Large",
-    model: "meta-llama/llama-4-scout-17b-16e-instruct",
+    id: "glm-air",
+    name: "GLM Air",
+    model: "z-ai/glm-4.5-air:free",
     max_request: "1000",
   },
   {
     category: "Live Coding Cepat, Responsif",
     id: "gemini-2.5-pro",
     name: "Gemini 2.5 Pro",
-    model: "llama-3.3-70b-versatile",
+    model: "openrouter/sonoma-dusk-alpha",
     max_request: "1000",
   },
   {
     category: "Refactor Besar / File Panjang",
     id: "deepseek-v3",
     name: "Deepseek V3",
-    model: "deepseek-r1-distill-llama-70b",
+    model: "deepseek/deepseek-chat-v3.1:free",
     max_request: "1000",
   },
   {
     category: "Live Coding Cepat, Responsif",
     id: "llama-4",
     name: "LLaMA 4",
-    model: "meta-llama/llama-4-maverick-17b-128e-instruct",
+    model: "meta-llama/llama-4-scout:free",
     max_request: "1000",
   },
 ];
@@ -66,4 +66,4 @@ export interface FileResponse {
   data: ApiFile[];
 }
 
-export const FALLBACK_MODEL_ID = "meta-llama/llama-4-maverick-17b-128e-instruct";
+export const FALLBACK_MODEL_ID = "openai/gpt-4o-mini";

@@ -1,7 +1,7 @@
 import axios from "axios";
 
-const BASE_URL = 'https://api.groq.com/openai';
-// const BASE_URL = 'http://localhost:8000';
+// Base URL will be provided by individual API calls
+const BASE_URL = 'https://openrouter.ai/api';
 
 const makeCallApi = ({
   url = "",
