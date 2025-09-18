@@ -70,7 +70,7 @@ export function ChatLayout({
               previewImage={previewImage}
             />
           </div>
-          <div className="flex-1 overflow-y-auto mb-4">
+          <div className="flex-1 overflow-y-auto">
             <MessageList messages={messages} />
           </div>
         </div>

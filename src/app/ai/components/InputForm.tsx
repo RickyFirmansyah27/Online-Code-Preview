@@ -1,7 +1,7 @@
 "use client";
 
 import { Send, Loader, Image as ImageIcon } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useEffect } from "react";
 
 interface InputFormProps {
   input: string;
@@ -21,6 +21,13 @@ export function InputForm({
   previewImage
 }: InputFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (textareaRef.current && input === "") {
+      textareaRef.current.style.height = "44px"; // Reset to initial height
+    }
+  }, [input]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -80,14 +87,14 @@ export function InputForm({
       
       <div className="relative bg-gray-900/50 rounded-xl p-1 focus-within:ring-2 focus-within:ring-blue-500 mb-5">
         <textarea
+          ref={textareaRef}
           value={input}
           onChange={handleInputChange}
-          rows={1}
-          className="w-full bg-transparent px-4 py-3 pr-20 text-gray-200 focus:outline-none resize-none overflow-hidden font-mono"
+          className="w-full bg-transparent px-4 py-2 pr-20 text-gray-200 focus:outline-none resize-none font-mono"
           placeholder="Type your message..."
           disabled={isLoading}
           style={{
-            minHeight: "44px",
+            minHeight: "28px",
             maxHeight: "200px",
           }}
           onInput={(e) => {
