@@ -25,7 +25,7 @@ export function InputForm({
 
   useEffect(() => {
     if (textareaRef.current && input === "") {
-      textareaRef.current.style.height = "44px"; // Reset to initial height
+      textareaRef.current.style.height = "28px"; // Reset to initial height
     }
   }, [input]);
 
@@ -90,7 +90,7 @@ export function InputForm({
           ref={textareaRef}
           value={input}
           onChange={handleInputChange}
-          className="w-full bg-transparent px-4 py-2 pr-20 text-gray-200 focus:outline-none resize-none font-mono"
+          className="w-full bg-transparent px-4 py-2 pr-20 text-gray-200 focus:outline-none resize-none font-mono custom-scrollbar"
           placeholder="Type your message..."
           disabled={isLoading}
           style={{
