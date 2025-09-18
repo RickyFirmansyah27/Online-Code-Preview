@@ -11,14 +11,14 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "AI Coding Assistant Pintar",
     id: "gpt-5",
     name: "GPT 5",
-    model: "openrouter/sonoma-sky-alpha",
+    model: "openai/gpt-oss-20b:free",
     max_request: "1000",
   },
   {
     category: "AI Coding Assistant Pintar",
     id: "claude-sonnet-4",
     name: "Claude Sonnet 4",
-    model: "qwen/qwen3-coder:free",
+    model: "openrouter/sonoma-sky-alpha",
     max_request: "1000",
   },
   {
@@ -32,7 +32,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "Live Coding Cepat, Responsif",
     id: "gemini-2.5-pro",
     name: "Gemini 2.5 Pro",
-    model: "openrouter/sonoma-dusk-alpha",
+    model: "qwen/qwen3-235b-a22b:free",
     max_request: "1000",
   },
   {
@@ -46,7 +46,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "Live Coding Cepat, Responsif",
     id: "llama-4",
     name: "LLaMA 4",
-    model: "meta-llama/llama-4-scout:free",
+    model: "meta-llama/llama-3.1-405b-instruct:free",
     max_request: "1000",
   },
 ];
