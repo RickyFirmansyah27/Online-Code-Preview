@@ -55,6 +55,7 @@ export function CodeBlock({ className, children }: CodeBlockProps) {
       <SyntaxHighlighter
         language={language}
         style={vscDarkPlus}
+        className="custom-scrollbar"
         customStyle={{
           margin: 0,
           borderRadius: "0 0 0.5rem 0.5rem",

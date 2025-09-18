@@ -50,6 +50,9 @@ export function ChatLayout({
       <div className="flex-1 overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 py-4 h-full flex flex-col">
           <ChatHeader />
+          <div className="flex-1 overflow-y-auto">
+            <MessageList messages={messages} />
+          </div>
           <div className="sticky top-0 bg-[#0a0a0f] z-10 pb-4">
             <ModelSelector
               selectedModel={selectedModel}
@@ -69,9 +72,6 @@ export function ChatLayout({
               onImageUpload={onImageUpload}
               previewImage={previewImage}
             />
-          </div>
-          <div className="flex-1 overflow-y-auto">
-            <MessageList messages={messages} />
           </div>
         </div>
       </div>

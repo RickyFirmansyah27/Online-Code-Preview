@@ -94,7 +94,7 @@ export function InputForm({
           placeholder="Type your message..."
           disabled={isLoading}
           style={{
-            minHeight: "28px",
+            minHeight: "44px",
             maxHeight: "200px",
           }}
           onInput={(e) => {
