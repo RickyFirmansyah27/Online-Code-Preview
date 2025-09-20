@@ -247,7 +247,7 @@ export const useConversationAi = (model: string) => {
 
         try {
           if (hasImage) {
-            const vercelPayload = { ...payload, model: "openrouter/sonoma-sky-alpha" };
+            const vercelPayload = { ...payload, model: "meta-llama/llama-4-maverick:free" };
             response = await apiPost(`${basePath}/completions`, vercelPayload, {
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
               "Content-Type": "application/json",

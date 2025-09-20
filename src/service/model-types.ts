@@ -18,7 +18,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "AI Coding Assistant Pintar",
     id: "claude-sonnet-4",
     name: "Claude Sonnet 4",
-    model: "openrouter/sonoma-sky-alpha",
+    model: "x-ai/grok-4-fast:free",
     max_request: "1000",
   },
   {
