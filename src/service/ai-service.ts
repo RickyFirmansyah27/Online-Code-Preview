@@ -251,11 +251,15 @@ export const useConversationAi = (model: string) => {
             response = await apiPost(`${basePath}/completions`, vercelPayload, {
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
               "Content-Type": "application/json",
+              "HTTP-Referer": "https://online-code-preview.vercel.app",
+              "X-Title": "Online Code Editor",
             });
           } else {
             response = await apiPost(`${basePath}/completions`, payload, {
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
               "Content-Type": "application/json",
+              "HTTP-Referer": "https://online-code-preview.vercel.app",
+              "X-Title": "Online Code Editor",
             });
           }
         } catch (error) {
@@ -278,6 +282,8 @@ export const useConversationAi = (model: string) => {
               response = await apiPost(`${basePath}/completions`, fallbackPayload, {
                 Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
                 "Content-Type": "application/json",
+                "HTTP-Referer": "https://online-code-preview.vercel.app",
+                "X-Title": "Online Code Editor",
               });
             } catch (groqError) {
               if (shouldActivateFallback) {
@@ -289,12 +295,14 @@ export const useConversationAi = (model: string) => {
           } else {
             // Fallback for image messages
             if (hasImage && payload.model !== FALLBACK_MODEL_ID) {
-              console.log("Image processing failed, retrying with fallback model");
               const fallbackPayload = { ...payload, model: FALLBACK_MODEL_ID };
               try {
                 response = await apiPost(`${basePath}/completions`, fallbackPayload, {
                   Authorization: `Bearer ${process.env.NEXT_PUBLIC_GROQ_API_KEY}`,
                   "Content-Type": "application/json",
+                  "HTTP-Referer": "https://online-code-preview.vercel.app",
+                  "X-Title": "Online Code Editor",
+
                 });
               } catch (fallbackError) {
                 // Activate fallback for specific error codes even on fallback failure
@@ -449,6 +457,8 @@ export const useCodingAssistant = (
           const response =await apiPost(`${basePath}/completions`, payload, {
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
             "Content-Type": "application/json",
+            "HTTP-Referer": "https://online-code-preview.vercel.app",
+            "X-Title": "Online Code Editor",
           });
 
           if (response?.data?.choices?.[0]?.message) {
@@ -537,6 +547,8 @@ export const useCodeAnalyzer = (model: string) => { // eslint-disable-line @type
       const response = await apiPost(`${basePath}/completions`, payload, {
         Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
+        "HTTP-Referer": "https://online-code-preview.vercel.app",
+        "X-Title": "Online Code Editor",
       });
 
       return response;
