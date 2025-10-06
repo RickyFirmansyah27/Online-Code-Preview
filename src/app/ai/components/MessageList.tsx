@@ -20,9 +20,7 @@ export function MessageList({ messages }: MessageListProps) {
   }, [messages]);
 
   return (
-    <div
-      className="max-w-3xl mx-auto bg-gray-900/50 rounded-xl p-6 mb-4 h-[500px] overflow-y-auto custom-scrollbar"
-    >
+    <div className="w-full h-full">
       <AnimatePresence>
         {messages.map((message, index) => (
           <Message

@@ -63,19 +63,19 @@ export function InputForm({
   };
 
   return (
-    <form onSubmit={(e) => handleSubmit(e, !!previewImage)} className="max-w-3xl mx-auto">
+    <form onSubmit={(e) => handleSubmit(e, !!previewImage)}>
       {previewImage && (
-        <div className="mb-3">
+        <div className="mb-4">
           <div className="relative inline-block">
             <img
               src={previewImage}
               alt="Preview"
-              className="max-w-full h-32 object-contain rounded-lg border border-gray-700"
+              className="max-w-full h-40 object-contain rounded-lg border border-gray-700"
             />
             <button
               type="button"
               onClick={removePreviewImage}
-              className="absolute top-0 right-0 mt-1 mr-1 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors"
+              className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -84,17 +84,17 @@ export function InputForm({
           </div>
         </div>
       )}
-      
-      <div className="relative bg-gray-900/50 rounded-xl p-1 focus-within:ring-2 focus-within:ring-blue-500 mb-5">
+
+      <div className="relative bg-gray-900/80 rounded-2xl p-3 focus-within:ring-2 focus-within:ring-blue-500/50 border border-gray-700/60 backdrop-blur-sm">
         <textarea
           ref={textareaRef}
           value={input}
           onChange={handleInputChange}
-          className="w-full bg-transparent px-4 py-2 pr-20 text-gray-200 focus:outline-none resize-none font-mono custom-scrollbar"
-          placeholder="Type your message..."
+          className="w-full bg-transparent px-4 py-3 pr-24 text-gray-100 focus:outline-none resize-none font-sans custom-scrollbar text-base placeholder:text-gray-400"
+          placeholder="Message AI Assistant..."
           disabled={isLoading}
           style={{
-            minHeight: "44px",
+            minHeight: "52px",
             maxHeight: "200px",
           }}
           onInput={(e) => {
@@ -103,8 +103,8 @@ export function InputForm({
             target.style.height = `${target.scrollHeight}px`;
           }}
         />
-        
-        <div className="absolute right-2 bottom-2 flex gap-1">
+
+        <div className="absolute right-3 bottom-3 flex gap-2">
           <input
             type="file"
             ref={fileInputRef}
@@ -113,26 +113,26 @@ export function InputForm({
             className="hidden"
             disabled={isLoading}
           />
-          
+
           <button
             type="button"
             onClick={triggerFileInput}
             disabled={isLoading}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2.5 hover:bg-gray-700/70 rounded-lg transition-all duration-200 disabled:opacity-50"
             title="Upload image"
           >
-            <ImageIcon className="w-5 h-5 text-gray-400" />
+            <ImageIcon className="w-5 h-5 text-gray-400 hover:text-gray-300" />
           </button>
-          
+
           <button
             type="submit"
             disabled={isLoading}
-            className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            className="p-2.5 hover:bg-blue-600/20 rounded-lg transition-all duration-200 disabled:opacity-50"
           >
             {isLoading ? (
               <Loader className="w-5 h-5 text-gray-400 animate-spin" />
             ) : (
-              <Send className="w-5 h-5 text-gray-400" />
+              <Send className="w-5 h-5 text-gray-400 hover:text-blue-400" />
             )}
           </button>
         </div>

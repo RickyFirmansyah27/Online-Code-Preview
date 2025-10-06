@@ -153,29 +153,29 @@ export function Message({ role, content }: MessageProps) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex items-start gap-3 mb-4 ${
+      className={`flex items-start gap-3 mb-6 px-4 ${
         isUser ? "justify-end" : "justify-start"
       }`}
     >
       {!isUser && (
         <div
-          className={`w-8 h-8 rounded-full ${bgColor} hidden sm:flex items-center justify-center`}
+          className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0`}
         >
           <Icon className={`w-4 h-4 ${iconColor}`} />
         </div>
       )}
 
       <div
-        className={`p-4 rounded-lg sm:max-w-[80%] max-w-full ${bgColor} ${textColor}`}
+        className={`p-4 rounded-2xl max-w-[85%] sm:max-w-[70%] ${bgColor} ${textColor} shadow-sm`}
       >
-        <div className="text-sm whitespace-pre-wrap">
+        <div className="text-sm leading-relaxed whitespace-pre-wrap">
           <MessageContent content={processedContent} />
         </div>
       </div>
 
       {isUser && (
         <div
-          className={`w-8 h-8 rounded-full ${bgColor} hidden sm:flex items-center justify-center`}
+          className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0`}
         >
           <Icon className={`w-4 h-4 ${iconColor}`} />
         </div>

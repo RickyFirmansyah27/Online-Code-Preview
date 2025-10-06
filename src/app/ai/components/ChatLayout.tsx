@@ -3,8 +3,7 @@
 import NavigationHeader from "../../(root)/_components/Header";
 import { MessageList } from "./MessageList";
 import { InputForm } from "./InputForm";
-import { ModelSelector } from "./ModelSelector";
-import { ChatHeader } from "./ChatHeader";
+import { UnifiedControl } from "./UnifiedControl";
 
 import { Message, ChatMode } from "../hooks/useChatState";
 import { ModelOption } from "@/service/model-types";
@@ -47,31 +46,49 @@ export function ChatLayout({
   return (
     <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
       <NavigationHeader />
-      <div className="flex-1 overflow-hidden">
-        <div className="relative max-w-7xl mx-auto px-4 py-4 h-full flex flex-col">
-          <ChatHeader />
-          <div className="flex-1 overflow-y-auto">
-            <MessageList messages={messages} />
+      <div className="flex-1 flex flex-col relative">
+        {/* Header section */}
+       
+        {/* Main chat area - takes up most space */}
+        <div className="flex-1 overflow-hidden">
+          <div className="h-full px-6 py-4">
+            <div className="max-w-4xl mx-auto h-full flex flex-col">
+              <div className="flex-1 overflow-y-auto custom-scrollbar">
+                <MessageList messages={messages} />
+              </div>
+            </div>
           </div>
-          <div className="sticky top-0 bg-[#0a0a0f] z-10 pb-4">
-            <ModelSelector
-              selectedModel={selectedModel}
-              mode={mode}
-              isDropdownOpen={isDropdownOpen}
-              dropdownRef={dropdownRef}
-              setSelectedModel={setSelectedModel}
-              setMode={setMode}
-              setIsDropdownOpen={setIsDropdownOpen}
-              handleClearMessages={handleClearMessages}
-            />
-            <InputForm
-              input={input}
-              isLoading={isLoading}
-              handleSubmit={handleSubmit}
-              handleInputChange={handleInputChange}
-              onImageUpload={onImageUpload}
-              previewImage={previewImage}
-            />
+        </div>
+
+        {/* Input area - fixed at bottom */}
+        <div className="flex-shrink-0 bg-[#0a0a0f] border-t border-gray-800/50">
+          <div className="px-6 py-6">
+            <div className="max-w-4xl mx-auto">
+              <div className="flex items-end gap-6">
+                <div className="flex-shrink-0">
+                  <UnifiedControl
+                    selectedModel={selectedModel}
+                    mode={mode}
+                    isDropdownOpen={isDropdownOpen}
+                    dropdownRef={dropdownRef}
+                    setSelectedModel={setSelectedModel}
+                    setMode={setMode}
+                    setIsDropdownOpen={setIsDropdownOpen}
+                    handleClearMessages={handleClearMessages}
+                  />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <InputForm
+                    input={input}
+                    isLoading={isLoading}
+                    handleSubmit={handleSubmit}
+                    handleInputChange={handleInputChange}
+                    onImageUpload={onImageUpload}
+                    previewImage={previewImage}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
