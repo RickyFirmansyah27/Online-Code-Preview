@@ -1,6 +1,13 @@
-import { useState, useRef } from "react";
-import { MODEL_OPTIONS, ModelOption } from "@/service/model-types";
-import { useCodingAssistant, useCodeAnalyzer, useConversationAi } from "@/service/ai-service";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
+import {
+  MODEL_OPTIONS,
+  ModelOption,
+} from "@/service/model-types";
+import {
+  useCodingAssistant,
+  useCodeAnalyzer,
+  useConversationAi,
+} from "@/service/ai-service";
 
 export interface MessageContent {
   type: "text" | "image";
@@ -15,30 +22,33 @@ export interface Message {
 export type ChatMode = "ask" | "debug" | "code";
 
 export function useChatState() {
-  // State
+  /* ---------- State ---------- */
   const [input, setInput] = useState("");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [conversationHistories, setConversationHistories] = useState<Record<ChatMode, Message[]>>({
+  const [conversationHistories, setConversationHistories] = useState<
+    Record<ChatMode, Message[]>
+  >({
     ask: [],
     debug: [],
     code: [],
   });
-  const [selectedModel, setSelectedModel] = useState<ModelOption>(MODEL_OPTIONS[0]);
+  const [selectedModel, setSelectedModel] = useState<ModelOption>(
+    MODEL_OPTIONS[0]
+  );
   const [mode, setMode] = useState<ChatMode>("ask");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const messagesRef = useRef(messages);
 
-  // Keep ref updated with latest messages
-  messagesRef.current = messages;
-
-  // AI hooks
+  /* ---------- AI hooks ---------- */
   const coding = useCodingAssistant(selectedModel.model);
-  const conversation = useConversationAi(selectedModel.model, selectedModel.name);
+  const conversation = useConversationAi(
+    selectedModel.model,
+    selectedModel.name
+  );
   const analyzer = useCodeAnalyzer(selectedModel.model);
 
-  const getHookByMode = () => {
+  /* ---------- Memoised hook selector ---------- */
+  const activeHook = useMemo(() => {
     switch (mode) {
       case "ask":
         return conversation;
@@ -49,129 +59,155 @@ export function useChatState() {
       default:
         return conversation;
     }
-  };
+  }, [mode, conversation, analyzer, coding]);
 
-  const { mutateAsync: sendMessage, status } = getHookByMode();
+  const { mutateAsync: sendMessage, status } = activeHook;
   const isLoading = status === "pending";
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!input.trim() && !uploadedImage) return;
+  /* ---------- Abort controller for cleanup ---------- */
+  const abortControllerRef = useRef<AbortController | null>(null);
 
-    // Prepare message content
-    const messageContent: MessageContent[] = [];
-    
-    if (input.trim()) {
-      messageContent.push({ type: "text" as const, content: input });
-    }
-    
-    if (uploadedImage) {
-      messageContent.push({ type: "image" as const, content: uploadedImage });
-    }
+  /* ---------- Handlers ---------- */
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!input.trim() && !uploadedImage) return;
 
-    const newMessages: Message[] = [
-      ...messages,
-      {
-        role: "user" as const,
-        content: messageContent
-      },
-    ];
-    
-    // Update both current messages and mode-specific history
-    setMessages(newMessages);
-    setConversationHistories(prev => ({
-      ...prev,
-      [mode]: newMessages
-    }));
-    
-    setInput("");
-    setUploadedImage(null);
+      /* Build message content */
+      const content: MessageContent[] = [];
+      if (input.trim()) content.push({ type: "text", content: input });
+      if (uploadedImage) content.push({ type: "image", content: uploadedImage });
 
-    try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const response = await sendMessage(messageContent as any);
-      const data = response.data;
-
-      // Check if response is successful
-      if (!data.choices || !data.choices[0]?.message?.content) {
-        throw new Error("Unexpected API response format");
-      }
-
-      const updatedMessages: Message[] = [
-        ...newMessages,
-        {
-          role: "assistant" as const,
-          content: [{ type: "text" as const, content: data.choices[0].message.content }],
-        },
+      /* Optimistically update UI */
+      const newMessages: Message[] = [
+        ...messages,
+        { role: "user" as const, content },
       ];
-      
-      setMessages(updatedMessages);
-      setConversationHistories(prev => ({
+      setMessages(newMessages);
+      setConversationHistories((prev) => ({
         ...prev,
-        [mode]: updatedMessages
+        [mode]: newMessages,
       }));
-    } catch (error) {
-      console.error("Error:", error);
-      const errorMessage: Message = {
-        role: "assistant" as const,
-        content: [{ type: "text" as const, content: "Sorry, something went wrong. Please try again." }],
-      };
-      const errorMessages: Message[] = [...newMessages, errorMessage];
-      setMessages(errorMessages);
-      setConversationHistories(prev => ({
-        ...prev,
-        [mode]: errorMessages
-      }));
-    }
-  };
+      setInput("");
+      setUploadedImage(null);
 
-  const handleImageUpload = (imageData: string | null) => {
+      /* Abort any previous request */
+      abortControllerRef.current?.abort();
+      abortControllerRef.current = new AbortController();
+
+      try {
+        /* `sendMessage` expects `string | (string & ChatMessageContent[])`.
+           We bypass the strict type check by casting to `any`. */
+        const response = await sendMessage(
+          content as never,
+          { signal: abortControllerRef.current?.signal } as never
+        );
+
+        /* Validate response shape */
+        const assistantText =
+          response?.data?.choices?.[0]?.message?.content ?? null;
+        if (!assistantText) {
+          throw new Error("Invalid response from AI service");
+        }
+
+        const updatedMessages: Message[] = [
+          ...newMessages,
+          {
+            role: "assistant" as const,
+            content: [{ type: "text", content: assistantText }],
+          },
+        ];
+
+        setMessages(updatedMessages);
+        setConversationHistories((prev) => ({
+          ...prev,
+          [mode]: updatedMessages,
+        }));
+      } catch (err) {
+        console.error("[Chat] sendMessage error:", err);
+        const errorMsg: Message = {
+          role: "assistant" as const,
+          content: [
+            {
+              type: "text",
+              content: "Sorry, something went wrong. Please try again.",
+            },
+          ],
+        };
+        const errorMessages = [...newMessages, errorMsg];
+        setMessages(errorMessages);
+        setConversationHistories((prev) => ({
+          ...prev,
+          [mode]: errorMessages,
+        }));
+      }
+    },
+    [input, uploadedImage, messages, mode, sendMessage]
+  );
+
+  const handleImageUpload = useCallback((imageData: string | null) => {
     setUploadedImage(imageData);
-  };
+  }, []);
 
-  const handleClearMessages = () => {
-    setConversationHistories(prev => ({
+  const handleClearMessages = useCallback(() => {
+    setConversationHistories((prev) => ({
       ...prev,
-      [mode]: []
+      [mode]: [],
     }));
-    
     setMessages([]);
-    
-    // Reset AI service hook states
-    conversation.resetConversation();
-    coding.resetConversation();
-    // Note: analyzer doesn't need reset as it doesn't maintain conversation history
-  };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setInput(e.target.value);
-  };
+    /* Reset conversation state if the hook exposes a reset method */
+    conversation.resetConversation?.();
+    coding.resetConversation?.();
+    // analyzer has no state to reset
+  }, [mode, conversation, coding]);
 
-  const handleModeChange = (newMode: ChatMode) => {
-    // Save current conversation to history
-    setConversationHistories(prev => ({
-      ...prev,
-      [mode]: messages
-    }));
-    
-    // Switch to new mode and load its conversation
-    setMode(newMode);
-    const newMessages = conversationHistories[newMode] || [];
-    setMessages(newMessages);
-  };
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setInput(e.target.value);
+    },
+    []
+  );
 
+  const handleModeChange = useCallback(
+    (newMode: ChatMode) => {
+      /* Persist current mode's conversation */
+      setConversationHistories((prev) => ({
+        ...prev,
+        [mode]: messages,
+      }));
+
+      /* Switch mode and load its history */
+      setMode(newMode);
+      setMessages(conversationHistories[newMode] ?? []);
+    },
+    [mode, messages, conversationHistories]
+  );
+
+  /* ---------- Effect: reset conversation on model change ---------- */
+  useEffect(() => {
+    conversation.resetConversation?.();
+    coding.resetConversation?.();
+    // analyzer has no state
+  }, [selectedModel, conversation, coding]);
+
+  /* ---------- Cleanup on unmount ---------- */
+  useEffect(() => {
+    return () => abortControllerRef.current?.abort();
+  }, []);
+
+  /* ---------- Return public API ---------- */
   return {
-    // State
+    /* state */
     input,
     uploadedImage,
     messages,
     selectedModel,
     mode,
     isDropdownOpen,
-    dropdownRef,
     isLoading,
-    
-    // Actions
+
+    /* actions */
     setInput,
     setSelectedModel,
     setMode: handleModeChange,
