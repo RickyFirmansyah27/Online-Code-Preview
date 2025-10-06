@@ -64,7 +64,7 @@ export function ChatLayout({
         <div className="flex-shrink-0 bg-[#0a0a0f] border-t border-gray-800/50">
           <div className="px-6 py-6">
             <div className="max-w-4xl mx-auto">
-              <div className="flex items-end gap-6">
+              <div className="flex items-end gap-8">
                 <div className="flex-shrink-0">
                   <UnifiedControl
                     selectedModel={selectedModel}

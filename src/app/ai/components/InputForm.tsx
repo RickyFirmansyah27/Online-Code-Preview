@@ -25,7 +25,7 @@ export function InputForm({
 
   useEffect(() => {
     if (textareaRef.current && input === "") {
-      textareaRef.current.style.height = "28px"; // Reset to initial height
+      textareaRef.current.style.height = "32px"; // Reset to initial height
     }
   }, [input]);
 
@@ -94,7 +94,7 @@ export function InputForm({
           placeholder="Message AI Assistant..."
           disabled={isLoading}
           style={{
-            minHeight: "24px",
+            minHeight: "28px",
             maxHeight: "100px",
           }}
           onInput={(e) => {

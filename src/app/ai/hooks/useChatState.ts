@@ -35,7 +35,7 @@ export function useChatState() {
 
   // AI hooks
   const coding = useCodingAssistant(selectedModel.model);
-  const conversation = useConversationAi(selectedModel.model);
+  const conversation = useConversationAi(selectedModel.model, selectedModel.name);
   const analyzer = useCodeAnalyzer(selectedModel.model);
 
   const getHookByMode = () => {

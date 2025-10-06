@@ -1,6 +1,5 @@
 "use client";
 
-import "katex/dist/katex.min.css";
 import { useChatState } from "./hooks/useChatState";
 import { ChatLayout } from "./components/ChatLayout";
 

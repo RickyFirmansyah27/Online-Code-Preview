@@ -99,22 +99,22 @@ export function UnifiedControl({
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute bottom-full right-0 mb-2 w-80 bg-gray-800/95 backdrop-blur-sm border border-gray-700/50 rounded-xl shadow-xl z-50"
+            className="absolute bottom-full left-0 mb-2 w-80 bg-gray-900/95 backdrop-blur-sm border border-gray-700/60 rounded-xl shadow-xl z-50"
             ref={dropdownRef}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-700/50">
+            <div className="flex items-center justify-between p-4 border-b border-gray-700/60">
               <h3 className="text-sm font-medium text-gray-200">Chat Settings</h3>
               <button
                 onClick={() => setIsDropdownOpen(false)}
-                className="p-1 rounded-lg hover:bg-gray-700/50 transition-colors"
+                className="p-1 rounded-lg hover:bg-gray-800/60 transition-colors"
               >
                 <X className="w-4 h-4 text-gray-400" />
               </button>
             </div>
 
             {/* Model Selection */}
-            <div className="p-4 border-b border-gray-700/50">
+            <div className="p-4 border-b border-gray-700/60">
               <label className="block text-xs font-medium text-gray-400 mb-3">AI Model</label>
               <select
                 value={selectedModel.id}
@@ -124,14 +124,14 @@ export function UnifiedControl({
                   );
                   if (model) setSelectedModel(model);
                 }}
-                className="w-full bg-gray-700/50 text-gray-100 px-3 py-2 rounded-lg appearance-none cursor-pointer
-                         focus:outline-none focus:ring-2 focus:ring-blue-500/50 border border-gray-600/50
+                className="w-full bg-gray-800/60 text-gray-100 px-3 py-2 rounded-lg appearance-none cursor-pointer
+                         focus:outline-none focus:ring-2 focus:ring-blue-500/50 border border-gray-700/60
                          hover:border-blue-500/50 transition-all duration-200 text-sm"
               >
                 {Object.entries(groupedModels).map(([category, models]) => (
-                  <optgroup key={`group-${category}`} label={category} className="bg-gray-800 text-gray-200">
+                  <optgroup key={`group-${category}`} label={category} className="bg-gray-900 text-gray-200">
                     {models.map((model) => (
-                      <option key={model.id} value={model.id} className="bg-gray-800 text-white">
+                      <option key={model.id} value={model.id} className="bg-gray-900 text-white">
                         {model.name}
                       </option>
                     ))}
@@ -141,7 +141,7 @@ export function UnifiedControl({
             </div>
 
             {/* Mode Selection */}
-            <div className="p-4 border-b border-gray-700/50">
+            <div className="p-4 border-b border-gray-700/60">
               <label className="block text-xs font-medium text-gray-400 mb-3">Chat Mode</label>
               <div className="grid grid-cols-3 gap-2">
                 {modes.map((m) => (
@@ -154,7 +154,7 @@ export function UnifiedControl({
                     className={`flex flex-col items-center gap-2 p-3 rounded-lg text-xs transition-all duration-200 ${
                       mode === m.id
                         ? "bg-blue-600/20 text-blue-400 border border-blue-500/50"
-                        : "bg-gray-700/30 text-gray-300 border border-gray-600/50 hover:bg-gray-700/50"
+                        : "bg-gray-800/50 text-gray-300 border border-gray-700/60 hover:bg-gray-800/70"
                     }`}
                   >
                     {m.icon}

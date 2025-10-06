@@ -48,12 +48,12 @@ interface ConversationContext {
   clearMessages: () => void;
 }
 
-export const useConversationAi = (model: string) => {
+export const useConversationAi = (model: string, name: string) => {
   const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>(
     [
       {
         role: "system",
-        content: `You are an expert ai assistant. Always provide:
+        content: `You are ${name} model ai assistant . Always provide:
                 Your task is to deliver answers that are:
                   - ✅ Accurate, relevant, and based only on the user’s context.
                   - ✅ Helpful and easy to understand, like technical documentation.
