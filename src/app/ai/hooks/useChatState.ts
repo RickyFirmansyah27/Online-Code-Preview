@@ -39,6 +39,9 @@ export function useChatState() {
   const [mode, setMode] = useState<ChatMode>("ask");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  /* ---------- Dropdown ref for click-outside handling ---------- */
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
   /* ---------- AI hooks ---------- */
   const coding = useCodingAssistant(selectedModel.model);
   const conversation = useConversationAi(
@@ -206,6 +209,7 @@ export function useChatState() {
     selectedModel,
     mode,
     isDropdownOpen,
+    dropdownRef,
     isLoading,
 
     /* actions */
