@@ -94,8 +94,8 @@ export function InputForm({
           placeholder="Message AI Assistant..."
           disabled={isLoading}
           style={{
-            minHeight: "52px",
-            maxHeight: "200px",
+            minHeight: "24px",
+            maxHeight: "100px",
           }}
           onInput={(e) => {
             const target = e.target as HTMLTextAreaElement;

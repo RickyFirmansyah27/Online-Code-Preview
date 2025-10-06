@@ -70,9 +70,9 @@ export function UnifiedControl({
       {/* Main Control Button */}
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-900/80 border border-gray-700/60 
-                   hover:bg-gray-800/80 hover:border-blue-500/50 transition-all duration-200 
-                   backdrop-blur-sm text-sm font-medium text-gray-200 group"
+        className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-900/80 border border-gray-700/60
+                   hover:bg-gray-800/80 hover:border-blue-500/50 transition-all duration-200
+                   backdrop-blur-sm text-sm font-medium text-gray-200 group h-[52px]"
       >
         <div className="flex items-center gap-2">
           <Settings className="w-4 h-4 text-blue-400" />
