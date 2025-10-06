@@ -189,7 +189,8 @@ export function useChatState() {
     conversation.resetConversation?.();
     coding.resetConversation?.();
     // analyzer has no state
-  }, [selectedModel, conversation, coding]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /* ---------- Cleanup on unmount ---------- */
   useEffect(() => {

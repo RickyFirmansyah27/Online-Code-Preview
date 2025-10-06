@@ -54,7 +54,7 @@ export const useConversationAi = (model: string, name: string) => {
       {
         role: "system",
         content: `You are ${name} model ai assistant . Always provide:
-                Your task is to deliver answers that are:
+                Your task is to deliver answers with indonesian language that are:
                   - ✅ Accurate, relevant, and based only on the user’s context.
                   - ✅ Helpful and easy to understand, like technical documentation.
                   - ❌ Never add unrelated information or go off-topic.
