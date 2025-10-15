@@ -30,13 +30,6 @@ export function useChatState() {
   const [input, setInput] = useState("");
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const [conversationHistories, setConversationHistories] = useState<
-    Record<ChatMode, Message[]>
-  >({
-    ask: [],
-    debug: [],
-    code: [],
-  });
   const [selectedModel, setSelectedModel] = useState<ModelOption>(
     MODEL_OPTIONS[0]
   );
@@ -73,6 +66,7 @@ export function useChatState() {
       prevNameRef.current = selectedModel.name;
     }
     // analyzer has no state
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedModel.model, selectedModel.name, conversation.resetConversation, coding.resetConversation]);
 
   /* ---------- Memoised hook selector ---------- */
@@ -114,10 +108,6 @@ export function useChatState() {
         { role: "user" as const, content },
       ];
       setMessages(newMessages);
-      setConversationHistories((prev) => ({
-        ...prev,
-        [mode]: newMessages,
-      }));
       setInput("");
       setUploadedImage(null);
 
@@ -149,10 +139,7 @@ export function useChatState() {
         ];
 
         setMessages(updatedMessages);
-        setConversationHistories((prev) => ({
-          ...prev,
-          [mode]: updatedMessages,
-        }));
+
       } catch (err) {
         console.error("[Chat] sendMessage error:", err);
         const errorMsg: Message = {
@@ -166,12 +153,9 @@ export function useChatState() {
         };
         const errorMessages = [...newMessages, errorMsg];
         setMessages(errorMessages);
-        setConversationHistories((prev) => ({
-          ...prev,
-          [mode]: errorMessages,
-        }));
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [input, uploadedImage, messages, mode, sendMessage]
   );
 
@@ -180,16 +164,13 @@ export function useChatState() {
   }, []);
 
   const handleClearMessages = useCallback(() => {
-    setConversationHistories((prev) => ({
-      ...prev,
-      [mode]: [],
-    }));
     setMessages([]);
 
     /* Reset conversation state if the hook exposes a reset method */
     conversation.resetConversation?.();
     coding.resetConversation?.();
     // analyzer has no state to reset
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, conversation, coding]);
 
   const handleInputChange = useCallback(
@@ -202,18 +183,13 @@ export function useChatState() {
   const handleModeChange = useCallback(
     (newMode: ChatMode) => {
       /* Persist current mode's conversation and switch mode in single update */
-      setConversationHistories((prev) => {
-        const updatedHistories = {
-          ...prev,
+       const updatedHistories = {
           [mode]: messages,
         };
 
         /* Switch mode and load its history */
         setMode(newMode);
         setMessages(updatedHistories[newMode] ?? []);
-
-        return updatedHistories;
-      });
     },
     [mode, messages]
   );
