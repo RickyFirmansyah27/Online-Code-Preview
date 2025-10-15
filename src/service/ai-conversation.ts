@@ -7,6 +7,7 @@
 import { useState, useCallback } from "react";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { apiPost } from "./axios-client";
+import systemPrompt from "@/lib/system-prompt";
 import { FALLBACK_MODEL_ID } from "./model-types";
 import {
   ChatMessage,
@@ -146,8 +147,7 @@ export const useConversationAi = (
   const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([
     {
       role: "system",
-      content: `You are ${name} model ai assistant . Always provide:
-        ... (system prompt omitted for brevity) ...`,
+     content: systemPrompt(name),
     },
   ]);
 
@@ -162,13 +162,7 @@ export const useConversationAi = (
       setConversationHistory([
         {
           role: "system",
-          content: `You are an expert coding assistant. Always provide:
-            1. Clear, well-commented code solutions
-            3. Best practices and potential optimisations
-            4. Error handling considerations
-            5. Testing suggestions when applicable
-
-            Format your responses with proper code blocks and be concise but thorough.`,
+          content: systemPrompt(name),
         },
       ]);
     },
