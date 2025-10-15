@@ -122,7 +122,10 @@ export function UnifiedControl({
                   const model = MODEL_OPTIONS.find(
                     (m) => m.id === e.target.value
                   );
-                  if (model) setSelectedModel(model);
+                  if (model) {
+                    setSelectedModel(model);
+                    setIsDropdownOpen(false);
+                  }
                 }}
                 className="w-full bg-gray-800/60 text-gray-100 px-3 py-2 rounded-lg appearance-none cursor-pointer
                          focus:outline-none focus:ring-2 focus:ring-blue-500/50 border border-gray-700/60

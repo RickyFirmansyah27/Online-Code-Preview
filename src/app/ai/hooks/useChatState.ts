@@ -64,7 +64,15 @@ export function useChatState() {
     }
   }, [mode, conversation, analyzer, coding]);
 
-  const { mutateAsync: sendMessage, status } = activeHook;
+  // Debug logging to understand activeHook structure
+  console.log("[useChatState] activeHook type:", typeof activeHook);
+  console.log("[useChatState] activeHook keys:", Object.keys(activeHook));
+  console.log("[useChatState] activeHook has mutation:", 'mutation' in activeHook);
+  console.log("[useChatState] activeHook has mutateAsync:", 'mutateAsync' in activeHook);
+
+  // Handle different hook return types
+  const mutation = 'mutation' in activeHook ? activeHook.mutation : activeHook;
+  const { mutateAsync: sendMessage, status } = mutation;
   const isLoading = status === "pending";
 
   /* ---------- Abort controller for cleanup ---------- */
