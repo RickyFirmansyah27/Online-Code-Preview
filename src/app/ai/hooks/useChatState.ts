@@ -5,9 +5,13 @@ import {
 } from "@/service/model-types";
 import {
   useCodingAssistant,
+} from "@/service/coding-assistant";
+import {
   useCodeAnalyzer,
+} from "@/service/code-analyzer";
+import {
   useConversationAi,
-} from "@/service/ai-service";
+} from "@/service/ai-conversation";
 
 export interface MessageContent {
   type: "text" | "image";
