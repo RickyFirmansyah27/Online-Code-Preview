@@ -4,7 +4,7 @@
    useConversationAi hook for generic chat with fallback model support.
    ────────────────────────────────────────────────────────────────────── */
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { apiPost } from "./axios-client";
 import systemPrompt from "@/lib/system-prompt";
@@ -144,39 +144,31 @@ export const useConversationAi = (
 } => {
   /* ---- Conversation state ------------------------------------------------ */
 
-  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>(() => [
     {
       role: "system",
-     content: systemPrompt(name),
+      content: systemPrompt(name),
     },
   ]);
 
   const [fallbackActive, setFallbackActive] = useState(false);
 
-  // Update system prompt when name changes
-  useEffect(() => {
-    setConversationHistory(prev => [
-      {
-        role: "system",
-        content: systemPrompt(name),
+  const conversationContext: ConversationContext = useMemo(
+    () => ({
+      messages: conversationHistory,
+      addMessage: (msg) => setConversationHistory((prev) => [...prev, msg]),
+      clearMessages: () => {
+        setFallbackActive(false);
+        setConversationHistory([
+          {
+            role: "system",
+            content: systemPrompt(name),
+          },
+        ]);
       },
-      ...prev.slice(1) // Keep existing messages except the old system prompt
-    ]);
-  }, [name]);
-
-  const conversationContext: ConversationContext = {
-    messages: conversationHistory,
-    addMessage: (msg) => setConversationHistory((prev) => [...prev, msg]),
-    clearMessages: () => {
-      setFallbackActive(false);
-      setConversationHistory([
-        {
-          role: "system",
-          content: systemPrompt(name),
-        },
-      ]);
-    },
-  };
+    }),
+    [conversationHistory, name]
+  );
 
   /* ---- Mutation ----------------------------------------------------------- */
 
@@ -252,7 +244,15 @@ export const useConversationAi = (
 
   /* ---- Public API -------------------------------------------------------- */
 
-  const resetConversation = useCallback(() => conversationContext.clearMessages(), [conversationContext]);
+  const resetConversation = useCallback(() => {
+    setFallbackActive(false);
+    setConversationHistory([
+      {
+        role: "system",
+        content: systemPrompt(name),
+      },
+    ]);
+  }, [name]);
 
   const getLastResponse = useCallback(() => {
     const last = conversationHistory[conversationHistory.length - 1];

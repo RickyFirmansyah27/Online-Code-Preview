@@ -5,7 +5,7 @@
    useCodingAssistant hook for specialised coding help with language-specific prompts.
    ────────────────────────────────────────────────────────────────────── */
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { apiPost } from "./axios-client";
 import {
@@ -92,14 +92,13 @@ export const useCodingAssistant = (
 
   Format your responses with proper code blocks and be concise but thorough.`;
 
-  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>([
+  const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>(() => [
     { role: "system", content: systemPrompt },
   ]);
 
-  const conversationContext = {
-    clearMessages: () =>
-      setConversationHistory([{ role: "system", content: systemPrompt }]),
-  };
+  const resetConversation = useCallback(() => {
+    setConversationHistory([{ role: "system", content: systemPrompt }]);
+  }, [systemPrompt]);
 
   const mutation = useMutation({
     ...DEFAULT_QUERY_OPTIONS,
@@ -156,6 +155,6 @@ export const useCodingAssistant = (
 
   return {
     mutation,
-    resetConversation: conversationContext.clearMessages,
+    resetConversation,
   };
 };

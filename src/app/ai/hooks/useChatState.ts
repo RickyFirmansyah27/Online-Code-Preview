@@ -45,6 +45,10 @@ export function useChatState() {
 
   /* ---------- Dropdown ref for click-outside handling ---------- */
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  /* ---------- Refs to track previous model ---------- */
+  const prevModelRef = useRef<string>(selectedModel.model);
+  const prevNameRef = useRef<string>(selectedModel.name);
 
   /* ---------- AI hooks ---------- */
   const coding = useCodingAssistant(selectedModel.model);
@@ -56,10 +60,20 @@ export function useChatState() {
 
   /* ---------- Effect: reset conversation on model change ---------- */
   useEffect(() => {
-    conversation.resetConversation?.();
-    coding.resetConversation?.();
+    // Only reset if model or name actually changed
+    if (
+      prevModelRef.current !== selectedModel.model ||
+      prevNameRef.current !== selectedModel.name
+    ) {
+      conversation.resetConversation?.();
+      coding.resetConversation?.();
+      
+      // Update refs
+      prevModelRef.current = selectedModel.model;
+      prevNameRef.current = selectedModel.name;
+    }
     // analyzer has no state
-  }, [selectedModel.model, selectedModel.name, conversation, coding]);
+  }, [selectedModel.model, selectedModel.name, conversation.resetConversation, coding.resetConversation]);
 
   /* ---------- Memoised hook selector ---------- */
   const activeHook = useMemo(() => {
@@ -74,12 +88,6 @@ export function useChatState() {
         return conversation;
     }
   }, [mode, conversation, analyzer, coding]);
-
-  // Debug logging to understand activeHook structure
-  console.log("[useChatState] activeHook type:", typeof activeHook);
-  console.log("[useChatState] activeHook keys:", Object.keys(activeHook));
-  console.log("[useChatState] activeHook has mutation:", 'mutation' in activeHook);
-  console.log("[useChatState] activeHook has mutateAsync:", 'mutateAsync' in activeHook);
 
   // Handle different hook return types
   const mutation = 'mutation' in activeHook ? activeHook.mutation : activeHook;
@@ -193,17 +201,21 @@ export function useChatState() {
 
   const handleModeChange = useCallback(
     (newMode: ChatMode) => {
-      /* Persist current mode's conversation */
-      setConversationHistories((prev) => ({
-        ...prev,
-        [mode]: messages,
-      }));
+      /* Persist current mode's conversation and switch mode in single update */
+      setConversationHistories((prev) => {
+        const updatedHistories = {
+          ...prev,
+          [mode]: messages,
+        };
 
-      /* Switch mode and load its history */
-      setMode(newMode);
-      setMessages(conversationHistories[newMode] ?? []);
+        /* Switch mode and load its history */
+        setMode(newMode);
+        setMessages(updatedHistories[newMode] ?? []);
+
+        return updatedHistories;
+      });
     },
-    [mode, messages, conversationHistories]
+    [mode, messages]
   );
 
 
