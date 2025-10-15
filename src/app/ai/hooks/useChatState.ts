@@ -54,6 +54,13 @@ export function useChatState() {
   );
   const analyzer = useCodeAnalyzer(selectedModel.model);
 
+  /* ---------- Effect: reset conversation on model change ---------- */
+  useEffect(() => {
+    conversation.resetConversation?.();
+    coding.resetConversation?.();
+    // analyzer has no state
+  }, [selectedModel.model, selectedModel.name, conversation, coding]);
+
   /* ---------- Memoised hook selector ---------- */
   const activeHook = useMemo(() => {
     switch (mode) {
@@ -199,13 +206,6 @@ export function useChatState() {
     [mode, messages, conversationHistories]
   );
 
-  /* ---------- Effect: reset conversation on model change ---------- */
-  useEffect(() => {
-    conversation.resetConversation?.();
-    coding.resetConversation?.();
-    // analyzer has no state
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   /* ---------- Cleanup on unmount ---------- */
   useEffect(() => {

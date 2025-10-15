@@ -4,7 +4,7 @@
    useConversationAi hook for generic chat with fallback model support.
    ────────────────────────────────────────────────────────────────────── */
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useMutation, UseMutationResult } from "@tanstack/react-query";
 import { apiPost } from "./axios-client";
 import systemPrompt from "@/lib/system-prompt";
@@ -153,7 +153,17 @@ export const useConversationAi = (
 
   const [fallbackActive, setFallbackActive] = useState(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // Update system prompt when name changes
+  useEffect(() => {
+    setConversationHistory(prev => [
+      {
+        role: "system",
+        content: systemPrompt(name),
+      },
+      ...prev.slice(1) // Keep existing messages except the old system prompt
+    ]);
+  }, [name]);
+
   const conversationContext: ConversationContext = {
     messages: conversationHistory,
     addMessage: (msg) => setConversationHistory((prev) => [...prev, msg]),
