@@ -73,4 +73,4 @@ export interface FileResponse {
   data: ApiFile[];
 }
 
-export const FALLBACK_MODEL_ID = "openai/gpt-4o-mini";
+export const FALLBACK_MODEL_ID = "meta-llama/llama-4-maverick:free";
