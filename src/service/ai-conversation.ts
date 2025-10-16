@@ -17,23 +17,7 @@ import {
   ApiResponse,
   ConversationContext,
 } from "./ai-types";
-import { BASE_PATH, buildApiMessages, containsImage, DEFAULT_QUERY_OPTIONS, handleFallback } from "./ai-service";
-
-
-/* ------------------------------------------------------------------ */
-/* Helper Functions                                                */
-/* ------------------------------------------------------------------ */
-
-/**
- * Build the headers used for every request.
- */
-const getHeaders = (): Record<string, string> => ({
-  Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
-  "Content-Type": "application/json",
-  "HTTP-Referer": "https://online-code-preview.vercel.app",
-  "X-Title": "Online Code Editor",
-});
-
+import { BASE_PATH, buildApiMessages, containsImage, DEFAULT_QUERY_OPTIONS, getHeaders, handleFallback } from "./ai-service";
 
 /* ------------------------------------------------------------------ */
 /* Hook: useConversationAi                                         */
@@ -46,7 +30,6 @@ export const useConversationAi = (
   mutation: UseMutationResult<ApiResponse, unknown, string | ChatMessageContent[], unknown>;
   conversationContext: ConversationContext;
   resetConversation: () => void;
-  getLastResponse: () => string | ChatMessageContent[] | null;
 } => {
   /* ---- Conversation state ------------------------------------------------ */
 
@@ -159,15 +142,9 @@ export const useConversationAi = (
     ]);
   }, [name]);
 
-  const getLastResponse = useCallback(() => {
-    const last = conversationHistory[conversationHistory.length - 1];
-    return last?.role === "assistant" ? last.content : null;
-  }, [conversationHistory]);
-
   return {
     mutation,
     conversationContext,
     resetConversation,
-    getLastResponse,
   };
 };
