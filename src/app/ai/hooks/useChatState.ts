@@ -169,6 +169,7 @@ export function useChatState() {
     /* Reset conversation state if the hook exposes a reset method */
     conversation.resetConversation?.();
     coding.resetConversation?.();
+    analyzer.resetConversation?.();
     // analyzer has no state to reset
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, conversation, coding]);
