@@ -13,17 +13,7 @@ import {
  ApiMessageContent,
  ChatRequest,
 } from "./ai-types";
-
-/* ------------------------------------------------------------------ */
-/* Constants                                                        */
-/* ------------------------------------------------------------------ */
-
-const DEFAULT_QUERY_OPTIONS = {
- retry: 1,
- refetchOnWindowFocus: false,
-};
-
-const BASE_PATH = "/v1/chat";
+import { BASE_PATH, DEFAULT_QUERY_OPTIONS } from "./ai-service";
 
 /* ------------------------------------------------------------------ */
 /* Helper Functions                                                */

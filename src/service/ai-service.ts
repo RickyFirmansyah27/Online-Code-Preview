@@ -1,40 +1,22 @@
 import { apiPost } from "./axios-client";
+import {
+  ChatMessage,
+  ChatMessageContent,
+  ApiChatMessage,
+  ApiMessageContent,
+  ChatRequest,
+} from "./ai-types";
 
 /* ------------------------------------------------------------------ */
-/* Types & Interfaces                                               */
+/* Constants                                                        */
 /* ------------------------------------------------------------------ */
 
-interface ChatMessageContent {
-  type: "text" | "image";
-  content: string;
-}
+export const DEFAULT_QUERY_OPTIONS = {
+  retry: 1,
+  refetchOnWindowFocus: false,
+};
 
-export interface ChatMessage {
-  role: "user" | "assistant" | "system";
-  content: string | ChatMessageContent[];
-}
-
-interface ApiMessageContent {
-  type: "text" | "image_url";
-  text?: string;
-  image_url?: { url: string };
-}
-
-interface ApiChatMessage {
-  role: "user" | "assistant" | "system";
-  content: string | ApiMessageContent[];
-}
-
-interface ChatRequest {
-  model: string;
-  messages: ApiChatMessage[];
-  temperature?: number;
-  max_tokens?: number;
-  top_p?: number;
-  stream?: boolean;
-}
-
-const BASE_PATH = "/v1/chat";
+export const BASE_PATH = "/v1/chat";
 
 /* ------------------------------------------------------------------ */
 /* Helper Functions                                                */
