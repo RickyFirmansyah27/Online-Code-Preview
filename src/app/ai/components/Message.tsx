@@ -158,10 +158,12 @@ export function Message({ role, content }: MessageProps) {
       }`}
     >
       {!isUser && (
-        <div
-          className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0`}
-        >
-          <Icon className={`w-4 h-4 ${iconColor}`} />
+        <div className="hidden sm:block">
+          <div
+            className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0`}
+          >
+            <Icon className={`w-4 h-4 ${iconColor}`} />
+          </div>
         </div>
       )}
 
@@ -174,10 +176,12 @@ export function Message({ role, content }: MessageProps) {
       </div>
 
       {isUser && (
-        <div
-          className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0`}
-        >
-          <Icon className={`w-4 h-4 ${iconColor}`} />
+        <div className="hidden sm:block">
+          <div
+            className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0`}
+          >
+            <Icon className={`w-4 h-4 ${iconColor}`} />
+          </div>
         </div>
       )}
     </motion.div>
