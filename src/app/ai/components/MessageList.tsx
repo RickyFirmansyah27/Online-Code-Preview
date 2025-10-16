@@ -20,7 +20,7 @@ export function MessageList({ messages }: MessageListProps) {
   }, [messages]);
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full flex flex-col">
       <AnimatePresence>
         {messages.map((message, index) => (
           <Message

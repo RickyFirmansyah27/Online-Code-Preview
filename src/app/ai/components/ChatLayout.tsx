@@ -44,16 +44,16 @@ export function ChatLayout({
   messages,
 }: ChatLayoutProps) {
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex flex-col">
+    <div className="h-screen bg-[#0a0a0f] flex flex-col">
       <NavigationHeader />
-      <div className="flex-1 flex flex-col relative">
+      <div className="flex-1 flex flex-col relative overflow-hidden">
         {/* Header section */}
        
         {/* Main chat area - takes up most space */}
         <div className="flex-1 overflow-hidden">
           <div className="h-full px-6 py-4">
             <div className="max-w-4xl mx-auto h-full flex flex-col">
-              <div className="flex-1 overflow-y-auto custom-scrollbar">
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-4">
                 <MessageList messages={messages} />
               </div>
             </div>
@@ -61,7 +61,7 @@ export function ChatLayout({
         </div>
 
         {/* Input area - fixed at bottom */}
-        <div className="flex-shrink-0 bg-[#0a0a0f] border-t border-gray-800/50">
+        <div className="flex-shrink-0 bg-[#0a0a0f] border-t border-gray-800/50 overflow-hidden">
           <div className="px-6 py-6">
             <div className="max-w-4xl mx-auto">
               <div className="flex items-end gap-8">
