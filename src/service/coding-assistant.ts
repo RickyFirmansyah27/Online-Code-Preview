@@ -10,61 +10,9 @@ import { useMutation } from "@tanstack/react-query";
 import { apiPost } from "./axios-client";
 import {
   ChatMessage,
-  ApiChatMessage,
-  ApiMessageContent,
   ChatRequest,
 } from "./ai-types";
-import { BASE_PATH, DEFAULT_QUERY_OPTIONS } from "./ai-service";
-
-/* ------------------------------------------------------------------ */
-/* Helper Functions                                                */
-/* ------------------------------------------------------------------ */
-
-/**
- * Build the headers used for every request.
- */
-const getHeaders = (): Record<string, string> => ({
-  Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENROUTER_API_KEY}`,
-  "Content-Type": "application/json",
-  "HTTP-Referer": "https://online-code-preview.vercel.app",
-  "X-Title": "Online Code Editor",
-});
-
-/**
- * Convert a local `ChatMessage` array into the format expected by the API.
- */
-const buildApiMessages = (
-  messages: ChatMessage[]
-): ApiChatMessage[] => {
-  return messages.map((msg) => {
-    if (typeof msg.content === "string") {
-      return { role: msg.role, content: msg.content };
-    }
-
-    // Multimodal content – split text and images
-    const textParts = msg.content
-      .filter((c) => c.type === "text")
-      .map((c) => c.content)
-      .join(" ");
-    const imageParts = msg.content
-      .filter((c) => c.type === "image")
-      .map((c) => c.content);
-
-    if (imageParts.length === 0) {
-      return { role: msg.role, content: textParts };
-    }
-
-    const apiContent: ApiMessageContent[] = [];
-    if (textParts.trim()) {
-      apiContent.push({ type: "text", text: textParts });
-    }
-    imageParts.forEach((url) => {
-      apiContent.push({ type: "image_url", image_url: { url } });
-    });
-
-    return { role: msg.role, content: apiContent };
-  });
-};
+import { BASE_PATH, buildApiMessages, DEFAULT_QUERY_OPTIONS, getHeaders } from "./ai-service";
 
 /* ------------------------------------------------------------------ */
 /* Hook: useCodingAssistant                                         */
@@ -122,11 +70,6 @@ export const useCodingAssistant = (
           message: axiosError.message || 'Unknown error',
           code: axiosError.code,
           status: axiosError.response?.status,
-          request: {
-            model: payload.model,
-            messages: payload.messages.slice(0, 2),
-            temperature: payload.temperature,
-          },
         });
         throw error;
       }
