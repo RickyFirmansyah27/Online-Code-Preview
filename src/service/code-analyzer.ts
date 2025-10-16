@@ -43,7 +43,7 @@ const getHeaders = (): Record<string, string> => ({
 export const useCodeAnalyzer = (model: string) => {
   return useMutation({
     ...DEFAULT_QUERY_OPTIONS,
-    mutationFn: async (code: string) => {
+    mutationFn: async (prompt: string) => {
       const analysisPrompt = `Analyze the following code and provide:
       - Diagnosing Core Failure
       - Unpacking the Error's Source
@@ -56,12 +56,7 @@ export const useCodeAnalyzer = (model: string) => {
       - Implementing Edge Case Logic
       - Adapting Logic
       - Refining the Approach
-      - Refining the Solution
-
-      Code to analyze:
-      \`\`\`
-      ${code}
-      \`\`\``;
+      - Refining the Solution`;
 
       const payload: ChatRequest = {
         model,
@@ -69,9 +64,9 @@ export const useCodeAnalyzer = (model: string) => {
           {
             role: "system",
             content:
-              "You are a code review expert. Provide thorough, constructive analysis focusing on code quality, security, and performance",
+              analysisPrompt,
           },
-          { role: "user", content: analysisPrompt },
+          { role: "user", content: prompt },
         ] as ApiChatMessage[],
         temperature: 0.3,
         max_tokens: 10_000,
