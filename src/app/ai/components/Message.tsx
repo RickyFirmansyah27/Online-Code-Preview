@@ -168,7 +168,11 @@ export function Message({ role, content }: MessageProps) {
       )}
 
       <div
-        className={`p-4 rounded-2xl max-w-[85%] sm:max-w-[70%] ${bgColor} ${textColor} shadow-sm`}
+        className={`p-4 rounded-2xl ${
+          isUser
+            ? "max-w-[100%] sm:max-w-[70%]"
+            : "max-w-[100%] sm:max-w-[70%]"
+        } ${bgColor} ${textColor} shadow-sm`}
       >
         <div className="text-sm leading-relaxed whitespace-pre-wrap">
           <MessageContent content={processedContent} />
