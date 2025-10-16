@@ -99,7 +99,7 @@ export function UnifiedControl({
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute bottom-full left-0 mb-2 w-80 bg-gray-900/95 backdrop-blur-sm border border-gray-700/60 rounded-xl shadow-xl z-50"
+            className="absolute bottom-full left-0 mb-2 w-80 bg-gray-900/95 backdrop-blur-sm border border-gray-700/60 rounded-xl shadow-xl z-[60]"
             ref={dropdownRef}
           >
             {/* Header */}

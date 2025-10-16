@@ -53,7 +53,7 @@ export function ChatLayout({
         <div className="flex-1 overflow-hidden">
           <div className="h-full px-8 py-6">
             <div className="max-w-6xl mx-auto h-full flex flex-col">
-              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-6">
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-6 relative z-0">
                 <MessageList messages={messages} />
               </div>
             </div>
@@ -61,7 +61,7 @@ export function ChatLayout({
         </div>
 
         {/* Input area - fixed at bottom */}
-        <div className="flex-shrink-0 bg-[#0a0a0f] border-t border-gray-800/50 overflow-hidden">
+        <div className="flex-shrink-0 bg-[#0a0a0f] border-t border-gray-800/50 overflow-visible relative z-10">
           <div className="px-8 py-6">
             <div className="max-w-4xl mx-auto">
               <div className="flex items-end gap-8">
