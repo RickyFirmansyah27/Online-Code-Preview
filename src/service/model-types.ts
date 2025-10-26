@@ -32,7 +32,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "Live Coding Cepat, Responsif",
     id: "gemini-2.5-pro",
     name: "Gemini 2.5 Pro",
-    model: "qwen/qwen3-coder:free",
+    model: "minimax/minimax-m2:free",
     max_request: "1000",
   },
   {
@@ -46,7 +46,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "Refactor Besar / File Panjang",
     id: "qween-a255",
     name: "Qween 3 Coder A235",
-    model: "qwen/qwen3-235b-a22b:free",
+    model: "qwen/qwen3-coder:free",
     max_request: "1000",
   },
   {
