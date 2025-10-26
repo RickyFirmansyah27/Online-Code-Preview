@@ -89,7 +89,7 @@ export const useConversationAi = (
         model: effectiveModel,
         messages: finalMessages,
         temperature: 0.3,
-        max_tokens: 10_000,
+        max_tokens: 10000,
         top_p: 0.9,
         stream: false,
       };

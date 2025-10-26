@@ -50,8 +50,8 @@ export const useCodingAssistant = (
         model,
         messages: apiMessages,
         temperature: 0.3,
-        max_tokens: 10_000,
-        top_p: 0.95,
+        max_tokens: 10000,
+        top_p: 0.75,
         stream: false,
       };
 

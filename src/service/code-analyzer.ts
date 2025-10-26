@@ -54,8 +54,8 @@ Format your responses with clear sections and provide working code examples when
        model,
        messages: apiMessages,
        temperature: 0.3,
-       max_tokens: 10_000,
-       top_p: 0.9,
+       max_tokens: 10000,
+       top_p: 0.7,
        stream: false,
      };
 
