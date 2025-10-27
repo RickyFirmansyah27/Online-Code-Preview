@@ -99,19 +99,20 @@ export function UnifiedControl({
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute bottom-full left-0 mb-2 w-full sm:w-80 max-w-[calc(100vw-1rem)] bg-gray-900/95 backdrop-blur-sm border border-gray-700/60 rounded-xl sm:rounded-2xl shadow-xl z-[60] transform -translate-x-0"
+            className="fixed inset-0 sm:absolute sm:bottom-full sm:left-0 sm:mb-2 sm:w-80 sm:max-w-[calc(100vw-1rem)] bg-gray-900/95 backdrop-blur-sm border border-gray-700/60 rounded-none sm:rounded-2xl shadow-xl z-[60] transform-none sm:transform sm:-translate-x-0"
             ref={dropdownRef}
           >
             {/* Header */}
-            <div className="flex items-center justify-between p-3 sm:p-5 border-b border-gray-700/60">
-              <h3 className="text-sm sm:text-base font-semibold text-gray-200">Chat Settings</h3>
-              <button
-                onClick={() => setIsDropdownOpen(false)}
-                className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-800/60 transition-colors min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center"
-              >
-                <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-              </button>
-            </div>
+            <div className="flex flex-col h-full overflow-y-auto">
+              <div className="flex items-center justify-between p-3 sm:p-5 border-b border-gray-700/60">
+                <h3 className="text-sm sm:text-base font-semibold text-gray-200">Chat Settings</h3>
+                <button
+                  onClick={() => setIsDropdownOpen(false)}
+                  className="p-1.5 sm:p-2 rounded-lg hover:bg-gray-800/60 transition-colors min-h-[40px] min-w-[40px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center"
+                >
+                  <X className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
+                </button>
+              </div>
 
             {/* Model Selection */}
             <div className="p-3 sm:p-5 border-b border-gray-700/60">
@@ -154,7 +155,7 @@ export function UnifiedControl({
                       setMode(m.id as "ask" | "debug" | "code");
                       setIsDropdownOpen(false);
                     }}
-                    className={`flex flex-col items-center gap-2 p-3 sm:p-4 rounded-lg sm:rounded-xl text-xs sm:text-sm transition-all duration-200 min-h-[48px] sm:min-h-[80px] ${
+                    className={`w-full flex flex-col items-center gap-2 p-3 sm:p-4 rounded-lg sm:rounded-xl text-xs sm:text-sm transition-all duration-200 min-h-[48px] sm:min-h-[80px] ${
                       mode === m.id
                         ? "bg-blue-600/20 text-blue-400 border border-blue-500/50"
                         : "bg-gray-800/50 text-gray-300 border border-gray-700/60 hover:bg-gray-800/70"
@@ -181,6 +182,7 @@ export function UnifiedControl({
                 <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 <span className="text-xs sm:text-sm font-medium">Clear Messages</span>
               </button>
+            </div>
             </div>
           </motion.div>
         )}
