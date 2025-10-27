@@ -70,25 +70,25 @@ export function UnifiedControl({
       {/* Main Control Button */}
       <button
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-        className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-900/80 border border-gray-700/60
+        className="flex items-center gap-3 px-3 sm:px-4 py-3 rounded-xl bg-gray-900/80 border border-gray-700/60
                    hover:bg-gray-800/80 hover:border-blue-500/50 transition-all duration-200
-                   backdrop-blur-sm text-sm font-medium text-gray-200 group h-[52px]"
+                   backdrop-blur-sm text-sm font-medium text-gray-200 group h-[52px] w-full sm:w-auto"
       >
         <div className="flex items-center gap-2">
-          <Settings className="w-4 h-4 text-blue-400" />
-          <div className="text-left">
-            <div className="text-xs text-gray-400 leading-none">Model & Mode</div>
+          <Settings className="w-4 h-4 text-blue-400 flex-shrink-0" />
+          <div className="text-left min-w-0 flex-1">
+            <div className="text-xs text-gray-400 leading-none hidden sm:block">Model & Mode</div>
             <div className="flex items-center gap-1 text-gray-200">
-              <span className="font-medium">{selectedModel.name}</span>
-              <span className="text-gray-500">•</span>
-              <span>{activeMode?.label}</span>
+              <span className="font-medium truncate">{selectedModel.name}</span>
+              <span className="text-gray-500 hidden sm:inline">•</span>
+              <span className="hidden sm:inline">{activeMode?.label}</span>
             </div>
           </div>
         </div>
-        <ChevronDown 
-          className={`w-4 h-4 transition-transform duration-200 ${
+        <ChevronDown
+          className={`w-4 h-4 transition-transform duration-200 flex-shrink-0 ${
             isDropdownOpen ? "rotate-180" : ""
-          }`} 
+          }`}
         />
       </button>
 
@@ -99,7 +99,7 @@ export function UnifiedControl({
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="absolute bottom-full left-0 mb-2 w-80 bg-gray-900/95 backdrop-blur-sm border border-gray-700/60 rounded-xl shadow-xl z-[60]"
+            className="absolute bottom-full left-1/2 sm:left-0 mb-2 w-80 max-w-[calc(100vw-2rem)] sm:max-w-none bg-gray-900/95 backdrop-blur-sm border border-gray-700/60 rounded-xl shadow-xl z-[60] transform -translate-x-1/2 sm:translate-x-0"
             ref={dropdownRef}
           >
             {/* Header */}

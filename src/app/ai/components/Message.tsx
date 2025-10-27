@@ -153,25 +153,25 @@ export function Message({ role, content }: MessageProps) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex items-start gap-3 mb-6 px-4 ${
+      className={`flex items-start gap-2 sm:gap-3 mb-4 sm:mb-6 px-2 sm:px-4 ${
         isUser ? "justify-end" : "justify-start"
       }`}
     >
       {!isUser && (
-        <div className="hidden sm:block">
+        <div className="hidden sm:block flex-shrink-0">
           <div
-            className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0`}
+            className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full ${bgColor} flex items-center justify-center`}
           >
-            <Icon className={`w-4 h-4 ${iconColor}`} />
+            <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
           </div>
         </div>
       )}
 
       <div
-        className={`p-4 rounded-2xl ${
+        className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl ${
           isUser
-            ? "max-w-[100%] sm:max-w-[70%]"
-            : "max-w-[100%] sm:max-w-[70%]"
+            ? "max-w-[85%] sm:max-w-[70%]"
+            : "max-w-[85%] sm:max-w-[70%]"
         } ${bgColor} ${textColor} shadow-sm`}
       >
         <div className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -180,11 +180,11 @@ export function Message({ role, content }: MessageProps) {
       </div>
 
       {isUser && (
-        <div className="hidden sm:block">
+        <div className="hidden sm:block flex-shrink-0">
           <div
-            className={`w-8 h-8 rounded-full ${bgColor} flex items-center justify-center flex-shrink-0`}
+            className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full ${bgColor} flex items-center justify-center`}
           >
-            <Icon className={`w-4 h-4 ${iconColor}`} />
+            <Icon className={`w-3 h-3 sm:w-4 sm:h-4 ${iconColor}`} />
           </div>
         </div>
       )}

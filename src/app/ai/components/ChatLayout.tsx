@@ -51,9 +51,9 @@ export function ChatLayout({
        
         {/* Main chat area - takes up most space */}
         <div className="flex-1 overflow-hidden">
-          <div className="h-full px-8 py-6">
+          <div className="h-full px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
             <div className="max-w-6xl mx-auto h-full flex flex-col">
-              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-6 relative z-0">
+              <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar pb-4 sm:pb-6 relative z-0">
                 <MessageList messages={messages} />
               </div>
             </div>
@@ -62,10 +62,10 @@ export function ChatLayout({
 
         {/* Input area - fixed at bottom */}
         <div className="flex-shrink-0 bg-[#0a0a0f] border-t border-gray-800/50 overflow-visible relative z-10">
-          <div className="px-8 py-6">
+          <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
             <div className="max-w-4xl mx-auto">
-              <div className="flex items-end gap-8">
-                <div className="flex-shrink-0">
+              <div className="flex flex-col sm:flex-row sm:items-end gap-3 sm:gap-6 lg:gap-8">
+                <div className="flex-shrink-0 w-full sm:w-auto">
                   <UnifiedControl
                     selectedModel={selectedModel}
                     mode={mode}
