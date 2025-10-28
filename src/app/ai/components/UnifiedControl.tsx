@@ -99,7 +99,7 @@ export function UnifiedControl({
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-            className="fixed inset-0 lg:fixed lg:inset-auto lg:left-4 lg:bottom-20 lg:w-80 lg:max-w-[calc(100vw-2rem)] bg-gray-900/95 backdrop-blur-sm border border-gray-700/60 rounded-none lg:rounded-2xl shadow-xl z-[70]"
+            className="fixed inset-0 lg:fixed lg:inset-auto lg:bottom-20 lg:w-80 lg:max-w-[calc(100vw-2rem)] bg-gray-900/95 backdrop-blur-sm border border-gray-700/60 rounded-none lg:rounded-2xl shadow-xl z-[70] mb-12"
             ref={dropdownRef}
             style={{ zIndex: 70 }}
           >
