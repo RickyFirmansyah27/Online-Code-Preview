@@ -54,3 +54,29 @@ export const FEATURES = {
     "Custom domain mapping",
   ],
 };
+
+// Pricing page constants
+export const PRICING = {
+  AMOUNT: 10,
+  CURRENCY: "$",
+  PERIOD: "one-time",
+  DESCRIPTION: "Unlock the full potential of our suite of tools",
+};
+
+export const COLORS = {
+  BACKGROUND: "#0a0a0f",
+  CARD_BACKGROUND: "#12121a",
+  GRADIENT_FROM: "from-blue-500",
+  GRADIENT_TO: "to-purple-500",
+  TEXT_PRIMARY: "text-white",
+  TEXT_SECONDARY: "text-gray-400",
+  TEXT_GRADIENT: "from-gray-100 to-gray-300",
+};
+
+export const BREAKPOINTS = {
+  HERO_TITLE: "text-3xl sm:text-4xl md:text-5xl lg:text-6xl",
+  HERO_SUBTITLE: "text-sm sm:text-base",
+  GRID_COLS: "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+  CARD_PADDING: "p-4 sm:p-6 md:p-8",
+  FEATURE_GRID: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3",
+};
