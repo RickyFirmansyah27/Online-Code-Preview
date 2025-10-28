@@ -1,8 +1,8 @@
 "use client";
 
-import { MessageContentItem } from "../types";
-import { TextContent } from "./TextContent";
-import { ImageContent } from "./ImageContent";
+import { MessageContentItem } from "../../types";
+import { TextContent } from "../content/TextContent";
+import { ImageContent } from "../content/ImageContent";
 
 interface MessageContentProps {
   content: MessageContentItem[];

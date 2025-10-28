@@ -1,11 +1,11 @@
 "use client";
 
-import NavigationHeader from "../../(root)/_components/Header";
-import { MessageList } from "./MessageList";
-import { InputForm } from "./InputForm";
-import { UnifiedControl } from "./UnifiedControl";
+import NavigationHeader from "../../../(root)/_components/Header";
+import { MessageList } from "../message/MessageList";
+import { InputForm } from "../input/InputForm";
+import { UnifiedControl } from "../input/UnifiedControl";
 
-import { Message, ChatMode } from "../hooks/useChatState";
+import { Message, ChatMode } from "../../hooks/useChatState";
 import { ModelOption } from "@/service/model-types";
 
 interface ChatLayoutProps {

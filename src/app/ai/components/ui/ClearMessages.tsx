@@ -1,5 +1,5 @@
 import { Trash2 } from "lucide-react";
-import { CONTROL_STYLES } from "./constants/controlConstants";
+import { CONTROL_STYLES } from "../constants/controlConstants";
 
 interface ClearMessagesProps {
   onClear: () => void;

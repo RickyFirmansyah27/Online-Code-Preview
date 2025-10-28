@@ -1,7 +1,7 @@
 "use client";
 
 import { useChatState } from "./hooks/useChatState";
-import { ChatLayout } from "./components/ChatLayout";
+import { ChatLayout } from "./components/layout/ChatLayout";
 
 function AiPlayground() {
   const {

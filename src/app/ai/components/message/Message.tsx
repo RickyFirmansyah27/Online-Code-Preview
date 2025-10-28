@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { BookOpen, Code } from "lucide-react";
 import { MessageContent } from "./MessageContent";
-import { MessageRole } from "../types";
+import { MessageRole } from "../../types";
 
 interface MessageProps {
   role: MessageRole;

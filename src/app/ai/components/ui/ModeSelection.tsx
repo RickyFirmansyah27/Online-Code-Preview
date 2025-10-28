@@ -1,4 +1,4 @@
-import { MODES, CONTROL_STYLES, ChatMode } from "./constants/controlConstants";
+import { MODES, CONTROL_STYLES, ChatMode } from "../constants/controlConstants";
 
 interface ModeSelectionProps {
   currentMode: ChatMode;

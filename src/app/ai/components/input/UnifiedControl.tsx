@@ -2,13 +2,13 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { ModelOption, MODEL_OPTIONS } from "@/service/model-types";
-import { MainControlButton } from "./MainControlButton";
-import { DropdownHeader } from "./DropdownHeader";
-import { ModelSelection } from "./ModelSelection";
-import { ModeSelection } from "./ModeSelection";
-import { ClearMessages } from "./ClearMessages";
-import { CONTROL_STYLES } from "./constants/controlConstants";
-import { ChatMode } from "./constants/controlConstants";
+import { MainControlButton } from "../ui/MainControlButton";
+import { DropdownHeader } from "../ui/DropdownHeader";
+import { ModelSelection } from "../ui/ModelSelection";
+import { ModeSelection } from "../ui/ModeSelection";
+import { ClearMessages } from "../ui/ClearMessages";
+import { CONTROL_STYLES } from "../constants/controlConstants";
+import { ChatMode } from "../constants/controlConstants";
 
 interface UnifiedControlProps {
   selectedModel: ModelOption;

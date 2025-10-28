@@ -1,6 +1,6 @@
 import { ChevronDown, Settings } from "lucide-react";
 import { ModelOption } from "@/service/model-types";
-import { MODES, CONTROL_STYLES } from "./constants/controlConstants";
+import { MODES, CONTROL_STYLES } from "../constants/controlConstants";
 
 interface MainControlButtonProps {
   selectedModel: ModelOption;

@@ -1,5 +1,5 @@
 import { MODEL_OPTIONS } from "@/service/model-types";
-import { CONTROL_STYLES } from "./constants/controlConstants";
+import { CONTROL_STYLES } from "../constants/controlConstants";
 
 interface ModelSelectionProps {
   selectedModelId: string;
