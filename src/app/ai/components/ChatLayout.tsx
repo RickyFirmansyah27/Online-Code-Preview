@@ -61,9 +61,9 @@ export function ChatLayout({
         {/* Input area - fixed at bottom */}
         <div className="flex-shrink-0 bg-[#0a0a0f] border-t border-gray-800/50 overflow-visible relative z-10">
           <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex flex-col gap-4 sm:gap-4 lg:gap-5">
-                <div className="flex-shrink-0 w-full">
+            <div className="max-w-6xl mx-auto">
+              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+                <div className="flex-shrink-0 w-full lg:w-auto">
                   <UnifiedControl
                     selectedModel={selectedModel}
                     mode={mode}
