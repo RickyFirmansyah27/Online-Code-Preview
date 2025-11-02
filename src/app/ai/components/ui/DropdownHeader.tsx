@@ -1,4 +1,4 @@
-import { X } from "lucide-react";
+import { X, Settings } from "lucide-react";
 
 interface DropdownHeaderProps {
   onClose: () => void;
@@ -6,13 +6,16 @@ interface DropdownHeaderProps {
 
 export function DropdownHeader({ onClose }: DropdownHeaderProps) {
   return (
-    <div className="flex items-center justify-between p-3 lg:p-4 border-b border-gray-700/60">
-      <h3 className="text-sm lg:text-base font-semibold text-gray-200">Chat Settings</h3>
+    <div className="flex items-center justify-between p-3 border-b border-gray-700/60 bg-gray-800 rounded-t-xl">
+      <div className="flex items-center gap-2">
+        <Settings className="w-4 h-4 text-blue-400" />
+        <h3 className="text-sm font-medium text-gray-200">Chat Settings</h3>
+      </div>
       <button
         onClick={onClose}
-        className="p-1.5 lg:p-2 rounded-lg hover:bg-gray-800/60 transition-colors min-h-[40px] min-w-[40px] lg:min-h-[44px] lg:min-w-[44px] flex items-center justify-center"
+        className="p-1.5 rounded hover:bg-gray-700/60 transition-colors duration-150 min-h-[32px] min-w-[32px] flex items-center justify-center"
       >
-        <X className="w-4 h-4 lg:w-5 lg:h-5 text-gray-400" />
+        <X className="w-4 h-4 text-gray-400" />
       </button>
     </div>
   );
