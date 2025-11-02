@@ -75,13 +75,13 @@ export function ModeSelection({
               )}
             </AnimatePresence>
             
-            <div className="relative">
+            <div className="relative flex items-center justify-center w-8 h-8">
               <motion.div
                 animate={{
                   scale: currentMode === mode.id ? 1.15 : 1,
                 }}
                 transition={{ duration: 0.2 }}
-                className="w-5 h-5 lg:w-6 lg:h-6"
+                className="flex items-center justify-center w-6 h-6"
               >
                 {mode.icon}
               </motion.div>

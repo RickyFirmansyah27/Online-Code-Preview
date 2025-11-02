@@ -16,19 +16,19 @@ export const MODES: ModeConfig[] = [
   {
     id: "code",
     label: "Code",
-    icon: <Code2 className="w-4 h-4" />,
+    icon: <Code2 className="w-5 h-5" />,
     description: "Refactor code"
   },
   {
     id: "debug",
     label: "Debug",
-    icon: <Bug className="w-4 h-4" />,
+    icon: <Bug className="w-5 h-5" />,
     description: "Analyze code"
   },
   {
     id: "ask",
     label: "Ask",
-    icon: <MessageCircleQuestion className="w-4 h-4" />,
+    icon: <MessageCircleQuestion className="w-5 h-5" />,
     description: "General conversation"
   },
 ];
