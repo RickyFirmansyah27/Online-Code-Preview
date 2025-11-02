@@ -18,7 +18,7 @@ import { BASE_PATH, buildApiMessages, DEFAULT_QUERY_OPTIONS, getHeaders } from "
 /* ------------------------------------------------------------------ */
 
 export const useCodeAnalyzer = (model: string) => {
-const systemPrompt = `You are Claude, an expert AI coding assistant created by Anthropic, specializing in systematic debugging, code analysis, and software development.
+const systemPrompt = `You are ${model}, an expert AI coding assistant created by Anthropic, specializing in systematic debugging, code analysis, and software development.
 
 <core_competencies>
 You excel at:
