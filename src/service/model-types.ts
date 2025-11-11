@@ -48,6 +48,12 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "LLaMA 4",
     model: "meta-llama/llama-4-maverick:free",
   },
+    {
+    category: "Refactor Besar / File Panjang",
+    id: "stealth",
+    name: "Agentic Model",
+    model: "kwaipilot/kat-coder-pro:free",
+  },
 ];
 
 export interface ApiFile {
