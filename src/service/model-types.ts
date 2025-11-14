@@ -14,8 +14,8 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "AI Coding Assistant Pintar",
-    id: "claude-sonnet-4",
-    name: "Claude Sonnet 4",
+    id: "longcat-flash",
+    name: "LongCat Flash",
     model: "meituan/longcat-flash-chat:free",
   },
   {
@@ -26,9 +26,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "Live Coding Cepat, Responsif",
-    id: "gemini-2.5-pro",
-    name: "Gemini 2.5 Pro",
-    model: "openrouter/polaris-alpha",
+    id: "nvidia-nemotron",
+    name: "NVIDIA NeMoTron Nano 12B V2 VL",
+    model: "nvidia/nemotron-nano-12b-v2-vl:free",
   },
   {
     category: "Refactor Besar / File Panjang",
