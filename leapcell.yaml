@@ -1,0 +1,5 @@
+runtime: javascript
+startCommand: npm run start
+buildCommand: npm install && npm run build
+port: 3000
+memory: 2048mb
