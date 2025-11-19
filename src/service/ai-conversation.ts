@@ -96,13 +96,13 @@ export const useConversationAi = (
       const hasImage = containsImage(content);
 
       // Choose the model for image messages
-      const vercelPayload = hasImage
+      const completionPayload = hasImage
         ? { ...payload, model: "google/gemini-2.0-flash-exp:free" }
         : payload;
 
       let response;
       try {
-        response = await apiPost(`${BASE_PATH}/completions`, vercelPayload, {
+        response = await apiPost(`${BASE_PATH}/completions`, completionPayload, {
           ...getHeaders(),
         });
       } catch (error) {
