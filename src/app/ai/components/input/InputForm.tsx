@@ -53,38 +53,8 @@ export function InputForm({
     fileInputRef.current?.click();
   };
 
-  const removePreviewImage = () => {
-    if (onImageUpload) {
-      onImageUpload(null);
-    }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
   return (
     <form onSubmit={(e) => handleSubmit(e, !!previewImage)}>
-      {previewImage && (
-        <div className="mb-3 sm:mb-4">
-          <div className="relative inline-block max-w-full">
-            <img
-              src={previewImage}
-              alt="Preview"
-              className="max-w-full h-32 sm:h-40 object-contain rounded-lg border border-gray-700"
-            />
-            <button
-              type="button"
-              onClick={removePreviewImage}
-              className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 transition-colors"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className="relative bg-gray-900/80 rounded-2xl p-4 focus-within:ring-2 focus-within:ring-blue-500/50 border border-gray-700/60 backdrop-blur-sm">
         <textarea
           ref={textareaRef}
