@@ -48,11 +48,24 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "LLaMA 4",
     model: "meta-llama/llama-4-maverick:free",
   },
+  // STEALTH MODEL IS CURRENTLY UNSTABLE AND MAY CAUSE ISSUES
   {
-    category: "Refactor Besar / File Panjang",
-    id: "stealth",
-    name: "Agentic Model",
+    category: "Stealth Model (Experimental)",
+    id: "stealth-kat-pilot",
+    name: "KAT Pilot",
     model: "kwaipilot/kat-coder-pro:free",
+  },
+   {
+    category: "Stealth Model (Experimental)",
+    id: "stealth-sherlock-dash",
+    name: "Sherlock Dash",
+    model: "openrouter/sherlock-dash-alpha",
+  },
+   {
+    category: "Stealth Model (Experimental)",
+    id: "stealth-sherlock-think",
+    name: "Sherlock Think",
+    model: "openrouter/sherlock-think-alpha",
   },
 ];
 
