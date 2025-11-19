@@ -97,7 +97,7 @@ export const useConversationAi = (
 
       // Choose the model for image messages
       const vercelPayload = hasImage
-        ? { ...payload, model: "meta-llama/llama-4-maverick:free" }
+        ? { ...payload, model: "google/gemini-2.0-flash-exp:free" }
         : payload;
 
       let response;
