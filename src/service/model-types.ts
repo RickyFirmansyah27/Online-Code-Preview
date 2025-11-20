@@ -12,6 +12,12 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "GPT 5",
     model: "openai/gpt-oss-20b:free",
   },
+   {
+    category: "AI Coding Assistant Pintar",
+    id: "grok-4.1",
+    name: "GPT 4.1",
+    model: "x-ai/grok-4.1-fast",
+  },
   {
     category: "AI Coding Assistant Pintar",
     id: "longcat-flash",
