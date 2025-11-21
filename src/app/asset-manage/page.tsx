@@ -5,14 +5,14 @@ import { useUser } from "@clerk/nextjs";
 import { get } from "lodash";
 import Header from "../(root)/_components/Header";
 import { useGetFiles } from "@/service/storage-service";
-import FileManagementHeader from "./components/FileManagementHeader";
-import FileManagementControls from "./components/FileManagementControls";
-import FileList from "./components/FileList";
-import Pagination from "./components/Pagination";
-import ConfirmationDialog from "./components/ConfirmationDialog";
+import FileManagementHeader from "./components/layout/FileManagementHeader";
+import FileManagementControls from "./components/controls/FileManagementControls";
+import FileList from "./components/file/FileList";
+import Pagination from "./components/layout/Pagination";
+import ConfirmationDialog from "./components/ui/ConfirmationDialog";
 import { useFileOperations } from "./hooks/useFileOperations";
 import { useFileFiltering } from "./hooks/useFileFiltering";
-import { FileType } from "./components/FileTypeFilter";
+import { FileType } from "./components/controls/FileTypeFilter";
 import { ApiFile } from "@/service/model-types";
 
 const FileManagement = () => {

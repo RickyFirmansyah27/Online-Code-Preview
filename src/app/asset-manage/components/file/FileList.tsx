@@ -4,8 +4,8 @@ import { AnimatePresence } from "framer-motion";
 import { ApiFile } from "@/service/model-types";
 import FileCard from "./FileCard";
 import FileCardSkeleton from "./FileCardSkeleton";
-import LoadingSpinner from "./LoadingSpinner";
-import EmptyState from "./EmptyState";
+import LoadingSpinner from "../ui/LoadingSpinner";
+import EmptyState from "../ui/EmptyState";
 
 interface FileListProps {
   files: ApiFile[];
