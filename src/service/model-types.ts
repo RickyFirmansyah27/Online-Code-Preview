@@ -61,18 +61,6 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "KAT Pilot",
     model: "kwaipilot/kat-coder-pro:free",
   },
-   {
-    category: "Stealth Model (Experimental)",
-    id: "stealth-sherlock-dash",
-    name: "Sherlock Dash",
-    model: "openrouter/sherlock-dash-alpha",
-  },
-   {
-    category: "Stealth Model (Experimental)",
-    id: "stealth-sherlock-think",
-    name: "Sherlock Think",
-    model: "openrouter/sherlock-think-alpha",
-  },
 ];
 
 export interface ApiFile {
