@@ -5,7 +5,6 @@ import { useUser } from "@clerk/nextjs";
 import { ConvexHttpClient } from "convex/browser";
 import { api } from "../../../convex/_generated/api";
 import Header from "../(root)/_components/Header";
-import ProfileCover from "./_components/ProfileCover";
 import ProfileHeader from "./_components/ProfileHeader";
 import ProfileStats from "./_components/ProfileStats";
 import ProfileTabs from "./_components/ProfileTabs";
@@ -75,8 +74,6 @@ export default function ProfilePage() {
 
       <main className="max-w-7xl mx-auto px-4 py-8">
         <div className="space-y-8">
-          {/* Cover Photo */}
-          <ProfileCover />
 
           {/* Profile Header */}
           <ProfileHeader user={user} convexUser={convexUser} />

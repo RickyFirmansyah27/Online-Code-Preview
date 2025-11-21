@@ -5,11 +5,11 @@ import { User, Mail, Calendar, Crown } from "lucide-react";
 
 interface ProfileHeaderProps {
   user: {
-    firstName?: string;
-    lastName?: string;
-    username?: string;
-    primaryEmailAddress?: { emailAddress: string };
-    createdAt?: Date;
+    firstName?: string | null;
+    lastName?: string | null;
+    username?: string | null;
+    primaryEmailAddress?: { emailAddress: string } | null;
+    createdAt?: Date | null;
   };
   convexUser: { isPro?: boolean; createdAt?: string } | null;
 }
@@ -50,7 +50,7 @@ export default function ProfileHeader({ user, convexUser }: ProfileHeaderProps) 
         <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-3">
             <h1 className="text-3xl font-bold bg-gradient-to-r from-gray-100 to-gray-300 text-transparent bg-clip-text">
-              {user.firstName} {user.lastName}
+              {user.firstName || ''} {user.lastName || ''}
             </h1>
             {convexUser?.isPro && (
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 text-amber-400 text-sm font-medium">
