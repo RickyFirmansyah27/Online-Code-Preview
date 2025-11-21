@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base URL will be provided by individual API calls
-const BASE_URL = 'https://openrouter.ai/api';
+const BASE_URL = 'https://rust-actix.apn.leapcell.app';
 
 const makeCallApi = ({
   url = "",

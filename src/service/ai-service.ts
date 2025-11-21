@@ -31,15 +31,7 @@ export const BASE_PATH = "/v1/chat" as const;
  * Centralises the `Authorization` header so it can’t be duplicated.
  */
 export const getHeaders = (): Record<string, string> => {
-  const apiKey = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY;
-  if (!apiKey) {
-    throw new Error(
-      "NEXT_PUBLIC_OPENROUTER_API_KEY is missing from environment variables."
-    );
-  }
-
   return {
-    Authorization: `Bearer ${apiKey}`,
     "Content-Type": "application/json",
     "HTTP-Referer": "https://online-code-preview.vercel.app",
     "X-Title": "Online Code Editor",
