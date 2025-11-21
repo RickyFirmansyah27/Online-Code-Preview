@@ -1,8 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
 import { User, Activity, Settings } from "lucide-react";
-import Link from "next/link";
 
 interface ProfileTabsProps {
   activeTab: string;

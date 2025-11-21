@@ -3,9 +3,6 @@
 import { motion } from "framer-motion";
 import { FileText, MessageSquare, Upload, Code, Calendar } from "lucide-react";
 
-interface ProfileActivityProps {
-  userId: string;
-}
 
 // Mock activity data - in a real app, this would come from your backend
 const mockActivities = [
@@ -61,7 +58,7 @@ const mockActivities = [
   },
 ];
 
-export default function ProfileActivity({ userId }: ProfileActivityProps) {
+export default function ProfileActivity() {
   // userId will be used when connecting to real activity data
   return (
     <motion.div
