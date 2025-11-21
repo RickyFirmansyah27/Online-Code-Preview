@@ -3,6 +3,7 @@
 import { AnimatePresence } from "framer-motion";
 import { ApiFile } from "@/service/model-types";
 import FileCard from "./FileCard";
+import FileCardSkeleton from "./FileCardSkeleton";
 import LoadingSpinner from "./LoadingSpinner";
 import EmptyState from "./EmptyState";
 
@@ -16,6 +17,7 @@ interface FileListProps {
   emptyMessage?: string;
   loadingMessage?: string;
   className?: string;
+  isPageChanging?: boolean;
 }
 
 const FileList = ({
@@ -28,6 +30,7 @@ const FileList = ({
   emptyMessage = "No files found.",
   loadingMessage = "Loading files...",
   className = "",
+  isPageChanging = false,
 }: FileListProps) => {
   if (isLoading) {
     return (
@@ -42,6 +45,16 @@ const FileList = ({
       <div className={`col-span-full ${className}`}>
         <EmptyState message={emptyMessage} />
       </div>
+    );
+  }
+
+  if (isPageChanging) {
+    return (
+      <>
+        {Array.from({ length: 6 }, (_, i) => (
+          <FileCardSkeleton key={`skeleton-${i}`} />
+        ))}
+      </>
     );
   }
 

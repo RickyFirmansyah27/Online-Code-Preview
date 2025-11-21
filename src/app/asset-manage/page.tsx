@@ -20,6 +20,7 @@ const FileManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<FileType | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isPageChanging, setIsPageChanging] = useState(false);
   const [deleteDialog, setDeleteDialog] = useState<{
     isOpen: boolean;
     filename: string;
@@ -27,7 +28,7 @@ const FileManagement = () => {
   const { user } = useUser();
   console.log("User:", user);
 
-  const itemsPerPage = 12;
+  const itemsPerPage = 6;
 
   // Data fetching
   const { data: filesResponse, isLoading, refetch } = useGetFiles(
@@ -69,6 +70,13 @@ const FileManagement = () => {
     setCurrentPage(1);
   }, [searchQuery, filterType]);
 
+  // Handle page change with loading state
+  const handlePageChange = (page: number) => {
+    setIsPageChanging(true);
+    setCurrentPage(page);
+    setTimeout(() => setIsPageChanging(false), 300);
+  };
+
   // Event handlers
   const handleUploadStart = useCallback(() => {
     // Additional upload start logic if needed
@@ -109,7 +117,7 @@ const FileManagement = () => {
         <FileManagementHeader />
 
         {/* Controls Section */}
-        <section className="mb-12 max-w-4xl mx-auto">
+        <section className="mb-12 max-w-5xl mx-auto">
           <FileManagementControls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -122,8 +130,8 @@ const FileManagement = () => {
         </section>
 
         {/* File List Section */}
-        <section className="max-w-4xl mx-auto">
-          <div className="flex flex-col gap-4">
+        <section className="max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             <FileList
               files={paginatedFiles}
               isLoading={isLoading}
@@ -136,6 +144,7 @@ const FileManagement = () => {
                   ? "No files match your search criteria."
                   : "No files found."
               }
+              isPageChanging={isPageChanging}
             />
           </div>
         </section>
@@ -144,7 +153,7 @@ const FileManagement = () => {
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
         />
 
         {/* Delete Confirmation Dialog */}
