@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { ApiFile } from "@/service/model-types";
-import { FileType } from "../components/FileTypeFilter";
+import { FileType } from "../components/controls/FileTypeFilter";
 
 interface UseFileFilteringProps {
   files: ApiFile[];

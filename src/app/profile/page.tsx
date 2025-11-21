@@ -91,7 +91,7 @@ export default function ProfilePage() {
           {activeTab === "settings" ? (
             <ProfileSettings />
           ) : (
-            <ProfileActivity userId={user.id} />
+            <ProfileActivity />
           )}
         </div>
       </main>
