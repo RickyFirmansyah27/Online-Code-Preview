@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
 import { get } from "lodash";
 import Header from "../(root)/_components/Header";
@@ -8,6 +8,7 @@ import { useGetFiles } from "@/service/storage-service";
 import FileManagementHeader from "./components/FileManagementHeader";
 import FileManagementControls from "./components/FileManagementControls";
 import FileList from "./components/FileList";
+import Pagination from "./components/Pagination";
 import ConfirmationDialog from "./components/ConfirmationDialog";
 import { useFileOperations } from "./hooks/useFileOperations";
 import { useFileFiltering } from "./hooks/useFileFiltering";
@@ -18,12 +19,15 @@ const FileManagement = () => {
   // State management
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<FileType | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [deleteDialog, setDeleteDialog] = useState<{
     isOpen: boolean;
     filename: string;
   }>({ isOpen: false, filename: "" });
   const { user } = useUser();
   console.log("User:", user);
+
+  const itemsPerPage = 12;
 
   // Data fetching
   const { data: filesResponse, isLoading, refetch } = useGetFiles(
@@ -52,6 +56,18 @@ const FileManagement = () => {
     searchQuery,
     filterType,
   });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredFiles.length / itemsPerPage);
+  const paginatedFiles = filteredFiles.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, filterType]);
 
   // Event handlers
   const handleUploadStart = useCallback(() => {
@@ -88,12 +104,12 @@ const FileManagement = () => {
     >
       <Header />
 
-      <main className="mx-auto max-w-7xl px-4 py-12">
+      <main className="mx-auto max-w-7xl px-4 py-8">
         {/* Header Section */}
         <FileManagementHeader />
 
         {/* Controls Section */}
-        <section className="mb-12 max-w-5xl mx-auto">
+        <section className="mb-12 max-w-4xl mx-auto">
           <FileManagementControls
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
@@ -106,10 +122,10 @@ const FileManagement = () => {
         </section>
 
         {/* File List Section */}
-        <section className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <section className="max-w-4xl mx-auto">
+          <div className="flex flex-col gap-4">
             <FileList
-              files={filteredFiles}
+              files={paginatedFiles}
               isLoading={isLoading}
               onDownload={handleDownload}
               onDelete={handleDeleteClick}
@@ -123,6 +139,13 @@ const FileManagement = () => {
             />
           </div>
         </section>
+
+        {/* Pagination */}
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
 
         {/* Delete Confirmation Dialog */}
         <ConfirmationDialog
