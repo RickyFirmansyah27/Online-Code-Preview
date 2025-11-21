@@ -15,7 +15,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
    {
     category: "AI Coding Assistant Pintar",
     id: "grok-4.1",
-    name: "GPT 4.1",
+    name: "Grok 4.1",
     model: "x-ai/grok-4.1-fast",
   },
   {
