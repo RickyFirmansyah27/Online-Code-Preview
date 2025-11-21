@@ -1,5 +1,6 @@
-import type * as monacoEditor from 'monaco-editor';
 import { Theme } from "../../../types";
+
+type BuiltinTheme = 'vs' | 'vs-dark' | 'hc-light' | 'hc-dark';
 
 type LanguageConfig = Record<
   string,
@@ -345,7 +346,7 @@ export const THEMES: Theme[] = [
 ];
 
 interface ThemeDefinition {
-  base: monacoEditor.editor.BuiltinTheme;
+  base: BuiltinTheme;
   inherit: boolean;
   rules: Array<{ token: string; foreground: string }>;
   colors: Record<string, string>;
@@ -427,7 +428,8 @@ export const THEME_DEFINITONS: Record<string, ThemeDefinition> = {
 };
 
 // Helper function to define themes in Monaco
-export const defineMonacoThemes = (monaco: typeof monacoEditor) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const defineMonacoThemes = (monaco: any) => {
   Object.entries(THEME_DEFINITONS).forEach(([themeName, themeData]) => {
     monaco.editor.defineTheme(themeName, {
       base: themeData.base,
