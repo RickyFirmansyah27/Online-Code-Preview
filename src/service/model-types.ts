@@ -50,9 +50,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "Live Coding Cepat, Responsif",
-    id: "llama-4",
-    name: "LLaMA 4",
-    model: "meta-llama/llama-4-maverick:free",
+    id: "nousresearch-hermes-3-405b",
+    name: "NousResearch Hermes-3 405B",
+    model: "nousresearch/hermes-3-llama-3.1-405b:free",
   },
   // STEALTH MODEL IS CURRENTLY UNSTABLE AND MAY CAUSE ISSUES
   {
