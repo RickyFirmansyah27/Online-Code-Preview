@@ -40,7 +40,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "Refactor Besar / File Panjang",
     id: "deepseek-v3",
     name: "Deepseek V3",
-    model: "deepseek/deepseek-chat-v3.1:free",
+    model: "deepseek/deepseek-chat-v3-0324:free",
   },
   {
     category: "Refactor Besar / File Panjang",
