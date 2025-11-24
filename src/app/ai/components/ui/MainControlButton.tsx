@@ -22,15 +22,21 @@ export function MainControlButton({
       onClick={() => setIsDropdownOpen(!isDropdownOpen)}
       className={CONTROL_STYLES.button}
     >
-      <div className="flex items-center gap-1.5 lg:gap-2.5">
-        <Settings className="w-4 h-4 lg:w-5 lg:h-5 text-blue-400 flex-shrink-0 flex items-center justify-center" />
-        <div className="text-left min-w-0 flex-1">
-          <div className="text-xs text-gray-400 leading-tight mb-0.5 lg:mb-1 truncate">Model & Mode</div>
-          <div className="flex items-center gap-1 lg:gap-1.5 text-gray-200 min-w-0">
-            <span className="font-semibold truncate text-sm lg:text-base flex-1 min-w-0 pr-1">{selectedModel.name}</span>
-            <span className="text-gray-500 flex-shrink-0 px-1">•</span>
-            <span className="font-semibold text-sm lg:text-base flex-shrink-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 px-2 py-0.5 rounded-md border border-blue-500/30 whitespace-nowrap">{activeMode?.label}</span>
+      <div className="flex items-center justify-between w-full gap-3">
+        {/* Left: Icon + Model info */}
+        <div className="flex items-center gap-2.5 flex-1 min-w-0">
+          <Settings className="w-4 h-4 lg:w-5 lg:h-5 text-blue-400 flex-shrink-0" />
+          <div className="min-w-0 flex-1">
+            <div className="text-xs text-gray-400 leading-tight mb-0.5 truncate">Model & Mode</div>
+            <div className="font-semibold truncate text-sm lg:text-base text-gray-200">{selectedModel.name}</div>
           </div>
+        </div>
+
+        {/* Right corner: Mode label + Chevron */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <span className="font-semibold text-xs lg:text-sm bg-gradient-to-r from-blue-400/20 to-purple-400/20 px-2 py-0.5 rounded-md border border-blue-500/30 whitespace-nowrap">
+            {activeMode?.label}
+          </span>
         </div>
       </div>
     </button>

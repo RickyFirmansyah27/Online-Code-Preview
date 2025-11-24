@@ -1,6 +1,7 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
+import React from "react";
 import { ModelOption, MODEL_OPTIONS } from "@/service/model-types";
 import { MainControlButton } from "../ui/MainControlButton";
 import { DropdownHeader } from "../ui/DropdownHeader";
