@@ -50,9 +50,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "Live Coding Cepat, Responsif",
-    id: "nousresearch-hermes-3-405b",
-    name: "NousResearch Hermes-3 405B",
-    model: "nousresearch/hermes-3-llama-3.1-405b:free",
+    id: "Deepseek-r1t2-chimera",
+    name: "Deepseek Chimera",
+    model: "tngtech/deepseek-r1t2-chimera:free",
   },
   // STEALTH MODEL IS CURRENTLY UNSTABLE AND MAY CAUSE ISSUES
   {
