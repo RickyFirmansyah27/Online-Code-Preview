@@ -38,6 +38,25 @@ export function useChatState() {
 
   /* ---------- Dropdown ref for click-outside handling ---------- */
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false);
+      }
+    }
+
+    if (isDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
   
   /* ---------- Refs to track previous model ---------- */
   const prevModelRef = useRef<string>(selectedModel.model);
