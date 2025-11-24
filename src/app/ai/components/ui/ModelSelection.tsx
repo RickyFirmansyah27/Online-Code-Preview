@@ -130,7 +130,7 @@ export function ModelSelection({
                         
                         {/* Model Info */}
                         <div className="flex-1">
-                          <span className="font-medium block text-sm">{model.name}</span>
+                          <span className="font-medium block text-sm truncate" title={model.name}>{model.name}</span>
                           <span className="text-xs text-gray-400 group-hover/item:text-gray-300 transition-colors">
                             {model.category}
                           </span>

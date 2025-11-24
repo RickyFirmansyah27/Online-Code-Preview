@@ -33,7 +33,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
   {
     category: "Live Coding Cepat, Responsif",
     id: "nvidia-nemotron",
-    name: "NVIDIA NeMoTron Nano 12B V2 VL",
+    name: "NVIDIA Nano 12B V2",
     model: "nvidia/nemotron-nano-12b-v2-vl:free",
   },
   {
