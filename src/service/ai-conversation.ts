@@ -97,7 +97,7 @@ export const useConversationAi = (
 
       // Choose the model for image messages
       const completionPayload = hasImage
-        ? { ...payload, model: "google/gemini-2.0-flash-exp:free" }
+        ? { ...payload, model: "mistralai/mistral-small-3.2-24b-instruct:free" }
         : payload;
 
       let response;
