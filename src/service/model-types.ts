@@ -61,6 +61,12 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "KAT Pilot",
     model: "kwaipilot/kat-coder-pro:free",
   },
+  {
+    category: "Stealth Model (Experimental)",
+    id: "stealth-bert-nebulon-alpha",
+    name: "Bert Nebulon Alpha",
+    model: "openrouter/bert-nebulon-alpha",
+  },
 ];
 
 export interface ApiFile {
