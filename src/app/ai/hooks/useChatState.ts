@@ -28,7 +28,7 @@ export type ChatMode = "ask" | "debug" | "code";
 export function useChatState() {
   /* ---------- State ---------- */
   const [input, setInput] = useState("");
-  const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [selectedModel, setSelectedModel] = useState<ModelOption>(
     MODEL_OPTIONS[0]
@@ -114,21 +114,23 @@ export function useChatState() {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      if (!input.trim() && !uploadedImage) return;
+      if (!input.trim() && uploadedImages.length === 0) return;
 
       /* Build message content */
       const content: MessageContent[] = [];
       if (input.trim()) content.push({ type: "text", content: input });
-      if (uploadedImage) content.push({ type: "image", content: uploadedImage });
+      uploadedImages.forEach(image => {
+        content.push({ type: "image", content: image });
+      });
 
       /* Optimistically update UI */
       const newMessages: Message[] = [
         ...messages,
-        { role: "user" as const, content },
+        { role: "user" as const, content }
       ];
       setMessages(newMessages);
       setInput("");
-      setUploadedImage(null);
+      setUploadedImages([]);
 
       /* Abort any previous request */
       abortControllerRef.current?.abort();
@@ -153,12 +155,11 @@ export function useChatState() {
           ...newMessages,
           {
             role: "assistant" as const,
-            content: [{ type: "text", content: assistantText }],
-          },
+            content: [{ type: "text", content: assistantText }]
+          }
         ];
 
         setMessages(updatedMessages);
-
       } catch (err) {
         console.error("[Chat] sendMessage error:", err);
         const errorMsg: Message = {
@@ -166,21 +167,28 @@ export function useChatState() {
           content: [
             {
               type: "text",
-              content: "Sorry, something went wrong. Please try again.",
-            },
-          ],
+              content: "Sorry, something went wrong. Please try again."
+            }
+          ]
         };
         const errorMessages = [...newMessages, errorMsg];
         setMessages(errorMessages);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [input, uploadedImage, messages, mode, sendMessage]
+    [input, uploadedImages, messages, mode, sendMessage]
   );
 
-  const handleImageUpload = useCallback((imageData: string | null) => {
-    setUploadedImage(imageData);
-  }, []);
+  const handleImageUpload = useCallback(
+    (imageData: string[], action: "add" | "replace") => {
+      if (action === "add") {
+        setUploadedImages(prevImages => [...prevImages, ...imageData]);
+      } else {
+        setUploadedImages(imageData);
+      }
+    },
+    []
+  );
 
   const handleClearMessages = useCallback(() => {
     setMessages([]);
@@ -190,7 +198,7 @@ export function useChatState() {
     coding.resetConversation?.();
     analyzer.resetConversation?.();
     // analyzer has no state to reset
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode, conversation, coding]);
 
   const handleInputChange = useCallback(
@@ -203,17 +211,16 @@ export function useChatState() {
   const handleModeChange = useCallback(
     (newMode: ChatMode) => {
       /* Persist current mode's conversation and switch mode in single update */
-       const updatedHistories = {
-          [mode]: messages,
-        };
+      const updatedHistories = {
+        [mode]: messages
+      };
 
-        /* Switch mode and load its history */
-        setMode(newMode);
-        setMessages(updatedHistories[newMode] ?? []);
+      /* Switch mode and load its history */
+      setMode(newMode);
+      setMessages(updatedHistories[newMode] ?? []);
     },
     [mode, messages]
   );
-
 
   /* ---------- Cleanup on unmount ---------- */
   useEffect(() => {
@@ -224,7 +231,7 @@ export function useChatState() {
   return {
     /* state */
     input,
-    uploadedImage,
+    uploadedImages,
     messages,
     selectedModel,
     mode,
@@ -240,6 +247,6 @@ export function useChatState() {
     handleSubmit,
     handleImageUpload,
     handleClearMessages,
-    handleInputChange,
+    handleInputChange
   };
 }

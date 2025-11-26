@@ -6,7 +6,7 @@ import { ChatLayout } from "./components/layout/ChatLayout";
 function AiPlayground() {
   const {
     input,
-    uploadedImage,
+    uploadedImages,
     messages,
     selectedModel,
     mode,
@@ -19,7 +19,7 @@ function AiPlayground() {
     handleSubmit,
     handleImageUpload,
     handleClearMessages,
-    handleInputChange,
+    handleInputChange
   } = useChatState();
 
   return (
@@ -37,7 +37,7 @@ function AiPlayground() {
       handleSubmit={handleSubmit}
       handleInputChange={handleInputChange}
       onImageUpload={handleImageUpload}
-      previewImage={uploadedImage}
+      previewImages={uploadedImages}
       messages={messages}
     />
   );

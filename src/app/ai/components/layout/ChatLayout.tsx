@@ -21,8 +21,8 @@ interface ChatLayoutProps {
   isLoading: boolean;
   handleSubmit: (e: React.FormEvent) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onImageUpload: (imageData: string | null) => void;
-  previewImage: string | null;
+  onImageUpload: (imageData: string[], action: "add" | "replace") => void;
+  previewImages: string[];
   messages: Message[];
 }
 
@@ -40,8 +40,8 @@ export function ChatLayout({
   handleSubmit,
   handleInputChange,
   onImageUpload,
-  previewImage,
-  messages,
+  previewImages,
+  messages
 }: ChatLayoutProps) {
   return (
     <div className="h-screen bg-[#0a0a0f] flex flex-col">
@@ -63,27 +63,47 @@ export function ChatLayout({
           <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6">
             <div className="max-w-6xl mx-auto">
               {/* Image Preview - separated to prevent layout shift */}
-              {previewImage && (
-                <div className="mb-4 flex justify-center lg:justify-start">
-                  <div className="relative inline-block max-w-full lg:max-w-md">
-                    <img
-                      src={previewImage}
-                      alt="Preview"
-                      className="max-w-full h-32 sm:h-40 object-contain rounded-lg border border-gray-700"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => onImageUpload(null)}
-                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 transition-colors"
+              {previewImages.length > 0 && (
+                <div className="mb-4 flex justify-center lg:justify-start gap-4">
+                  {previewImages.map((image, index) => (
+                    <div
+                      key={index}
+                      className="relative inline-block max-w-full lg:max-w-md"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </button>
-                  </div>
+                      <img
+                        src={image}
+                        alt={`Preview ${index + 1}`}
+                        className="max-w-full h-32 sm:h-40 object-contain rounded-lg border border-gray-700"
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          onImageUpload(
+                            previewImages.filter((_, i) => i !== index),
+                            "replace"
+                          )
+                        }
+                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 transition-colors"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
-              
+
               <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
                 <div className="flex-shrink-0 w-full lg:w-auto">
                   <UnifiedControl
@@ -103,8 +123,8 @@ export function ChatLayout({
                     isLoading={isLoading}
                     handleSubmit={handleSubmit}
                     handleInputChange={handleInputChange}
-                    onImageUpload={onImageUpload}
-                    previewImage={null} // Pass null to prevent duplicate preview
+                    onImageUpload={images => onImageUpload(images, "add")}
+                    previewImages={[]} // Pass null to prevent duplicate preview
                   />
                 </div>
               </div>

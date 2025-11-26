@@ -97,7 +97,7 @@ export const useConversationAi = (
 
       // Choose the model for image messages
       const completionPayload = hasImage
-        ? { ...payload, model: "mistralai/mistral-small-3.2-24b-instruct:free" }
+        ? { ...payload, model: "mistralai/mistral-large-2407-instruct:free" }
         : payload;
 
       let response;

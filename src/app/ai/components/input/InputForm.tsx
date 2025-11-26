@@ -8,8 +8,8 @@ interface InputFormProps {
   isLoading: boolean;
   handleSubmit: (e: React.FormEvent, hasImage: boolean) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onImageUpload?: (imageData: string | null) => void;
-  previewImage: string | null;
+  onImageUpload: (imageData: string[]) => void;
+  previewImages: string[];
 }
 
 export function InputForm({
@@ -18,7 +18,7 @@ export function InputForm({
   handleSubmit,
   handleInputChange,
   onImageUpload,
-  previewImage
+  previewImages
 }: InputFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -30,22 +30,35 @@ export function InputForm({
   }, [input]);
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      // Check if file is an image
-      if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
+    const files = e.target.files;
+    if (files) {
+      if (files.length > 2) {
+        alert("You can only upload a maximum of 2 images.");
         return;
       }
+      const imagePromises = Array.from(files).map(file => {
+        return new Promise<string>((resolve, reject) => {
+          if (!file.type.startsWith("image/")) {
+            alert("Please select image files only.");
+            reject("Invalid file type");
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = event => {
+            resolve(event.target?.result as string);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      });
 
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const imageData = event.target?.result as string;
-        if (onImageUpload) {
-          onImageUpload(imageData);
-        }
-      };
-      reader.readAsDataURL(file);
+      Promise.all(imagePromises)
+        .then(images => {
+          onImageUpload(images);
+        })
+        .catch(error => {
+          console.error("Error reading files:", error);
+        });
     }
   };
 
@@ -54,7 +67,7 @@ export function InputForm({
   };
 
   return (
-    <form onSubmit={(e) => handleSubmit(e, !!previewImage)}>
+    <form onSubmit={e => handleSubmit(e, previewImages.length > 0)}>
       <div className="relative bg-gray-900/80 rounded-2xl p-4 focus-within:ring-2 focus-within:ring-blue-500/50 border border-gray-700/60 backdrop-blur-sm">
         <textarea
           ref={textareaRef}
@@ -65,9 +78,9 @@ export function InputForm({
           disabled={isLoading}
           style={{
             minHeight: "52px",
-            maxHeight: "120px",
+            maxHeight: "120px"
           }}
-          onInput={(e) => {
+          onInput={e => {
             const target = e.target as HTMLTextAreaElement;
             target.style.height = "auto";
             target.style.height = `${target.scrollHeight}px`;
@@ -82,6 +95,7 @@ export function InputForm({
             accept="image/*"
             className="hidden"
             disabled={isLoading}
+            multiple
           />
 
           <button
