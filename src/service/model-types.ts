@@ -54,6 +54,12 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "Deepseek Chimera",
     model: "tngtech/deepseek-r1t2-chimera:free",
   },
+  {
+    category: "Refactor Besar / File Panjang",
+    id: "nova-2-lite",
+    name: "Nova 2 Lite",
+    model: "amazon/nova-2-lite-v1:free",
+  },
   // STEALTH MODEL IS CURRENTLY UNSTABLE AND MAY CAUSE ISSUES
   {
     category: "Stealth Model (Experimental)",
