@@ -10,13 +10,13 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "AI Coding Assistant Pintar",
     id: "gpt-5",
     name: "GPT 5",
-    model: "openai/gpt-oss-20b:free",
+    model: "openai/gpt-oss-120b:free",
   },
    {
     category: "AI Coding Assistant Pintar",
-    id: "grok-4.1",
-    name: "Grok 4.1",
-    model: "x-ai/grok-4.1-fast",
+    id: "nova-2-lite",
+    name: "Nova 2 Lite",
+    model: "amazon/nova-2-lite-v1:free",
   },
   {
     category: "AI Coding Assistant Pintar",
@@ -29,12 +29,6 @@ export const MODEL_OPTIONS: ModelOption[] = [
     id: "glm-air",
     name: "GLM 4.5 Air",
     model: "z-ai/glm-4.5-air:free",
-  },
-  {
-    category: "Live Coding Cepat, Responsif",
-    id: "nvidia-nemotron",
-    name: "NVIDIA Nano 12B V2",
-    model: "nvidia/nemotron-nano-12b-v2-vl:free",
   },
   {
     category: "Refactor Besar / File Panjang",
@@ -55,10 +49,10 @@ export const MODEL_OPTIONS: ModelOption[] = [
     model: "tngtech/deepseek-r1t2-chimera:free",
   },
   {
-    category: "Refactor Besar / File Panjang",
-    id: "nova-2-lite",
-    name: "Nova 2 Lite",
-    model: "amazon/nova-2-lite-v1:free",
+    category: "Live Coding Cepat, Responsif",
+    id: "nvidia-nemotron",
+    name: "NVIDIA Nano 12B V2",
+    model: "nvidia/nemotron-nano-12b-v2-vl:free",
   },
   // STEALTH MODEL IS CURRENTLY UNSTABLE AND MAY CAUSE ISSUES
   {
