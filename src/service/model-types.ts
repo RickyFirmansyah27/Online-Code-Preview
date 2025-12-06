@@ -10,9 +10,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "AI Coding Assistant Pintar",
     id: "gpt-5",
     name: "GPT 5",
-    model: "openai/gpt-oss-120b:free",
+    model: "openai/gpt-oss-20b:free",
   },
-   {
+  {
     category: "AI Coding Assistant Pintar",
     id: "nova-2-lite",
     name: "Nova 2 Lite",
@@ -54,19 +54,19 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "NVIDIA Nano 12B V2",
     model: "nvidia/nemotron-nano-12b-v2-vl:free",
   },
-  // STEALTH MODEL IS CURRENTLY UNSTABLE AND MAY CAUSE ISSUES
   {
-    category: "Stealth Model (Experimental)",
+    category: "Live Coding Cepat, Responsif",
     id: "stealth-kat-pilot",
     name: "KAT Pilot",
     model: "kwaipilot/kat-coder-pro:free",
   },
-  {
-    category: "Stealth Model (Experimental)",
-    id: "stealth-bert-nebulon-alpha",
-    name: "Bert Nebulon Alpha",
-    model: "openrouter/bert-nebulon-alpha",
-  },
+  // STEALTH MODEL IS CURRENTLY UNSTABLE AND MAY CAUSE ISSUES
+  // {
+  //   category: "Stealth Model (Experimental)",
+  //   id: "stealth-kat-pilot",
+  //   name: "KAT Pilot",
+  //   model: "kwaipilot/kat-coder-pro:free",
+  // },
 ];
 
 export interface ApiFile {
