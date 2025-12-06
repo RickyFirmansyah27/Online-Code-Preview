@@ -9,7 +9,7 @@ export const fileHeader = `
    • anotherFunction – <brief purpose>
    ──────────────────────────────────────────────────────────────────────
 */
-`
+`;
 export const codeBlock = `
 /* ------------------------------------------------------------------ */
 /* Imports                                                           */
@@ -30,13 +30,12 @@ export const codeBlock = `
 /* ------------------------------------------------------------------ */
 /* Main Hook / Component / Function                                   */
 /* ------------------------------------------------------------------ */
-`
+`;
 
-export const describeFunction =`
+export const describeFunction = `
 /**
  * Short one-line description of what this hook/function does.
  * Mention key behaviors, parameters, and return values briefly.
  */
 
-`
-
+`;
