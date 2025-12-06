@@ -20,23 +20,18 @@ import systemPrompt from "../lib/system-prompt";
 /* ------------------------------------------------------------------ */
 
 export const useCodingAssistant = (
-  model: string,
-  programmingLanguage?: string
+  model: string
 ) => {
   const baseSystemPrompt = systemPrompt(model);
-  const codingSpecificPrompt = programmingLanguage
-    ? `\n\n## Coding Specialization\nYou are currently acting as a senior software engineer and coding mentor specializing in ${programmingLanguage}.\n\nYour responses should:\n1. Provide working, production‑ready code with comprehensive error handling, industry best practices, and performance considerations\n2. Offer testing suggestions\n3. Format your responses with proper code blocks and be concise but thorough.`
-    : `\n\n## General Coding Assistance\nYou are currently acting as a senior software engineer and coding mentor.\n\nYour responses should:\n1. Provide working, production‑ready code with comprehensive error handling, industry best practices, and performance considerations\n2. Offer testing suggestions\n3. Format your responses with proper code blocks and be concise but thorough.`;
-  
-  const finalSystemPrompt = baseSystemPrompt + codingSpecificPrompt;
+
 
   const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>(() => [
-    { role: "system", content: finalSystemPrompt },
+    { role: "system", content: baseSystemPrompt },
   ]);
 
   const resetConversation = useCallback(() => {
-    setConversationHistory([{ role: "system", content: finalSystemPrompt }]);
-  }, [finalSystemPrompt]);
+    setConversationHistory([{ role: "system", content: baseSystemPrompt }]);
+  }, [baseSystemPrompt]);
 
   const mutation = useMutation({
     ...DEFAULT_QUERY_OPTIONS,
