@@ -19,12 +19,6 @@ export const MODEL_OPTIONS: ModelOption[] = [
     model: "amazon/nova-2-lite-v1:free",
   },
   {
-    category: "AI Coding Assistant Pintar",
-    id: "longcat-flash",
-    name: "LongCat Flash",
-    model: "meituan/longcat-flash-chat:free",
-  },
-  {
     category: "Refactor Besar / File Panjang",
     id: "glm-air",
     name: "GLM 4.5 Air",
