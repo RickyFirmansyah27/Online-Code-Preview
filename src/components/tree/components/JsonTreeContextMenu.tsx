@@ -2,13 +2,13 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Plus, 
-  Trash2, 
-  Edit3, 
-  Copy, 
-  Cut, 
-  Paste, 
+import {
+  Plus,
+  Trash2,
+  Edit3,
+  Copy,
+  Scissors,
+  Clipboard,
   Download,
   Eye,
   EyeOff,
@@ -130,12 +130,14 @@ const DEFAULT_ACTIONS: ContextMenuAction[] = [
   },
 ];
 
-export const JsonTreeContextMenu: React.FC<JsonTreeContextMenuProps> = ({
+export const JsonTreeContextMenu = React.forwardRef<{
+  showMenu: (event: MouseEvent, node: JsonNode) => void;
+}, JsonTreeContextMenuProps>(({
   actions = DEFAULT_ACTIONS,
   onAction,
   className = '',
   testId = 'json-tree-context-menu',
-}) => {
+}, ref) => {
   const [isVisible, setIsVisible] = useState(false);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [targetNode, setTargetNode] = useState<JsonNode | null>(null);
@@ -246,8 +248,8 @@ export const JsonTreeContextMenu: React.FC<JsonTreeContextMenuProps> = ({
       case 'add': return <Plus className="w-4 h-4" />;
       case 'delete': return <Trash2 className="w-4 h-4" />;
       case 'copy': return <Copy className="w-4 h-4" />;
-      case 'cut': return <Cut className="w-4 h-4" />;
-      case 'paste': return <Paste className="w-4 h-4" />;
+      case 'cut': return <Scissors className="w-4 h-4" />;
+      case 'paste': return <Clipboard className="w-4 h-4" />;
       case 'export': return <Download className="w-4 h-4" />;
       case 'expand': return <Eye className="w-4 h-4" />;
       case 'collapse': return <EyeOff className="w-4 h-4" />;
@@ -255,14 +257,11 @@ export const JsonTreeContextMenu: React.FC<JsonTreeContextMenuProps> = ({
     }
   };
 
-  // Expose showMenu method
-  // Expose methods via ref if needed
-  const menuRefExposed = React.useRef({
+  // Expose showMenu method via ref
+  React.useImperativeHandle(ref, () => ({
     showMenu,
     hideMenu,
-  });
-
-  // Note: onAction prop is for handling context menu actions, not for exposing methods
+  }), [showMenu, hideMenu]);
 
   return (
     <AnimatePresence>
@@ -302,8 +301,8 @@ export const JsonTreeContextMenu: React.FC<JsonTreeContextMenuProps> = ({
                   disabled={action.disabled}
                   className={`
                     w-full flex items-center justify-between px-3 py-2 text-left transition-colors
-                    ${action.disabled 
-                      ? 'text-gray-600 cursor-not-allowed' 
+                    ${action.disabled
+                      ? 'text-gray-600 cursor-not-allowed'
                       : 'text-gray-300 hover:bg-white/[0.05] hover:text-white'
                     }
                   `}
@@ -312,7 +311,7 @@ export const JsonTreeContextMenu: React.FC<JsonTreeContextMenuProps> = ({
                     {action.icon && getIcon(action.icon)}
                     <span className="text-sm">{action.label}</span>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     {action.shortcut && (
                       <span className="text-xs text-gray-500">
@@ -341,8 +340,8 @@ export const JsonTreeContextMenu: React.FC<JsonTreeContextMenuProps> = ({
                           disabled={submenuAction.disabled}
                           className={`
                             w-full flex items-center justify-between px-3 py-2 text-left transition-colors
-                            ${submenuAction.disabled 
-                              ? 'text-gray-600 cursor-not-allowed' 
+                            ${submenuAction.disabled
+                              ? 'text-gray-600 cursor-not-allowed'
                               : 'text-gray-300 hover:bg-white/[0.05] hover:text-white'
                             }
                           `}
@@ -351,7 +350,7 @@ export const JsonTreeContextMenu: React.FC<JsonTreeContextMenuProps> = ({
                             {submenuAction.icon && getIcon(submenuAction.icon)}
                             <span className="text-sm">{submenuAction.label}</span>
                           </div>
-                          
+
                           {submenuAction.shortcut && (
                             <span className="text-xs text-gray-500">
                               {submenuAction.shortcut}
@@ -369,6 +368,8 @@ export const JsonTreeContextMenu: React.FC<JsonTreeContextMenuProps> = ({
       )}
     </AnimatePresence>
   );
-};
+});
+
+JsonTreeContextMenu.displayName = 'JsonTreeContextMenu';
 
 export default JsonTreeContextMenu;

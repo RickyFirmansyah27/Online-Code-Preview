@@ -36,6 +36,7 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const _treeRef = useRef<JsonTreeMenuRef>(null);
+  const contextMenuRef = useRef<{ showMenu: (event: MouseEvent, node: JsonNode) => void } | null>(null);
   
   const mergedConfig = React.useMemo(() => ({ ...DEFAULT_TREE_CONFIG, ...config }), [config]);
   
@@ -155,30 +156,44 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [expandAll, collapseAll, saveFile, currentFile, readOnly]);
 
-  // Render tree nodes
+  // Handle context menu
+  const _handleContextMenu = useCallback((event: MouseEvent, node: JsonNode) => {
+    if (contextMenuRef.current) {
+      contextMenuRef.current.showMenu(event, node);
+    }
+  }, []);
+
+  // Render tree nodes with proper state passing
   const _renderTreeNodes = useCallback((nodes: JsonNode[], level = 0) => {
-    return nodes.map((node) => (
-      <JsonTreeNode
-        key={node.path}
-        node={node}
-        level={level}
-        isExpanded={expandedNodes.has(node.path)}
-        isSelected={selectedNodes.has(node.path)}
-        isEditing={node.isEditing || false}
-        showTypes={mergedConfig.showTypes}
-        showSizes={mergedConfig.showSizes}
-        showLineNumbers={mergedConfig.showLineNumbers}
-        animationDuration={mergedConfig.animationDuration}
-        onToggle={_handleNodeToggle}
-        onSelect={_handleNodeSelect}
-        onEdit={_handleNodeEdit}
-        onDelete={_handleNodeDelete}
-        onContextMenu={(_event: MouseEvent, _node: JsonNode) => {
-          // Handle context menu
-        }}
-      />
-    ));
-  }, [expandedNodes, selectedNodes, mergedConfig, _handleNodeToggle, _handleNodeSelect, _handleNodeEdit, _handleNodeDelete, enableDragDrop, enableMultiSelect]);
+    return nodes.map((node) => {
+      const isNodeExpanded = expandedNodes.has(node.path);
+      const hasChildren = node.type === 'object' || node.type === 'array';
+      
+      return (
+        <React.Fragment key={node.path}>
+          <JsonTreeNode
+            node={node}
+            level={level}
+            isExpanded={isNodeExpanded}
+            isSelected={selectedNodes.has(node.path)}
+            isEditing={node.isEditing || false}
+            showTypes={mergedConfig.showTypes}
+            showSizes={mergedConfig.showSizes}
+            showLineNumbers={mergedConfig.showLineNumbers}
+            animationDuration={mergedConfig.animationDuration}
+            onToggle={_handleNodeToggle}
+            onSelect={_handleNodeSelect}
+            onEdit={_handleNodeEdit}
+            onDelete={_handleNodeDelete}
+            onContextMenu={_handleContextMenu}
+          />
+          {isNodeExpanded && hasChildren && node.children &&
+            _renderTreeNodes(node.children, level + 1)
+          }
+        </React.Fragment>
+      );
+    });
+  }, [expandedNodes, selectedNodes, mergedConfig, _handleNodeToggle, _handleNodeSelect, _handleNodeEdit, _handleNodeDelete, _handleContextMenu]);
 
   if (isLoading) {
     return (
@@ -316,8 +331,29 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
 
       {/* Context Menu */}
       <JsonTreeContextMenu
-        onAction={(_action: unknown, _node: JsonNode) => {
-          // Handle context menu actions
+        ref={contextMenuRef}
+        onAction={(actionId: string, node: JsonNode) => {
+          switch (actionId) {
+            case 'edit':
+              if (node.type !== 'object' && node.type !== 'array') {
+                _handleNodeEdit(node.path, node.value);
+              }
+              break;
+            case 'copy':
+              navigator.clipboard.writeText(JSON.stringify(node.value, null, 2));
+              break;
+            case 'delete':
+              _handleNodeDelete(node.path);
+              break;
+            case 'expand':
+              expandAll();
+              break;
+            case 'collapse':
+              collapseAll();
+              break;
+            default:
+              console.log('Unhandled action:', actionId);
+          }
         }}
       />
 

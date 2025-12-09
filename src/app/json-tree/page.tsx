@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { JsonTreeMenu } from "@/components/tree";
-import { JsonFile } from "@/components/tree/types/json.types";
+import { JsonFile, JsonNode, JsonValue } from "@/components/tree/types/json.types";
 import { FileText, Upload, Plus, Database, Settings } from "lucide-react";
 
 
@@ -11,6 +11,9 @@ export default function JsonTreePage() {
   const [jsonFiles, setJsonFiles] = useState<JsonFile[]>([]);
   const [activeFile, setActiveFile] = useState<JsonFile | null>();
   const [isUploading, setIsUploading] = useState(false);
+  const [showNewFileDialog, setShowNewFileDialog] = useState(false);
+  const [newFileJson, setNewFileJson] = useState('{\n  "key": "value"\n}');
+  const [newFileName, setNewFileName] = useState('');
 
   const handleFileSelect = useCallback((file: JsonFile) => {
     setActiveFile(file);
@@ -36,6 +39,9 @@ export default function JsonTreePage() {
       console.error('Failed to save file:', error);
       alert('Failed to save file. Please try again.');
     }
+  }, []);
+
+  const handleNodeEdit = useCallback((node: JsonNode, value: JsonValue) => {
   }, []);
 
   const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,21 +86,35 @@ export default function JsonTreePage() {
   }, []);
 
   const handleCreateNewFile = useCallback(() => {
-    const newFile: JsonFile = {
-      id: `new-file-${Date.now()}.json`,
-      name: `new-file-${Date.now()}.json`,
-      content: '{\n  "key": "value"\n}',
-      parsedData: { key: "value" },
-      size: 20,
-      lastModified: new Date(),
-      type: 'other',
-      isDirty: true,
-      isValid: true,
-    };
-
-    setJsonFiles(prev => [newFile, ...prev]);
-    setActiveFile(newFile);
+    setNewFileJson('{\n  "key": "value"\n}');
+    setNewFileName(`new-file-${Date.now()}.json`);
+    setShowNewFileDialog(true);
   }, []);
+
+  const handleCreateFileFromDialog = useCallback(() => {
+    try {
+      const parsedData = JSON.parse(newFileJson);
+      const newFile: JsonFile = {
+        id: `${newFileName}-${Date.now()}`,
+        name: newFileName,
+        content: newFileJson,
+        parsedData,
+        size: newFileJson.length,
+        lastModified: new Date(),
+        type: 'other',
+        isDirty: true,
+        isValid: true,
+      };
+
+      setJsonFiles(prev => [newFile, ...prev]);
+      setActiveFile(newFile);
+      setShowNewFileDialog(false);
+      setNewFileJson('{\n  "key": "value"\n}');
+      setNewFileName('');
+    } catch (error) {
+      alert(`Invalid JSON: ${error}`);
+    }
+  }, [newFileJson, newFileName]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] overflow-x-hidden">
@@ -229,6 +249,7 @@ export default function JsonTreePage() {
                 activeFile={activeFile}
                 onFileSelect={handleFileSelect}
                 onFileSave={handleFileSave}
+                onNodeEdit={handleNodeEdit}
                 showSearch={true}
                 showBreadcrumb={true}
                 showValidation={true}
@@ -268,6 +289,59 @@ export default function JsonTreePage() {
             )}
           </div>
         </div>
+
+        {/* New File Dialog */}
+        {showNewFileDialog && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-[#12121a] rounded-lg p-6 w-full max-w-2xl mx-4">
+              <h3 className="text-xl font-semibold text-white mb-4">Create New JSON File</h3>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    File Name
+                  </label>
+                  <input
+                    type="text"
+                    value={newFileName}
+                    onChange={(e) => setNewFileName(e.target.value)}
+                    placeholder="Enter file name (e.g., data.json)"
+                    className="w-full bg-[#1e1e2e] text-gray-200 border border-gray-600 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    JSON Content
+                  </label>
+                  <textarea
+                    value={newFileJson}
+                    onChange={(e) => setNewFileJson(e.target.value)}
+                    placeholder="Enter your JSON content here..."
+                    rows={12}
+                    className="w-full bg-[#1e1e2e] text-gray-200 border border-gray-600 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={() => setShowNewFileDialog(false)}
+                  className="px-4 py-2 text-gray-300 hover:text-white transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCreateFileFromDialog}
+                  disabled={!newFileName.trim() || !newFileJson.trim()}
+                  className="px-4 py-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg transition-colors"
+                >
+                  Create File
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Loading Overlay */}
         {isUploading && (

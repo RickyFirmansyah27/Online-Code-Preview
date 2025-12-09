@@ -139,7 +139,6 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
   const handleContextMenu = useCallback((event: React.MouseEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    // Context menu functionality disabled for now
     onContextMenu?.(event.nativeEvent, node);
   }, [onContextMenu, node]);
 
@@ -287,9 +286,9 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
           )}
           
           <button
-            onClick={() => navigator.clipboard.writeText(node.path)}
+            onClick={() => navigator.clipboard.writeText(JSON.stringify(node.value, null, 2))}
             className="p-1 hover:bg-white/[0.1] rounded transition-colors"
-            title="Copy path"
+            title="Copy value"
           >
             <Copy className="w-3 h-3 text-gray-400" />
           </button>
@@ -304,38 +303,6 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
         </div>
       </div>
 
-      {/* Children */}
-      <AnimatePresence>
-        {isExpanded && hasChildren && node.children && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: animationDuration / 1000 }}
-            className="overflow-hidden"
-          >
-            {node.children.map((child) => (
-              <JsonTreeNode
-                key={child.path}
-                node={child}
-                level={level + 1}
-                isExpanded={child.isExpanded || false}
-                isSelected={child.isSelected || false}
-                isEditing={child.isEditing || false}
-                showTypes={showTypes}
-                showSizes={showSizes}
-                showLineNumbers={showLineNumbers}
-                animationDuration={animationDuration}
-                onToggle={onToggle}
-                onSelect={onSelect}
-                onEdit={onEdit}
-                onDelete={onDelete}
-                onContextMenu={onContextMenu}
-              />
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Drop indicator for inside position */}
       {isDropTarget && dropPosition === 'inside' && (
