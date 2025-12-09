@@ -100,7 +100,7 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
   // Handle starting an edit
   const handleEditStart = useCallback((event?: React.MouseEvent) => {
     event?.stopPropagation();
-    console.log("handleEditStart called, should NOT switch to raw mode.");
+    event?.preventDefault();
     if (node.type !== 'object' && node.type !== 'array') {
       setEditValue(String(node.value));
       setIsInlineEditing(true);
@@ -286,7 +286,11 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
           {!isInlineEditing && node.type !== 'object' && node.type !== 'array' && (
             <button
-              onClick={handleEditStart}
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                handleEditStart(e);
+              }}
               className="p-1 hover:bg-white/[0.1] rounded transition-colors"
               title="Edit value"
             >

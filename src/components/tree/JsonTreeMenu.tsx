@@ -217,6 +217,7 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
             level={level}
             isExpanded={isNodeExpanded}
             isSelected={selectedNodes.has(node.path)}
+            isEditing={false}
             showTypes={mergedConfig.showTypes}
             showSizes={mergedConfig.showSizes}
             showLineNumbers={mergedConfig.showLineNumbers}
