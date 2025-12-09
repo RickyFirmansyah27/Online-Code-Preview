@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useCallback, useEffect } from 'react';
+import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useJsonTree } from './hooks/useJsonTree';
 import { JsonTreeNode } from './components/JsonTreeNode';
@@ -37,6 +37,7 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const _treeRef = useRef<JsonTreeMenuRef>(null);
   const contextMenuRef = useRef<{ showMenu: (event: MouseEvent, node: JsonNode) => void } | null>(null);
+  const [rawJsonContent, setRawJsonContent] = useState('');
   
   const mergedConfig = React.useMemo(() => ({ ...DEFAULT_TREE_CONFIG, ...config }), [config]);
   
@@ -162,6 +163,49 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
       contextMenuRef.current.showMenu(event, node);
     }
   }, []);
+
+  // Initialize raw JSON content when file changes
+  useEffect(() => {
+    if (rootNode) {
+      setRawJsonContent(JSON.stringify(rootNode.value, null, 2));
+    }
+  }, [rootNode]);
+
+  // Handle raw JSON content change
+  const handleRawJsonChange = useCallback((content: string) => {
+    setRawJsonContent(content);
+  }, []);
+
+  // Handle raw JSON save
+  const handleRawJsonSave = useCallback(() => {
+    if (!currentFile || readOnly) return;
+    
+    try {
+      const parsedData = JSON.parse(rawJsonContent);
+      
+      // Update the file content and parsed data
+      const updatedFile: JsonFile = {
+        ...currentFile,
+        content: rawJsonContent,
+        parsedData,
+        isDirty: true,
+        isValid: true,
+        lastModified: new Date(),
+      };
+      
+      // Trigger file save
+      if (onFileSave) {
+        onFileSave(updatedFile, rawJsonContent);
+      }
+      
+      // Update the tree by reloading the file
+      loadFile(updatedFile);
+      
+      alert('JSON updated successfully!');
+    } catch (error) {
+      alert(`Invalid JSON: ${error}`);
+    }
+  }, [rawJsonContent, currentFile, readOnly, onFileSave, loadFile]);
 
   // Render tree nodes with proper state passing
   const _renderTreeNodes = useCallback((nodes: JsonNode[], level = 0) => {
@@ -322,9 +366,28 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
             exit={{ opacity: 0 }}
             className="p-4"
           >
-            <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap">
-              {JSON.stringify(rootNode?.value || {}, null, 2)}
-            </pre>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-sm font-medium text-white">Raw JSON Editor</h3>
+                {!readOnly && (
+                  <button
+                    onClick={handleRawJsonSave}
+                    disabled={!currentFile}
+                    className="px-3 py-1 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs rounded transition-colors"
+                  >
+                    Save Changes
+                  </button>
+                )}
+              </div>
+              <textarea
+                value={rawJsonContent}
+                onChange={(e) => handleRawJsonChange(e.target.value)}
+                placeholder="Enter your JSON content here..."
+                rows={20}
+                className="w-full h-96 bg-[#1e1e2e] text-gray-200 border border-gray-600 rounded-lg px-3 py-2 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                disabled={readOnly}
+              />
+            </div>
           </motion.div>
         )}
       </div>
