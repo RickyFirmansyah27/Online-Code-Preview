@@ -29,9 +29,9 @@ const getValueDisplay = (value: JsonValue, type: string): string => {
     case 'null':
       return 'null';
     case 'object':
-      return `Object(${Object.keys(value as Record<string, unknown>).length})`;
+      return ''; // Remove Object(length) display
     case 'array':
-      return `Array(${(value as unknown[]).length})`;
+      return ''; // Remove Array(length) display
     default:
       return String(value);
   }
