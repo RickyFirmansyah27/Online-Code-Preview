@@ -106,10 +106,12 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
 
   const _handleNodeEdit = useCallback((path: string, value: JsonValue) => {
     if (!readOnly) {
+      // Auto-switch to raw mode for editing
+      setViewMode('raw');
       editNode(path, value);
       onNodeEdit?.(getNodeByPath(path)!, value);
     }
-  }, [readOnly, editNode, getNodeByPath, onNodeEdit]);
+  }, [readOnly, editNode, getNodeByPath, onNodeEdit, setViewMode]);
 
   const _handleNodeDelete = useCallback((path: string) => {
     if (!readOnly) {
@@ -398,6 +400,8 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
         onAction={(actionId: string, node: JsonNode) => {
           switch (actionId) {
             case 'edit':
+              // Auto-switch to raw mode for any edit action
+              setViewMode('raw');
               if (node.type !== 'object' && node.type !== 'array') {
                 _handleNodeEdit(node.path, node.value);
               }
