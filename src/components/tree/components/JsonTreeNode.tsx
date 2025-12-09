@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, Trash2, Edit3, Copy } from 'lucide-react';
 import { JsonTreeNodeProps, JsonValue } from '../types/json.types';
@@ -57,7 +57,6 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
   level,
   isExpanded,
   isSelected,
-  isEditing,
   isDragging = false,
   isDropTarget = false,
   dropPosition,
@@ -76,6 +75,7 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
   className = '',
   testId = `json-tree-node-${node.path}`,
 }) => {
+  const [isInlineEditing, setIsInlineEditing] = useState(false);
   const [editValue, setEditValue] = useState<string>('');
   const nodeRef = useRef<HTMLDivElement>(null);
   const editInputRef = useRef<HTMLInputElement>(null);
@@ -97,42 +97,48 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
     onSelect(node.path);
   }, [onSelect, node.path]);
 
-  // Handle editing
-  const handleEdit = useCallback((event: React.MouseEvent) => {
-    event.stopPropagation();
+  // Handle starting an edit
+  const handleEditStart = useCallback((event?: React.MouseEvent) => {
+    event?.stopPropagation();
+    console.log("handleEditStart called, should NOT switch to raw mode.");
     if (node.type !== 'object' && node.type !== 'array') {
       setEditValue(String(node.value));
-      onEdit(node.path, node.value);
+      setIsInlineEditing(true);
     }
-  }, [node, onEdit]);
+  }, [node]);
 
   const handleEditSubmit = useCallback(() => {
+    if (!isInlineEditing) return;
+
     try {
       let parsedValue: JsonValue = editValue;
       
-      // Try to parse as JSON first
-      if (editValue.startsWith('"') && editValue.endsWith('"')) {
-        parsedValue = editValue.slice(1, -1);
+      // A more robust way to parse the value
+      if (node.type === 'string') {
+        parsedValue = editValue;
       } else if (editValue === 'true') {
         parsedValue = true;
       } else if (editValue === 'false') {
         parsedValue = false;
       } else if (editValue === 'null') {
         parsedValue = null;
-      } else if (!isNaN(Number(editValue))) {
+      } else if (!isNaN(Number(editValue)) && editValue.trim() !== '') {
         parsedValue = Number(editValue);
+      } else {
+        // If it's not a clear primitive, treat it as a string
+        parsedValue = editValue;
       }
       
       onEdit(node.path, parsedValue);
     } catch (error) {
-      // Handle parse error
-      console.error('Invalid JSON value:', error);
+      console.error('Invalid JSON value during edit:', error);
+    } finally {
+      setIsInlineEditing(false);
     }
-  }, [editValue, onEdit, node.path]);
+  }, [editValue, onEdit, node, isInlineEditing]);
 
   const handleEditCancel = useCallback(() => {
-    setEditValue('');
-    // Cancel edit mode
+    setIsInlineEditing(false);
   }, []);
 
   // Handle context menu
@@ -142,7 +148,7 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
     onContextMenu?.(event.nativeEvent, node);
   }, [onContextMenu, node]);
 
-  // Handle drag and drop
+    // Handle drag and drop
   const handleDragStart = useCallback((event: React.DragEvent) => {
     // Drag and drop functionality disabled for now
     onDragStart?.(event.nativeEvent, node);
@@ -165,13 +171,14 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
     event.stopPropagation();
   }, []);
 
+
   // Focus edit input when editing starts
-  React.useEffect(() => {
-    if (isEditing && editInputRef.current) {
+  useEffect(() => {
+    if (isInlineEditing && editInputRef.current) {
       editInputRef.current.focus();
       editInputRef.current.select();
     }
-  }, [isEditing]);
+  }, [isInlineEditing]);
 
   return (
     <div
@@ -187,6 +194,7 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
       data-testid={testId}
       onClick={handleSelect}
       onContextMenu={handleContextMenu}
+      onDoubleClick={() => handleEditStart()}
       draggable={false}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
@@ -241,7 +249,7 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
         )}
 
         {/* Value or edit input */}
-        {isEditing && node.type !== 'object' && node.type !== 'array' ? (
+        {isInlineEditing && node.type !== 'object' && node.type !== 'array' ? (
           <input
             ref={editInputRef}
             type="text"
@@ -255,10 +263,11 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
               }
             }}
             onBlur={handleEditSubmit}
+            onClick={(e) => e.stopPropagation()}
             className="flex-1 bg-[#1e1e2e] text-gray-200 text-sm px-2 py-0.5 rounded border border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         ) : (
-          <span className={`text-sm ${getValueColor(node.type)} flex-1`}>
+          <span className={`text-sm ${getValueColor(node.type)} flex-1`} onDoubleClick={() => handleEditStart()}>
             {getValueDisplay(node.value, node.type)}
           </span>
         )}
@@ -275,9 +284,9 @@ export const JsonTreeNode: React.FC<JsonTreeNodeProps> = ({
 
         {/* Action buttons */}
         <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-          {!isEditing && node.type !== 'object' && node.type !== 'array' && (
+          {!isInlineEditing && node.type !== 'object' && node.type !== 'array' && (
             <button
-              onClick={handleEdit}
+              onClick={handleEditStart}
               className="p-1 hover:bg-white/[0.1] rounded transition-colors"
               title="Edit value"
             >

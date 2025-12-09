@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { JsonTreeMenu } from "@/components/tree";
-import { JsonFile } from "@/components/tree/types/json.types";
+import { JsonFile, JsonNode, JsonValue } from "@/components/tree/types/json.types";
 import { FileText, Upload, Plus, Database, Settings } from "lucide-react";
 import AI from "../(root)/_components/AI";
 import FileManage from "../(root)/_components/FileManage";
@@ -21,6 +21,101 @@ export default function JsonTreePage() {
   const handleFileSelect = useCallback((file: JsonFile) => {
     setActiveFile(file);
   }, []);
+
+  const handleNodeEdit = useCallback((node: JsonNode, value: JsonValue) => {
+    if (!activeFile) return;
+    
+    // Update the file content with the edited value
+    try {
+      const parsedData = JSON.parse(activeFile.content);
+      
+      // Function to update the value at the specified path
+      const updateValueAtPath = (obj: JsonValue, path: string, newValue: JsonValue) => {
+        if (typeof obj !== 'object' || obj === null) {
+          throw new Error('Cannot update path on non-object value');
+        }
+        
+        const keys = path.split('.');
+        let current: Record<string, unknown> = obj as Record<string, unknown>;
+        
+        for (let i = 0; i < keys.length - 1; i++) {
+          const key = keys[i];
+          if (key.includes('[')) {
+            // Handle array indices
+            const arrayMatch = key.match(/^([^\[]+)\[(\d+)\]$/);
+            if (arrayMatch) {
+              const arrayKey = arrayMatch[1];
+              const arrayIndex = parseInt(arrayMatch[2]);
+              const nextObj = current[arrayKey];
+              if (Array.isArray(nextObj)) {
+                current = nextObj[arrayIndex] as Record<string, unknown>;
+              } else {
+                throw new Error(`Expected array at key: ${arrayKey}`);
+              }
+            }
+          } else {
+            const nextObj = current[key];
+            if (typeof nextObj === 'object' && nextObj !== null) {
+              current = nextObj as Record<string, unknown>;
+            } else {
+              throw new Error(`Cannot traverse path: ${key} is not an object`);
+            }
+          }
+        }
+        
+        const lastKey = keys[keys.length - 1];
+        if (lastKey.includes('[')) {
+          const arrayMatch = lastKey.match(/^([^\[]+)\[(\d+)\]$/);
+          if (arrayMatch) {
+            const arrayKey = arrayMatch[1];
+            const arrayIndex = parseInt(arrayMatch[2]);
+            const array = current[arrayKey];
+            if (Array.isArray(array)) {
+              array[arrayIndex] = newValue;
+            } else {
+              throw new Error(`Expected array at key: ${arrayKey}`);
+            }
+          }
+        } else {
+          current[lastKey] = newValue;
+        }
+      };
+      
+      // Update the value in the parsed data
+      updateValueAtPath(parsedData, node.path, value);
+      
+      // Update the file content
+      const updatedContent = JSON.stringify(parsedData, null, 2);
+      
+      // Update local state
+      setJsonFiles(prev =>
+        prev.map(f =>
+          f.id === activeFile.id
+            ? {
+                ...f,
+                content: updatedContent,
+                parsedData,
+                isDirty: true,
+                lastModified: new Date()
+              }
+            : f
+        )
+      );
+      
+      // Update active file
+      setActiveFile(prev => prev ? {
+        ...prev,
+        content: updatedContent,
+        parsedData,
+        isDirty: true,
+        lastModified: new Date()
+      } : prev);
+      
+    } catch (error) {
+      console.error('Failed to update node value:', error);
+      alert('Failed to update value. Please try again.');
+    }
+  }, [activeFile]);
 
   const handleFileSave = useCallback(async (file: JsonFile, content: string) => {
     try {
@@ -249,7 +344,7 @@ export default function JsonTreePage() {
                 activeFile={activeFile}
                 onFileSelect={handleFileSelect}
                 onFileSave={handleFileSave}
-                onNodeEdit={()=>{}}
+                onNodeEdit={handleNodeEdit}
                 showSearch={true}
                 showBreadcrumb={true}
                 showValidation={true}

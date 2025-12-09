@@ -103,12 +103,10 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
 
   const _handleNodeEdit = useCallback((path: string, value: JsonValue) => {
     if (!readOnly) {
-      // Auto-switch to raw mode for editing
-      setViewMode('raw');
       editNode(path, value);
       onNodeEdit?.(getNodeByPath(path)!, value);
     }
-  }, [readOnly, editNode, getNodeByPath, onNodeEdit, setViewMode]);
+  }, [readOnly, editNode, getNodeByPath, onNodeEdit]);
 
   const _handleNodeDelete = useCallback((path: string) => {
     if (!readOnly) {
@@ -219,7 +217,6 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
             level={level}
             isExpanded={isNodeExpanded}
             isSelected={selectedNodes.has(node.path)}
-            isEditing={node.isEditing || false}
             showTypes={mergedConfig.showTypes}
             showSizes={mergedConfig.showSizes}
             showLineNumbers={mergedConfig.showLineNumbers}
@@ -396,13 +393,6 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
         ref={contextMenuRef}
         onAction={(actionId: string, node: JsonNode) => {
           switch (actionId) {
-            case 'edit':
-              // Auto-switch to raw mode for any edit action
-              setViewMode('raw');
-              if (node.type !== 'object' && node.type !== 'array') {
-                _handleNodeEdit(node.path, node.value);
-              }
-              break;
             case 'copy':
               navigator.clipboard.writeText(JSON.stringify(node.value, null, 2));
               break;

@@ -416,8 +416,31 @@ export const useJsonTreeStore = create<JsonTreeState>()(
       set({ searchQuery: query });
     },
     
-    performSearch: (_query) => {
-      // Implement search logic
+    performSearch: (query) => {
+      const { rootNode } = get();
+      
+      if (!rootNode || !query.trim()) {
+        set({ searchResults: [], isSearching: false });
+        return;
+      }
+      
+      set({ isSearching: true });
+      
+      // Import search utilities
+      import('../components/tree/utils/searchUtils').then(({ searchTree, DEFAULT_SEARCH_OPTIONS }) => {
+        const results = searchTree(rootNode, query, {
+          ...DEFAULT_SEARCH_OPTIONS,
+          maxResults: 100,
+        });
+        
+        set({
+          searchResults: results,
+          isSearching: false,
+        });
+      }).catch(error => {
+        console.error('Failed to perform search:', error);
+        set({ isSearching: false });
+      });
     },
     
     clearSearch: () => {
