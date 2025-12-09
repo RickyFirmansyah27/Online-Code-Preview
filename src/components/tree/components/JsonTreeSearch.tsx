@@ -208,7 +208,7 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
             className="absolute top-full left-0 right-0 mt-1 bg-[#1a1a22] border border-gray-700 rounded-lg shadow-lg z-10 p-3"
           >
             <div className="text-center text-sm text-gray-400">
-              No results found for "{query}"
+              No results found for &ldquo;{query}&rdquo;
             </div>
           </motion.div>
         )}
