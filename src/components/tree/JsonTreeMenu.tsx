@@ -284,7 +284,7 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
           >
             <option value="tree">Tree</option>
             <option value="raw">Raw</option>
-            <option value="compact">Compact</option>
+            <option value="compact">Node</option>
           </select>
           
           {/* Actions */}

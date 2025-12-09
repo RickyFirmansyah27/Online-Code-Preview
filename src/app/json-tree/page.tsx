@@ -5,6 +5,9 @@ import { motion } from "framer-motion";
 import { JsonTreeMenu } from "@/components/tree";
 import { JsonFile, JsonNode, JsonValue } from "@/components/tree/types/json.types";
 import { FileText, Upload, Plus, Database, Settings } from "lucide-react";
+import AI from "../(root)/_components/AI";
+import FileManage from "../(root)/_components/FileManage";
+import Logo from "../(root)/_components/Logo";
 
 
 export default function JsonTreePage() {
@@ -65,7 +68,7 @@ export default function JsonTreePage() {
               size: file.size,
               lastModified: new Date(file.lastModified),
               type: file.name.includes('config') ? 'config' :
-                    file.name.includes('data') ? 'data' : 'other',
+                file.name.includes('data') ? 'data' : 'other',
               isDirty: false,
               isValid: true,
             };
@@ -123,12 +126,12 @@ export default function JsonTreePage() {
         <div className="mx-auto max-w-7xl px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500/20 to-purple-500/20 ring-1 ring-white/10">
-                <FileText className="w-6 h-6 text-blue-400" />
-              </div>
+              <Logo />
               <div>
-                <h1 className="text-2xl font-bold text-white">JSON Tree Editor</h1>
-                <p className="text-gray-400">Visual JSON editor with tree navigation and advanced features</p>
+                <nav className="flex flex-wrap justify-center sm:justify-start gap-2 w-full sm:w-auto">
+                  <FileManage />
+                  <AI />
+                </nav>
               </div>
             </div>
 
@@ -176,11 +179,10 @@ export default function JsonTreePage() {
                   <motion.button
                     key={file.id}
                     onClick={() => handleFileSelect(file)}
-                    className={`w-full text-left p-3 rounded-lg transition-colors ${
-                      activeFile?.id === file.id
+                    className={`w-full text-left p-3 rounded-lg transition-colors ${activeFile?.id === file.id
                         ? 'bg-blue-500/20 border border-blue-500/30 text-blue-400'
                         : 'hover:bg-white/[0.05] text-gray-300'
-                    }`}
+                      }`}
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
