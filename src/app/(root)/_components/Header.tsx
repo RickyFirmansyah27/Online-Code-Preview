@@ -15,6 +15,7 @@ import HeaderProfileBtn from "./HeaderProfileBtn";
 import Logo from "./Logo";
 import FileManage from "./FileManage";
 import AI from "./AI";
+import Tree from "./Tree";
 
 function Header() {
   const { user, isLoaded } = useUser();
@@ -51,6 +52,7 @@ function Header() {
           <nav className="flex flex-wrap justify-center sm:justify-start gap-2 w-full sm:w-auto">
             <FileManage />
             <AI />
+            <Tree />
           </nav>
         </div>
 
