@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ChevronRight, Trash2, Edit3, Copy } from 'lucide-react';
 import { JsonTreeNodeProps, JsonValue } from '../types/json.types';
 

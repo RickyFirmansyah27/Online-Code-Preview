@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { JsonTreeMenu } from "@/components/tree";
-import { JsonFile, JsonNode, JsonValue } from "@/components/tree/types/json.types";
+import { JsonFile } from "@/components/tree/types/json.types";
 import { FileText, Upload, Plus, Database, Settings } from "lucide-react";
 import AI from "../(root)/_components/AI";
 import FileManage from "../(root)/_components/FileManage";
@@ -44,8 +44,6 @@ export default function JsonTreePage() {
     }
   }, []);
 
-  const handleNodeEdit = useCallback((node: JsonNode, value: JsonValue) => {
-  }, []);
 
   const handleFileUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -251,7 +249,7 @@ export default function JsonTreePage() {
                 activeFile={activeFile}
                 onFileSelect={handleFileSelect}
                 onFileSave={handleFileSave}
-                onNodeEdit={handleNodeEdit}
+                onNodeEdit={()=>{}}
                 showSearch={true}
                 showBreadcrumb={true}
                 showValidation={true}

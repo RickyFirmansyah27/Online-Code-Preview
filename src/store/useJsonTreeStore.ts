@@ -526,7 +526,7 @@ export const useJsonTreeStore = create<JsonTreeState>()(
     },
     
     importJson: (data, options) => {
-      const parsedData = importData(data, options);
+      const _parsedData = importData(data, options);
       // Implement logic to update the store's state with the imported data
     },
     

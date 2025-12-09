@@ -9,7 +9,7 @@ import { JsonTreeBreadcrumb } from './components/JsonTreeBreadcrumb';
 import { JsonTreeContextMenu } from './components/JsonTreeContextMenu';
 import { JsonTreeValidation } from './components/JsonTreeValidation';
 import { JsonTreeExport } from './components/JsonTreeExport';
-import { JsonTreeMenuProps, JsonNode, JsonFile, JsonValue, TreeViewMode, JsonTreeMenuRef, PathSegment, ExportOptions } from './types/json.types';
+import { JsonTreeMenuProps, JsonNode, JsonFile, JsonValue, TreeViewMode, PathSegment, ExportOptions } from './types/json.types';
 import { DEFAULT_TREE_CONFIG } from './constants/treeConstants';
 
 export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
@@ -28,14 +28,11 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
   showSearch = true,
   showBreadcrumb = true,
   showValidation = true,
-  enableDragDrop = false,
-  enableMultiSelect = false,
   enableVirtualScrolling: _enableVirtualScrolling = false,
   className = '',
   testId = 'json-tree-menu',
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const _treeRef = useRef<JsonTreeMenuRef>(null);
   const contextMenuRef = useRef<{ showMenu: (event: MouseEvent, node: JsonNode) => void } | null>(null);
   const [rawJsonContent, setRawJsonContent] = useState('');
   

@@ -19,7 +19,7 @@ export interface JsonObject {
 /**
  * JSON array type
  */
-export interface JsonArray extends Array<JsonValue> {}
+export type JsonArray = JsonValue[];
 
 /**
  * JSON file metadata and content
@@ -375,13 +375,13 @@ export interface BaseComponentProps {
  * Animation variants for Framer Motion
  */
 export interface TreeAnimationVariants {
-  container: any;
-  node: any;
-  expand: any;
-  collapse: any;
-  select: any;
-  edit: any;
-  search: any;
+  container: Record<string, unknown>;
+  node: Record<string, unknown>;
+  expand: Record<string, unknown>;
+  collapse: Record<string, unknown>;
+  select: Record<string, unknown>;
+  edit: Record<string, unknown>;
+  search: Record<string, unknown>;
 }
 
 /**
