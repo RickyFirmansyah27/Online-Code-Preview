@@ -145,6 +145,7 @@ export interface JsonEditOperation {
  */
 export type TreeViewMode = 
   | 'tree'      // Hierarchical tree view
+  | 'nodes'     // Nodes graph view
   | 'raw'       // Raw JSON text
   | 'compact'   // Compact tree view
   | 'expanded'; // Fully expanded view

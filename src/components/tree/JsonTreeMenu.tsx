@@ -8,6 +8,7 @@ import { JsonTreeSearch } from './components/JsonTreeSearch';
 import { JsonTreeBreadcrumb } from './components/JsonTreeBreadcrumb';
 import { JsonTreeContextMenu } from './components/JsonTreeContextMenu';
 import { JsonTreeValidation } from './components/JsonTreeValidation';
+import { JsonNodesView } from './components/JsonNodesView';
 import { JsonTreeExport } from './components/JsonTreeExport';
 import { JsonTreeMenuProps, JsonNode, JsonFile, JsonValue, TreeViewMode, PathSegment, ExportOptions } from './types/json.types';
 import { DEFAULT_TREE_CONFIG } from './constants/treeConstants';
@@ -278,8 +279,9 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
             className="bg-[#1e1e2e] text-gray-200 text-xs px-2 py-1 rounded border border-white/[0.05]"
           >
             <option value="tree">Tree</option>
+            <option value="nodes">Nodes</option>
             <option value="raw">Raw</option>
-            <option value="compact">Node</option>
+            <option value="compact">Compact</option>
           </select>
           
           {/* Actions */}
@@ -354,6 +356,10 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
           >
             {_renderTreeNodes([rootNode])}
           </motion.div>
+        )}
+
+        {_currentViewMode === 'nodes' && (
+            <JsonNodesView rootNode={rootNode} />
         )}
         
         {_currentViewMode === 'raw' && (
