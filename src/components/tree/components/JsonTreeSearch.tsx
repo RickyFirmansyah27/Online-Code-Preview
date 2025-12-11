@@ -20,6 +20,7 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
   testId = 'json-tree-search',
 }) => {
   const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [showDropdown, setShowDropdown] = useState(false);
   
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -28,6 +29,7 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
     const newQuery = event.target.value;
     onQueryChange(newQuery);
     setSelectedIndex(-1);
+    setShowDropdown(newQuery.trim().length > 0);
   }, [onQueryChange]);
 
   // Handle clear
@@ -35,6 +37,7 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
     onQueryChange('');
     onClear?.();
     setSelectedIndex(-1);
+    setShowDropdown(false);
     inputRef.current?.focus();
   }, [onQueryChange, onClear]);
 
@@ -43,7 +46,7 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
     switch (event.key) {
       case 'ArrowDown':
         event.preventDefault();
-        setSelectedIndex(prev => 
+        setSelectedIndex(prev =>
           prev < results.length - 1 ? prev + 1 : prev
         );
         break;
@@ -55,6 +58,7 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
         event.preventDefault();
         if (selectedIndex >= 0 && results[selectedIndex]) {
           onResultSelect?.(results[selectedIndex].node.path);
+          setShowDropdown(false); // Close dropdown after selecting with Enter
         }
         break;
       case 'Escape':
@@ -67,8 +71,8 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
   // Handle result click
   const handleResultClick = useCallback((result: SearchResult) => {
     onResultSelect?.(result.node.path);
-    setSelectedIndex(results.indexOf(result));
-  }, [onResultSelect, results]);
+    setShowDropdown(false); // Close dropdown after selecting
+  }, [onResultSelect]);
 
   // Add keyboard event listener
   useEffect(() => {
@@ -78,6 +82,15 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
       return () => element.removeEventListener('keydown', handleKeyDown);
     }
   }, [handleKeyDown]);
+
+  // Update dropdown visibility based on query and results
+  useEffect(() => {
+    if (query.trim().length > 0 && results.length > 0) {
+      setShowDropdown(true);
+    } else if (query.trim().length === 0) {
+      setShowDropdown(false);
+    }
+  }, [query, results]);
 
   return (
     <div className={`relative ${className}`} data-testid={testId}>
@@ -117,7 +130,7 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
 
       {/* Search Results */}
       <AnimatePresence>
-        {query && results.length > 0 && (
+        {showDropdown && query && results.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}
@@ -188,7 +201,7 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
       
       {/* No results */}
       <AnimatePresence>
-        {query && results.length === 0 && (
+        {showDropdown && query && results.length === 0 && (
           <motion.div
             initial={{ opacity: 0, y: -5 }}
             animate={{ opacity: 1, y: 0 }}

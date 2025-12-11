@@ -100,6 +100,10 @@ export const useJsonTree = ({
     store.collapseAll();
   }, [store]);
 
+  const expandToPath = useCallback((path: string) => {
+    store.expandToPath(path);
+  }, [store]);
+
   const selectNode = useCallback((path: string, multi = false) => {
     store.selectNode(path, multi);
     const node = store.getNodeByPath(path);
@@ -253,5 +257,6 @@ export const useJsonTree = ({
     getPathSegments,
     copyToClipboard,
     focus,
+    expandToPath,
   };
 };

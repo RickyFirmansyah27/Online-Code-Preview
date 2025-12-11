@@ -72,6 +72,7 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
     getNodeByPath,
     copyToClipboard: _copyToClipboard,
     focus: _focus,
+    expandToPath,
   } = useJsonTree({
     files,
     activeFile,
@@ -99,8 +100,10 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
     const node = getNodeByPath(path);
     if (node) {
       onNodeSelect?.(node);
+      // Expand to the selected node's path
+      expandToPath(path);
     }
-  }, [selectNode, getNodeByPath, onNodeSelect]);
+  }, [selectNode, getNodeByPath, onNodeSelect, expandToPath]);
 
   const _handleNodeEdit = useCallback((path: string, value: JsonValue) => {
     if (!readOnly) {

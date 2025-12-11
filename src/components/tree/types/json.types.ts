@@ -637,6 +637,7 @@ export interface UseJsonTreeReturn {
   getPathSegments: (path: string) => PathSegment[];
   copyToClipboard: (path: string, type: 'node' | 'value' | 'path') => void;
   focus: () => void;
+  expandToPath: (path: string) => void;
 }
 
 /**
