@@ -12,7 +12,6 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
   results = [],
   onResultSelect,
   placeholder = "Search JSON keys and values...",
-  debounceMs = 300,
   showResultCount = true,
   maxResults = 100,
   showPath = true,
