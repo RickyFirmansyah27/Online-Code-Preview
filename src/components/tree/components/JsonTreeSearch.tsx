@@ -22,25 +22,13 @@ export const JsonTreeSearch: React.FC<JsonTreeSearchProps> = ({
   const [selectedIndex, setSelectedIndex] = useState(-1);
   
   const inputRef = useRef<HTMLInputElement>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout>();
-
-  // Debounced search
-  const debouncedOnQueryChange = useCallback((newQuery: string) => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
-    
-    debounceTimerRef.current = setTimeout(() => {
-      onQueryChange(newQuery);
-    }, debounceMs);
-  }, [onQueryChange, debounceMs]);
 
   // Handle input change
   const handleInputChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const newQuery = event.target.value;
-    debouncedOnQueryChange(newQuery);
+    onQueryChange(newQuery);
     setSelectedIndex(-1);
-  }, [debouncedOnQueryChange]);
+  }, [onQueryChange]);
 
   // Handle clear
   const handleClear = useCallback(() => {

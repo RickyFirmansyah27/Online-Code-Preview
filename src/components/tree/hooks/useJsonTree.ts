@@ -126,10 +126,12 @@ export const useJsonTree = ({
 
   // Search operations
   const search = useCallback((query: string) => {
+    store.setSearchQuery(query); // Update query immediately for UI
+
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
-    
+
     searchTimeoutRef.current = setTimeout(() => {
       store.performSearch(query);
     }, store.config.searchDebounceMs);
