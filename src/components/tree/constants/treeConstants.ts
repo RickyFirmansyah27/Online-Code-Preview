@@ -44,7 +44,6 @@ export const TREE_MAX_DEPTH = {
 export const TREE_VIEW_MODES = {
   TREE: 'tree',
   RAW: 'raw',
-  COMPACT: 'compact',
   EXPANDED: 'expanded',
 } as const;
 

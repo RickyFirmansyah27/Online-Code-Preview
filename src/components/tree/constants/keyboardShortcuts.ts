@@ -281,13 +281,6 @@ export const KEYBOARD_SHORTCUTS: KeyboardShortcut[] = [
     category: 'view',
   },
   {
-    key: '3',
-    ctrlKey: true,
-    description: 'Switch to compact view',
-    action: 'compactView',
-    category: 'view',
-  },
-  {
     key: 't',
     ctrlKey: true,
     description: 'Toggle line numbers',

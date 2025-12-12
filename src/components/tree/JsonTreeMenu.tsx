@@ -286,7 +286,6 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
             <option value="tree">Tree</option>
             <option value="nodes">Nodes</option>
             <option value="raw">Raw</option>
-            <option value="compact">Compact</option>
           </select>
           
           {/* Export Button */}
