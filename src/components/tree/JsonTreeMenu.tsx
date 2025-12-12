@@ -2,6 +2,7 @@
 
 import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Download } from 'lucide-react';
 import { useJsonTree } from './hooks/useJsonTree';
 import { JsonTreeNode } from './components/JsonTreeNode';
 import { JsonTreeSearch } from './components/JsonTreeSearch';
@@ -36,6 +37,7 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const contextMenuRef = useRef<{ showMenu: (event: MouseEvent, node: JsonNode) => void } | null>(null);
   const [rawJsonContent, setRawJsonContent] = useState('');
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   
   const mergedConfig = React.useMemo(() => ({ ...DEFAULT_TREE_CONFIG, ...config }), [config]);
   
@@ -287,6 +289,16 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
             <option value="compact">Compact</option>
           </select>
           
+          {/* Export Button */}
+          <button
+            onClick={() => setIsExportModalOpen(true)}
+            disabled={!rootNode}
+            className="px-3 py-1 bg-green-500 hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs rounded transition-colors flex items-center gap-1"
+          >
+            <Download className="w-3 h-3" />
+            Export
+          </button>
+          
           {/* Actions */}
           {!readOnly && (
             <button
@@ -423,6 +435,8 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
 
       {/* Export Modal */}
       <JsonTreeExport
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
         onExport={async (options: ExportOptions) => {
           return await exportJson(options);
         }}
