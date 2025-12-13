@@ -18,6 +18,12 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "Nova 2 Lite",
     model: "amazon/nova-2-lite-v1:free",
   },
+   {
+    category: "AI Coding Assistant Pintar",
+    id: "mistralai-devstral-2512",
+    name: "Mistral DevStral 25B",
+    model: "mistralai/devstral-2512:free",
+  },
   {
     category: "Refactor Besar / File Panjang",
     id: "glm-air",
@@ -26,9 +32,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "Refactor Besar / File Panjang",
-    id: "deepseek-v3",
-    name: "Deepseek V3",
-    model: "deepseek/deepseek-chat-v3-0324:free",
+    id: "nous-hermes-3-1-405b",
+    name: "Nous Hermes 3.1 405B",
+    model: "nousresearch/hermes-3-llama-3.1-405b:free",
   },
   {
     category: "Refactor Besar / File Panjang",
@@ -38,9 +44,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "Live Coding Cepat, Responsif",
-    id: "Deepseek-r1t2-chimera",
-    name: "Deepseek Chimera",
-    model: "tngtech/deepseek-r1t2-chimera:free",
+    id: "deepseek-v3-1-nex-n1",
+    name: "Deepseek v3.1 Nex N1",
+    model: "nex-agi/deepseek-v3.1-nex-n1:free",
   },
   {
     category: "Live Coding Cepat, Responsif",
