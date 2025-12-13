@@ -9,3 +9,6 @@ export { default as JsonTreeExport } from './JsonTreeExport';
 export { default as JsonTreeContextMenu } from './JsonTreeContextMenu';
 export { default as JsonTreeValidation } from './JsonTreeValidation';
 export { default as JsonTreeBreadcrumb } from './JsonTreeBreadcrumb';
+
+// Breadcrumb modular components
+export * from './Breadcrumb';
