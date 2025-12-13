@@ -4,7 +4,7 @@ import React, { useRef, useCallback, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download } from 'lucide-react';
 import { useJsonTree } from './hooks/useJsonTree';
-import { JsonTreeNode } from './components/JsonTreeNode';
+import JsonTreeNode from './components/JsonTreeNode';
 import { JsonTreeSearch } from './components/JsonTreeSearch';
 import { JsonTreeBreadcrumb } from './components/JsonTreeBreadcrumb';
 import { JsonTreeContextMenu } from './components/JsonTreeContextMenu';
