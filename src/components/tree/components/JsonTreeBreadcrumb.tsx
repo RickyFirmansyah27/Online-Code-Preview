@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, ChevronRight, Copy } from 'lucide-react';
+import { Home, ChevronRight, Copy, Check } from 'lucide-react';
 import { JsonTreeBreadcrumbProps, PathSegment } from '../types/json.types';
 
 export const JsonTreeBreadcrumb: React.FC<JsonTreeBreadcrumbProps> = ({
@@ -17,7 +17,10 @@ export const JsonTreeBreadcrumb: React.FC<JsonTreeBreadcrumbProps> = ({
   className = '',
   testId = 'json-tree-breadcrumb',
 }) => {
-  // Parse path into segments
+  // State for copy feedback
+  const [copySuccess, setCopySuccess] = useState(false);
+  
+  // Parse path into segments - optimized with proper dependencies
   const parsePath = useCallback((pathString: string): PathSegment[] => {
     if (!pathString) return [];
     
@@ -35,7 +38,7 @@ export const JsonTreeBreadcrumb: React.FC<JsonTreeBreadcrumbProps> = ({
         segments.push({
           key: arrayMatch[2],
           type: 'index',
-          index: parseInt(arrayMatch[2]),
+          index: parseInt(arrayMatch[2], 10),
         });
       } else {
         segments.push({
@@ -46,12 +49,12 @@ export const JsonTreeBreadcrumb: React.FC<JsonTreeBreadcrumbProps> = ({
     });
     
     return segments;
-  }, []);
+  }, []); // No external dependencies, stable function
 
   const segments = parsePath(path);
   
-  // Truncate segments if needed
-  const getDisplaySegments = useCallback(() => {
+  // Truncate segments if needed - memoized for performance
+  const displaySegments = React.useMemo(() => {
     if (segments.length <= maxSegments) {
       return segments;
     }
@@ -80,31 +83,51 @@ export const JsonTreeBreadcrumb: React.FC<JsonTreeBreadcrumbProps> = ({
     }
   }, [segments, maxSegments, truncateFrom]);
 
-  const displaySegments = getDisplaySegments();
+  // Helper function to reconstruct path from segments - eliminates code duplication
+  const reconstructPath = useCallback((segments: PathSegment[]): string => {
+    return segments
+      .map(s => s.type === 'index' ? `[${s.key}]` : s.key)
+      .join('.')
+      .replace(/\.\[/g, '[');
+  }, []);
 
   // Handle segment click
   const handleSegmentClick = useCallback((segment: PathSegment, index: number) => {
     if (segment.key === '...') return;
     
-    // Reconstruct path up to this segment
+    // Reconstruct path up to this segment using helper function
     const pathSegments = displaySegments.slice(0, index + 1);
-    const fullPath = pathSegments
-      .map(s => s.type === 'index' ? `[${s.key}]` : s.key)
-      .join('.')
-      .replace(/\.\[/g, '[');
+    const fullPath = reconstructPath(pathSegments);
     
-    onPathClick({ ...segment, fullPath: fullPath } as PathSegment & { fullPath: string });
-  }, [displaySegments, onPathClick]);
+    // Create proper PathSegment with fullPath
+    const segmentWithPath: PathSegment & { fullPath: string } = {
+      ...segment,
+      fullPath,
+    };
+    
+    onPathClick(segmentWithPath);
+  }, [displaySegments, onPathClick, reconstructPath]);
 
-  // Handle copy path
+  // Handle copy path with proper feedback
   const handleCopyPath = useCallback(async () => {
+    if (!path) return;
+    
     try {
       await navigator.clipboard.writeText(path);
-      // Show toast notification
+      setCopySuccess(true);
     } catch (error) {
       console.error('Failed to copy path:', error);
+      // Could add error state here if needed
     }
   }, [path]);
+
+  // Reset copy success state after 2 seconds
+  useEffect(() => {
+    if (copySuccess) {
+      const timer = setTimeout(() => setCopySuccess(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [copySuccess]);
 
   // Handle home click
   const handleHomeClick = useCallback(() => {
@@ -112,13 +135,18 @@ export const JsonTreeBreadcrumb: React.FC<JsonTreeBreadcrumbProps> = ({
   }, [onHomeClick]);
 
   return (
-    <div className={`flex items-center gap-2 text-sm ${className}`} data-testid={testId}>
+    <nav
+      className={`flex items-center gap-2 text-sm ${className}`}
+      data-testid={testId}
+      aria-label="Breadcrumb navigation"
+    >
       {/* Home button */}
       {showHome && (
         <button
           onClick={handleHomeClick}
           className="p-1 hover:bg-white/[0.1] rounded transition-colors"
           title="Go to root"
+          aria-label="Go to root"
         >
           <Home className="w-4 h-4 text-gray-400" />
         </button>
@@ -143,13 +171,15 @@ export const JsonTreeBreadcrumb: React.FC<JsonTreeBreadcrumbProps> = ({
                 onClick={() => handleSegmentClick(segment, index)}
                 className={`
                   px-2 py-1 rounded transition-colors truncate max-w-32
-                  ${segment.key === '...' 
-                    ? 'text-gray-500 cursor-default' 
+                  ${segment.key === '...'
+                    ? 'text-gray-500 cursor-default'
                     : 'text-gray-300 hover:bg-white/[0.1] hover:text-white'
                   }
                 `}
                 disabled={segment.key === '...'}
                 title={segment.key === '...' ? 'Path truncated' : segment.key}
+                aria-label={segment.key === '...' ? 'Path truncated' : `Navigate to ${segment.key}`}
+                aria-disabled={segment.key === '...'}
               >
                 <span className="font-mono text-xs">
                   {segment.type === 'index' ? `[${segment.key}]` : segment.key}
@@ -167,17 +197,23 @@ export const JsonTreeBreadcrumb: React.FC<JsonTreeBreadcrumbProps> = ({
           <button
             onClick={handleCopyPath}
             className="p-1 hover:bg-white/[0.1] rounded transition-colors"
-            title="Copy full path"
+            title={copySuccess ? "Copied!" : "Copy full path"}
+            aria-label={copySuccess ? "Path copied to clipboard" : "Copy full path to clipboard"}
           >
-            <Copy className="w-3 h-3 text-gray-400" />
+            {copySuccess ? (
+              <Check className="w-3 h-3 text-green-400" />
+            ) : (
+              <Copy className="w-3 h-3 text-gray-400" />
+            )}
           </button>
         )}
         
-        {/* Full path toggle */}
+        {/* Full path toggle - TODO: Implement functionality */}
         {showFullPath && (
           <button
             className="p-1 hover:bg-white/[0.1] rounded transition-colors"
             title="Toggle full path view"
+            aria-label="Toggle full path view"
           >
             <span className="text-xs text-gray-400">...</span>
           </button>
@@ -186,11 +222,14 @@ export const JsonTreeBreadcrumb: React.FC<JsonTreeBreadcrumbProps> = ({
 
       {/* Full path display (when expanded) */}
       {showFullPath && (
-        <div className="absolute top-full left-0 right-0 mt-1 p-2 bg-[#1a1a22] border border-gray-700 rounded text-xs text-gray-300 font-mono">
+        <div
+          className="absolute top-full left-0 right-0 mt-1 p-2 bg-[#1a1a22] border border-gray-700 rounded text-xs text-gray-300 font-mono z-10"
+          role="tooltip"
+        >
           {path || '(root)'}
         </div>
       )}
-    </div>
+    </nav>
   );
 };
 

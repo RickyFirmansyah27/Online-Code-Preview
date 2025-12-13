@@ -548,12 +548,11 @@ export interface JsonTreeSearchProps extends BaseComponentProps {
  */
 export interface JsonTreeBreadcrumbProps extends BaseComponentProps {
   path: string;
-  onPathClick: (segment: PathSegment) => void;
+  onPathClick: (segment: PathSegment & { fullPath: string }) => void;
   onHomeClick?: () => void;
   
   // Configuration
   showHome?: boolean;
-  separator?: string;
   maxSegments?: number;
   truncateFrom?: 'start' | 'middle' | 'end';
   
