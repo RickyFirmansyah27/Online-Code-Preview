@@ -333,9 +333,8 @@ export const JsonTreeMenu: React.FC<JsonTreeMenuProps> = ({
         <div className="p-4 border-b border-white/[0.05]">
           <JsonTreeBreadcrumb
             path={Array.from(selectedNodes)[0] || ''}
-            onPathClick={(segment: PathSegment) => _handleNodeSelect(segment.key)}
+            onPathClick={(segment: PathSegment & { fullPath: string }) => _handleNodeSelect(segment.fullPath)}
             showHome={true}
-            separator="/"
             maxSegments={5}
             truncateFrom="middle"
             showFullPath={false}
