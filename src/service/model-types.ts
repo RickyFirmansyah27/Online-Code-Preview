@@ -20,9 +20,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
    {
     category: "AI Coding Assistant Pintar",
-    id: "mistralai-devstral-2512",
-    name: "Mistral DevStral 25B",
-    model: "mistralai/devstral-2512:free",
+    id: "qwen-235b-a22b",
+    name: "Qween 235B Thinking",
+    model: "qwen/qwen3-235b-a22b:free",
   },
   {
     category: "Refactor Besar / File Panjang",
@@ -56,7 +56,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "Live Coding Cepat, Responsif",
-    id: "stealth-kat-pilot",
+    id: "kat-pilot",
     name: "KAT Pilot",
     model: "kwaipilot/kat-coder-pro:free",
   },
