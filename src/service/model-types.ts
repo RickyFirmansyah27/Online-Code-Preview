@@ -77,4 +77,4 @@ export interface FileResponse {
   data: ApiFile[];
 }
 
-export const FALLBACK_MODEL_ID = "meta-llama/llama-4-maverick:free";
+export const FALLBACK_MODEL_ID = "openai/gpt-oss-20b:free";
