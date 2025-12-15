@@ -38,7 +38,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "Refactor Besar / File Panjang",
-    id: "qween-a255",
+    id: "qween-coder-3-a255",
     name: "Qween 3 Coder A235",
     model: "qwen/qwen3-coder:free",
   },
