@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Base URL will be provided by individual API calls
-const BASE_URL = 'https://online-code-api.leapcell.app';
+const BASE_URL = 'https://rust-api-service.vercel.app';
 
 const makeCallApi = ({
   url = "",
