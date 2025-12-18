@@ -1,4 +1,4 @@
-import { JsonNode, JsonValue, PathSegment, ValidationResult, ExportOptions, ImportOptions } from '../../components/tree/types/json.types';
+import { JsonNode, PathSegment, ValidationResult, ExportOptions, ImportOptions } from '../../components/tree/types/json.types';
 import { JsonTreeState } from '../types';
 import { exportJson, importData } from '../../components/tree/utils/exportUtils';
 import { initialJsonTreeState } from '../constants';
