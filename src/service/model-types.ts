@@ -20,9 +20,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
    {
     category: "AI Coding Assistant Pintar",
-    id: "qwen-235b-a22b",
-    name: "Qween 235B Thinking",
-    model: "qwen/qwen3-235b-a22b:free",
+    id: "xiaomi-mimo-v2-flash",
+    name: "Xiaomi Mimo V2 Flash",
+    model: "xiaomi/mimo-v2-flash:free",
   },
   {
     category: "Refactor Besar / File Panjang",
