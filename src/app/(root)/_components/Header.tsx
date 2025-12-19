@@ -43,9 +43,9 @@ function Header() {
 
   return (
     <div className="relative z-10 w-full">
-      <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row items-center justify-between bg-[#0a0a0f]/80 backdrop-blur-xl p-4 sm:p-6 mb-4 rounded-lg w-full">
+      <div className="flex flex-col gap-4 sm:flex-row items-center justify-between bg-[#0a0a0f]/80 backdrop-blur-xl p-4 sm:p-6 mb-4 rounded-lg w-full">
         {/* Kiri: Logo + Nav */}
-        <div className="w-full flex flex-col sm:flex-row items-center justify-between sm:justify-start gap-4">
+        <div className="w-full sm:w-auto flex flex-wrap items-center justify-center sm:justify-start gap-4">
           <Logo />
 
           {/* Navigation */}
@@ -57,7 +57,7 @@ function Header() {
         </div>
 
         {/* Kanan: Aksi */}
-        <div className="w-full flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3">
+        <div className="w-full sm:w-auto flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3">
           {/* Theme + Language + Run + Profile */}
           <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 sm:gap-3">
             {pathname === "/" && (
@@ -73,10 +73,10 @@ function Header() {
             )}
 
             <SignedIn>
-                {pathname === "/" && (
-                    <RunButton />
-                )}
-            
+              {pathname === "/" && (
+                <RunButton />
+              )}
+
               {(!convexUser || !convexUser.isPro) && (
                 <Link
                   href="/pricing"
