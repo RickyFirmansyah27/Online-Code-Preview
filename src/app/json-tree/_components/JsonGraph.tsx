@@ -249,7 +249,9 @@ const JsonGraphInner = ({ data }: { data: any }) => {
                 proOptions={{ hideAttribution: true }}
             >
                 <Background color="#1f1f2e" gap={25} size={1} />
-                <Controls className="!bg-[#1e1e2e] !border-[#2a2a35] !fill-gray-400" />
+                <Controls
+                    className="!bg-[#1e1e2e] !border-[#2a2a35] !shadow-xl [&>button]:!fill-white [&>button]:!text-white hover:[&>button]:!bg-white/10"
+                />
             </ReactFlow>
         </div>
     );
@@ -258,6 +260,35 @@ const JsonGraphInner = ({ data }: { data: any }) => {
 export default function JsonGraph({ data }: { data: any }) {
     return (
         <ReactFlowProvider>
+            <style>{`
+                .react-flow__controls {
+                    background-color: #1e1e2e !important;
+                    border: 1px solid #2a2a35 !important;
+                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
+                    overflow: hidden !important;
+                    border-radius: 8px !important;
+                }
+                .react-flow__controls-button {
+                    background-color: transparent !important;
+                    border-bottom: 1px solid #2a2a35 !important;
+                    width: 30px !important;
+                    height: 30px !important;
+                }
+                .react-flow__controls-button:last-child {
+                    border-bottom: none !important;
+                }
+                .react-flow__controls-button:hover {
+                    background-color: rgba(255, 255, 255, 0.1) !important;
+                }
+                .react-flow__controls-button svg {
+                    fill: #9ca3af !important; /* gray-400 */
+                    max-width: 14px !important;
+                    max-height: 14px !important;
+                }
+                .react-flow__controls-button:hover svg {
+                    fill: #ffffff !important;
+                }
+            `}</style>
             <JsonGraphInner data={data} />
         </ReactFlowProvider>
     )
