@@ -2,7 +2,7 @@
 
 import { useJsonFileManager } from "./hooks/useJsonFileManager";
 import Header from "../(root)/_components/Header";
-import JsonTreeSidebar from "./_components/JsonTreeSidebar";
+import JsonTreeNavbar from "./_components/JsonTreeNavbar";
 import JsonTreeMainContent from "./_components/JsonTreeMainContent";
 import NewFileDialog from "./_components/NewFileDialog";
 import LoadingOverlay from "./_components/LoadingOverlay";
@@ -27,33 +27,30 @@ export default function JsonTreePage() {
   } = useJsonFileManager();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] overflow-x-hidden">
+    <div className="min-h-screen bg-[#0a0a0f] overflow-x-hidden flex flex-col">
       <Header />
 
-      <main className="mx-auto max-w-[1920px] px-4 py-8 h-[calc(100vh-80px)]">
-        <div className="flex flex-col lg:flex-row gap-6 h-full">
-          <div className="w-full lg:w-[280px] shrink-0">
-            <JsonTreeSidebar
-              jsonFiles={jsonFiles}
-              activeFile={activeFile}
-              onFileSelect={handleFileSelect}
-              isUploading={isUploading}
-              onFileUpload={handleFileUpload}
-              onCreateNewFile={handleCreateNewFile}
-            />
-          </div>
-          <div className="flex-1 min-w-0 h-full">
-            <JsonTreeMainContent
-              activeFile={activeFile}
-              jsonFiles={jsonFiles}
-              isUploading={isUploading}
-              onFileSelect={handleFileSelect}
-              onFileSave={handleFileSave}
-              onNodeEdit={handleNodeEdit}
-              onFileUpload={handleFileUpload}
-              onCreateNewFile={handleCreateNewFile}
-            />
-          </div>
+      <JsonTreeNavbar
+        jsonFiles={jsonFiles}
+        activeFile={activeFile}
+        onFileSelect={handleFileSelect}
+        isUploading={isUploading}
+        onFileUpload={handleFileUpload}
+        onCreateNewFile={handleCreateNewFile}
+      />
+
+      <main className="mx-auto w-full max-w-[1920px] px-4 pb-8 flex-1 flex flex-col min-h-0">
+        <div className="flex-1 h-full min-h-0">
+          <JsonTreeMainContent
+            activeFile={activeFile}
+            jsonFiles={jsonFiles}
+            isUploading={isUploading}
+            onFileSelect={handleFileSelect}
+            onFileSave={handleFileSave}
+            onNodeEdit={handleNodeEdit}
+            onFileUpload={handleFileUpload}
+            onCreateNewFile={handleCreateNewFile}
+          />
         </div>
       </main>
 
