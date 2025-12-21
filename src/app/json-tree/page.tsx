@@ -30,17 +30,19 @@ export default function JsonTreePage() {
     <div className="min-h-screen bg-[#0a0a0f] overflow-x-hidden">
       <JsonTreePageHeader />
 
-      <main className="mx-auto max-w-7xl px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <JsonTreeSidebar
-            jsonFiles={jsonFiles}
-            activeFile={activeFile}
-            onFileSelect={handleFileSelect}
-            isUploading={isUploading}
-            onFileUpload={handleFileUpload}
-            onCreateNewFile={handleCreateNewFile}
-          />
-          <div className="lg:col-span-3">
+      <main className="mx-auto max-w-[1920px] px-4 py-8 h-[calc(100vh-80px)]">
+        <div className="flex flex-col lg:flex-row gap-6 h-full">
+          <div className="w-full lg:w-[280px] shrink-0">
+            <JsonTreeSidebar
+              jsonFiles={jsonFiles}
+              activeFile={activeFile}
+              onFileSelect={handleFileSelect}
+              isUploading={isUploading}
+              onFileUpload={handleFileUpload}
+              onCreateNewFile={handleCreateNewFile}
+            />
+          </div>
+          <div className="flex-1 min-w-0 h-full">
             <JsonTreeMainContent
               activeFile={activeFile}
               jsonFiles={jsonFiles}
