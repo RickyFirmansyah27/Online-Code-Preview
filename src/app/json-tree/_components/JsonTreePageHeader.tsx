@@ -1,15 +1,11 @@
 "use client";
 
-import { Upload, Plus } from "lucide-react"; // Keeping imports for now if referenced elsewhere, but unused here
+// import { Upload, Plus } from "lucide-react"; // Keeping imports for now if referenced elsewhere, but unused here
 import AI from "@/app/(root)/_components/AI";
 import FileManage from "@/app/(root)/_components/FileManage";
 import Logo from "@/app/(root)/_components/Logo";
 
-interface JsonTreePageHeaderProps {
-  // Props removed as they are no longer used
-}
-
-export default function JsonTreePageHeader({ }: JsonTreePageHeaderProps) {
+export default function JsonTreePageHeader() {
   return (
     <div className="border-b border-gray-800 bg-[#0a0a0f]/80 backdrop-blur">
       <div className="mx-auto max-w-7xl px-4 py-6">

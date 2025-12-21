@@ -17,14 +17,6 @@ export default function JsonSplitView({ activeFile, onSave }: JsonSplitViewProps
 
     useEffect(() => {
         if (activeFile) {
-            // Assume activeFile.content is the string representation or we fetch it?
-            // Looking at types, activeFile might have content as string or object? 
-            // Usually file managers load content. 
-            // Based on useJsonFileManager: 'activeFile' is JsonFile.
-            // Let's assume we can treat it as string or stringify it.
-            // If the types say content is object, we stringify.
-            // If content is string, we use it.
-            // I'll check generic usage.
             setCode(typeof activeFile.content === 'string' ? activeFile.content : JSON.stringify(activeFile.content, null, 2));
         }
     }, [activeFile]);
@@ -35,8 +27,12 @@ export default function JsonSplitView({ activeFile, onSave }: JsonSplitViewProps
             try {
                 JSON.parse(value);
                 setError(null);
-            } catch (e: any) {
-                setError(e.message);
+            } catch (e) {
+                if (e instanceof Error) {
+                    setError(e.message);
+                } else {
+                    setError("Invalid JSON syntax");
+                }
             }
         }
     };

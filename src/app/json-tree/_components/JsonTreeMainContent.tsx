@@ -17,11 +17,11 @@ interface JsonTreeMainContentProps {
 
 export default function JsonTreeMainContent({
   activeFile,
-  jsonFiles,
+  jsonFiles: _jsonFiles,
   isUploading,
-  onFileSelect,
+  onFileSelect: _onFileSelect,
   onFileSave,
-  onNodeEdit,
+  onNodeEdit: _onNodeEdit,
   onFileUpload,
   onCreateNewFile,
 }: JsonTreeMainContentProps) {
