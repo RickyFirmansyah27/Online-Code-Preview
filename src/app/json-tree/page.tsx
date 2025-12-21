@@ -1,7 +1,7 @@
 "use client";
 
 import { useJsonFileManager } from "./hooks/useJsonFileManager";
-import JsonTreePageHeader from "./_components/JsonTreePageHeader";
+import Header from "../(root)/_components/Header";
 import JsonTreeSidebar from "./_components/JsonTreeSidebar";
 import JsonTreeMainContent from "./_components/JsonTreeMainContent";
 import NewFileDialog from "./_components/NewFileDialog";
@@ -28,7 +28,7 @@ export default function JsonTreePage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] overflow-x-hidden">
-      <JsonTreePageHeader />
+      <Header />
 
       <main className="mx-auto max-w-[1920px] px-4 py-8 h-[calc(100vh-80px)]">
         <div className="flex flex-col lg:flex-row gap-6 h-full">

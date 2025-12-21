@@ -12,10 +12,10 @@ import ThemeSelector from "./ThemeSelector";
 import LanguageSelector from "./LanguageSelector";
 import RunButton from "./RunButton";
 import HeaderProfileBtn from "./HeaderProfileBtn";
-import Logo from "./Logo";
-import FileManage from "./FileManage";
-import AI from "./AI";
-import Tree from "./Tree";
+import Logo from "@/components/shared/Logo";
+import FileManageLink from "@/components/shared/FileManageLink";
+import AILink from "@/components/shared/AILink";
+import JsonTreeLink from "@/components/shared/JsonTreeLink";
 
 function Header() {
   const { user, isLoaded } = useUser();
@@ -50,9 +50,9 @@ function Header() {
 
           {/* Navigation */}
           <nav className="flex flex-wrap justify-center sm:justify-start gap-2 w-full sm:w-auto">
-            <FileManage />
-            <AI />
-            <Tree />
+            <FileManageLink />
+            <AILink />
+            <JsonTreeLink />
           </nav>
         </div>
 
