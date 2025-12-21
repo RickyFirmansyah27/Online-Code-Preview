@@ -46,7 +46,7 @@ const ObjectNode = ({ data, id }: { data: any; id: string }) => {
     const hasMore = entries.length > MAX_VISIBLE_ITEMS;
 
     return (
-        <div className="w-[280px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group transition-all hover:border-zinc-500">
+        <div className="w-[280px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group transition-all duration-200 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
             {/* Header */}
             <div
                 className="bg-zinc-800/50 px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
@@ -111,7 +111,7 @@ const ArrayNode = ({ data, id }: { data: any; id: string }) => {
     const onToggle = data.onToggle;
 
     return (
-        <div className="min-w-[180px] w-auto max-w-[280px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group hover:border-zinc-500 transition-all">
+        <div className="min-w-[180px] w-auto max-w-[280px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-200">
             <div
                 className="bg-zinc-800/50 px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
                 onClick={() => onToggle && onToggle(id, !isExpanded)}
@@ -374,7 +374,10 @@ const JsonGraphInner = ({ data }: { data: unknown }) => {
                 proOptions={{ hideAttribution: true }}
             >
                 <Background color="#27272a" gap={20} size={1} />
-                <Controls className="!bg-[#18181b] !border-zinc-700 [&>button]:!fill-zinc-400 [&>button:hover]:!fill-white [&>button:hover]:!bg-zinc-800" />
+                <Controls
+                    className="!bg-[#18181b] !border-zinc-700 !shadow-lg [&>button]:!bg-[#18181b] [&>button]:!border-b-zinc-700 last:[&>button]:!border-b-0 [&>button]:!fill-zinc-400 [&>button:hover]:!fill-zinc-100 [&>button:hover]:!bg-zinc-800 !m-4 !rounded-lg overflow-hidden"
+                    position="bottom-left"
+                />
             </ReactFlow>
         </div>
     );

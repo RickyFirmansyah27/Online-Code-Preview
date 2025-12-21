@@ -22,9 +22,9 @@ export default function JsonTreeNavbar({
     onCreateNewFile
 }: JsonTreeNavbarProps) {
     return (
-        <div className="w-full bg-[#12121a]/90 backdrop-blur border-b border-white/[0.05] p-4 mb-6">
-            <div className="flex items-center justify-between gap-6 max-w-[1920px] mx-auto">
-                <div className="flex items-center gap-2 shrink-0 border-r border-white/[0.05] pr-6">
+        <div className="w-full px-4 mb-4">
+            <div className="bg-[#12121a]/90 backdrop-blur border border-white/[0.05] rounded-lg p-3 flex items-center justify-between gap-4 max-w-[1920px] mx-auto">
+                <div className="flex items-center gap-2 shrink-0 border-r border-white/[0.05] pr-4">
                     <Database className="w-5 h-5 text-blue-400" />
                     <span className="font-semibold text-white">JSON Files</span>
                 </div>
@@ -35,8 +35,8 @@ export default function JsonTreeNavbar({
                             key={file.id}
                             onClick={() => onFileSelect(file)}
                             className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-colors border whitespace-nowrap ${activeFile?.id === file.id
-                                    ? 'bg-blue-500/20 border-blue-500/30 text-blue-400'
-                                    : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.05] text-gray-300'
+                                ? 'bg-blue-500/20 border-blue-500/30 text-blue-400'
+                                : 'bg-white/[0.02] border-white/[0.05] hover:bg-white/[0.05] text-gray-300'
                                 }`}
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
@@ -54,7 +54,7 @@ export default function JsonTreeNavbar({
                     )}
                 </div>
 
-                <div className="flex items-center gap-3 shrink-0 pl-6 border-l border-white/[0.05]">
+                <div className="flex items-center gap-3 shrink-0 pl-4 border-l border-white/[0.05]">
                     <label className="flex items-center justify-center gap-2 px-3 py-1.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20 rounded-lg cursor-pointer transition-colors">
                         <Upload className="w-4 h-4" />
                         <span className="text-sm font-medium">Upload</span>
