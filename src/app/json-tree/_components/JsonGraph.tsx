@@ -1,17 +1,14 @@
 "use client";
 
-import React, { useCallback, useMemo, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
     ReactFlow,
     useNodesState,
     useEdgesState,
-    addEdge,
-    ConnectionLineType,
     Position,
     Handle,
     Background,
     Controls,
-    MiniMap,
     Node,
     Edge,
     useReactFlow,
@@ -20,10 +17,10 @@ import {
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
 import dagre from "dagre";
-import { ChevronRight, Braces, Brackets } from "lucide-react";
+import { Braces, Brackets } from "lucide-react";
 
 // --- Node Types --- //
-const ObjectNode = ({ data }: { data: { label: string; content: any } }) => {
+const ObjectNode = ({ data }: { data: { label: string; content: Record<string, unknown> } }) => {
     const entries = Object.entries(data.content);
     const MAX_VISIBLE_ITEMS = 6;
     const hasMore = entries.length > MAX_VISIBLE_ITEMS;
@@ -98,12 +95,12 @@ const nodeTypes = {
 };
 
 // --- Graph Logic --- //
-const generateGraph = (data: any) => {
+const generateGraph = (data: unknown) => {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
     let idCounter = 0;
 
-    const traverse = (currentData: any, label: string, parentId?: string) => {
+    const traverse = (currentData: unknown, label: string, parentId?: string) => {
         const id = `node-${idCounter++}`;
         const isArray = Array.isArray(currentData);
         const isObject = typeof currentData === "object" && currentData !== null;
@@ -117,7 +114,7 @@ const generateGraph = (data: any) => {
                 data: { label, count: currentData.length },
                 position: { x: 0, y: 0 },
             });
-            currentData.forEach((item: any, index: number) => {
+            currentData.forEach((item: unknown, index: number) => {
                 // Only create edges for objects/arrays inside the array to keep graph clean
                 // Primitives inside arrays could be handled differently if needed, but standard tree view usually shows structure.
                 if (typeof item === 'object' && item !== null) {
@@ -201,7 +198,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = "LR") => 
     return { nodes: layoutedNodes, edges };
 };
 
-const JsonGraphInner = ({ data }: { data: any }) => {
+const JsonGraphInner = ({ data }: { data: unknown }) => {
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView } = useReactFlow();
@@ -213,7 +210,7 @@ const JsonGraphInner = ({ data }: { data: any }) => {
         if (typeof data === "string") {
             try {
                 parsedData = JSON.parse(data);
-            } catch (e) { return; }
+            } catch { return; }
         }
 
         const { nodes: initialNodes, edges: initialEdges } = generateGraph(parsedData);
@@ -257,7 +254,7 @@ const JsonGraphInner = ({ data }: { data: any }) => {
     );
 };
 
-export default function JsonGraph({ data }: { data: any }) {
+export default function JsonGraph({ data }: { data: unknown }) {
     return (
         <ReactFlowProvider>
             <style>{`
