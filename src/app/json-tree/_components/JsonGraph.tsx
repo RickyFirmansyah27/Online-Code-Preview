@@ -19,72 +19,117 @@ import "@xyflow/react/dist/style.css";
 import dagre from "dagre";
 import { Braces, Brackets } from "lucide-react";
 
-// --- Node Types --- //
-const ObjectNode = ({ data }: { data: { label: string; content: Record<string, unknown> } }) => {
-    const entries = Object.entries(data.content);
-    const MAX_VISIBLE_ITEMS = 6;
+// --- Constants & Helper Config --- //
+const LAYOUT_DIRECTION = "LR";
+const NODE_WIDTH = 280;
+const NODE_HEIGHT_BASE = 50;
+const NODE_HEIGHT_ITEM = 24;
+
+// Helper to determine value color based on type
+const getValueColor = (value: unknown) => {
+    if (typeof value === "string") return "text-emerald-400"; // Strings: Green
+    if (typeof value === "number") return "text-orange-400";  // Numbers: Orange
+    if (typeof value === "boolean") return "text-blue-400";   // Booleans: Blue
+    return "text-gray-400";
+};
+
+// --- Node Components --- //
+
+const ObjectNode = ({ data, id }: { data: any; id: string }) => {
+    const entries = Object.entries(data.content || {});
+    const isExpanded = data.isExpanded;
+    const onToggle = data.onToggle;
+
+    // Limit visible items to avoid huge nodes
+    const MAX_VISIBLE_ITEMS = 15;
+    const visibleEntries = entries.slice(0, MAX_VISIBLE_ITEMS);
     const hasMore = entries.length > MAX_VISIBLE_ITEMS;
-    const visibleEntries = hasMore ? entries.slice(0, MAX_VISIBLE_ITEMS) : entries;
 
     return (
-        <div className="min-w-[200px] max-w-[300px] bg-[#1e1e2e]/90 backdrop-blur-md rounded-lg border border-indigo-500/30 shadow-xl overflow-hidden font-sans group hover:border-indigo-500/60 transition-colors">
+        <div className="w-[280px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group transition-all hover:border-zinc-500">
             {/* Header */}
-            <div className="bg-indigo-500/10 px-3 py-2 border-b border-indigo-500/20 flex items-center gap-2">
-                <Braces className="w-3 h-3 text-indigo-400" />
-                <span className="font-semibold text-indigo-300 text-sm">{data.label}</span>
-                <span className="ml-auto text-[10px] text-indigo-400/60 bg-indigo-500/10 px-1.5 py-0.5 rounded-full">
+            <div
+                className="bg-zinc-800/50 px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
+                onClick={() => onToggle && onToggle(id, !isExpanded)}
+            >
+                <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
+                    <svg className="w-3 h-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                </div>
+                <Braces className="w-3 h-3 text-cyan-400" />
+                <span className="font-semibold text-zinc-200 truncate flex-1">{data.label}</span>
+                <span className="text-[10px] text-zinc-500 bg-zinc-900/50 px-1.5 py-0.5 rounded">
                     {entries.length} keys
                 </span>
             </div>
 
-            {/* Content */}
-            <div className="p-2 space-y-1">
-                {visibleEntries.map(([key, value]) => {
-                    if (typeof value === "object" && value !== null) return null; // Skip nested objects/arrays to avoid clutter (edges handle them)
-
-                    return (
-                        <div key={key} className="flex items-center gap-2 text-xs font-mono group/item hover:bg-white/5 rounded px-1 py-0.5 transition-colors">
-                            <span className="text-pink-400 shrink-0">{key}:</span>
-                            <span className="text-emerald-400 truncate text-[11px]" title={JSON.stringify(value)}>
-                                {JSON.stringify(value)}
-                            </span>
+            {/* Content - Only if expanded */}
+            {isExpanded && (
+                <div className="p-2 space-y-0.5 bg-[#18181b]">
+                    {visibleEntries.map(([key, value]) => {
+                        const isComplex = typeof value === "object" && value !== null;
+                        return (
+                            <div key={key} className="flex items-start gap-2 px-1 py-0.5 hover:bg-zinc-800/50 rounded">
+                                <span className="text-cyan-400 shrink-0 select-text">{key}:</span>
+                                {isComplex ? (
+                                    <span className="text-zinc-500 italic">
+                                        {Array.isArray(value) ? `Array(${value.length})` : `Object`}
+                                    </span>
+                                ) : (
+                                    <span className={`${getValueColor(value)} truncate select-text break-all`}>
+                                        {JSON.stringify(value)}
+                                    </span>
+                                )}
+                            </div>
+                        );
+                    })}
+                    {hasMore && (
+                        <div className="px-1 py-1 text-zinc-500 italic">
+                            ... {entries.length - MAX_VISIBLE_ITEMS} more
                         </div>
-                    );
-                })}
+                    )}
+                    {entries.length === 0 && (
+                        <div className="px-1 text-zinc-500 italic">empty</div>
+                    )}
+                </div>
+            )}
 
-                {hasMore && (
-                    <div className="pt-1 mt-1 border-t border-white/5 text-[10px] text-gray-500 italic text-center">
-                        + {entries.length - MAX_VISIBLE_ITEMS} more items
-                    </div>
-                )}
+            {!isExpanded && (
+                <div className="h-1 bg-zinc-800/30"></div>
+            )}
 
-                {entries.length === 0 && (
-                    <div className="text-gray-600 italic text-xs p-1">empty object</div>
-                )}
-            </div>
-
-            <Handle type="target" position={Position.Left} className="!bg-indigo-500 !w-2 !h-2 !border-0" />
-            <Handle type="source" position={Position.Right} className="!bg-indigo-500 !w-2 !h-2 !border-0" />
+            <Handle type="target" position={Position.Left} className="!bg-zinc-600 !w-2 !h-2 !border-zinc-900" />
+            <Handle type="source" position={Position.Right} className="!bg-zinc-600 !w-2 !h-2 !border-zinc-900" />
         </div>
     );
 };
 
-const ArrayNode = ({ data }: { data: { label: string; count: number } }) => {
+const ArrayNode = ({ data, id }: { data: any; id: string }) => {
+    // Array node logic similar to object but simpler
+    const isExpanded = data.isExpanded;
+    const onToggle = data.onToggle;
+
     return (
-        <div className="min-w-[140px] bg-[#1e1e2e]/90 backdrop-blur-md rounded-lg border border-amber-500/30 shadow-xl overflow-hidden font-sans group hover:border-amber-500/60 transition-colors">
-            <div className="bg-amber-500/10 px-3 py-2 border-b border-amber-500/20 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Brackets className="w-3 h-3 text-amber-400" />
-                    <span className="font-semibold text-amber-300 text-sm">{data.label}</span>
+        <div className="min-w-[180px] w-auto max-w-[280px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group hover:border-zinc-500 transition-all">
+            <div
+                className="bg-zinc-800/50 px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
+                onClick={() => onToggle && onToggle(id, !isExpanded)}
+            >
+                <div className={`transition-transform duration-200 ${isExpanded ? 'rotate-90' : ''}`}>
+                    <svg className="w-3 h-3 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
                 </div>
-            </div>
-            <div className="p-2 text-center">
-                <div className="text-xs text-amber-400/80 font-mono">
+                <Brackets className="w-3 h-3 text-orange-400" />
+                <span className="font-semibold text-zinc-200">{data.label}</span>
+                <span className="ml-auto text-zinc-500 text-[10px] bg-zinc-900/50 px-1.5 py-0.5 rounded">
                     {data.count} items
-                </div>
+                </span>
             </div>
-            <Handle type="target" position={Position.Left} className="!bg-amber-500 !w-2 !h-2 !border-0" />
-            <Handle type="source" position={Position.Right} className="!bg-amber-500 !w-2 !h-2 !border-0" />
+
+            <Handle type="target" position={Position.Left} className="!bg-zinc-600 !w-2 !h-2 !border-zinc-900" />
+            <Handle type="source" position={Position.Right} className="!bg-zinc-600 !w-2 !h-2 !border-zinc-900" />
         </div>
     );
 };
@@ -95,7 +140,9 @@ const nodeTypes = {
 };
 
 // --- Graph Logic --- //
-const generateGraph = (data: unknown) => {
+
+// 1. Generate the FULL graph (nodes + edges) from data
+const generateFullGraph = (data: unknown) => {
     const nodes: Node[] = [];
     const edges: Edge[] = [];
     let idCounter = 0;
@@ -107,16 +154,16 @@ const generateGraph = (data: unknown) => {
 
         if (!isObject) return;
 
+        // Create Node
         if (isArray) {
             nodes.push({
                 id,
                 type: "array",
-                data: { label, count: currentData.length },
+                data: { label, count: currentData.length, isExpanded: true }, // Default expanded
                 position: { x: 0, y: 0 },
             });
+            // Recurse
             currentData.forEach((item: unknown, index: number) => {
-                // Only create edges for objects/arrays inside the array to keep graph clean
-                // Primitives inside arrays could be handled differently if needed, but standard tree view usually shows structure.
                 if (typeof item === 'object' && item !== null) {
                     traverse(item, `[${index}]`, id);
                 }
@@ -125,7 +172,7 @@ const generateGraph = (data: unknown) => {
             nodes.push({
                 id,
                 type: "object",
-                data: { label, content: currentData },
+                data: { label, content: currentData, isExpanded: true },
                 position: { x: 0, y: 0 },
             });
             Object.entries(currentData).forEach(([key, value]) => {
@@ -135,19 +182,17 @@ const generateGraph = (data: unknown) => {
             });
         }
 
+        // Create Edge
         if (parentId) {
             edges.push({
                 id: `edge-${parentId}-${id}`,
                 source: parentId,
                 target: id,
                 type: "bezier",
-                animated: false, // Cleaner look without constant animation
-                style: { stroke: "#4b5563", strokeWidth: 1.5 },
+                style: { stroke: "#52525b", strokeWidth: 1.5 }, // zinc-600
                 markerEnd: {
                     type: MarkerType.ArrowClosed,
-                    color: '#4b5563',
-                    width: 15,
-                    height: 15,
+                    color: '#52525b',
                 },
             });
         }
@@ -157,22 +202,62 @@ const generateGraph = (data: unknown) => {
     return { nodes, edges };
 };
 
-const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = "LR") => {
+// 2. Filter nodes/edges based on which nodes are collapsed
+// If a node is collapsed, all its descendants are hidden
+const getVisibleElements = (allNodes: Node[], allEdges: Edge[], collapsedIds: Set<string>) => {
+    const visibleNodes = new Set<string>();
+
+    // Find root(s) - nodes with no incoming edges or manually identified
+    // In this tree structure, node-0 is always root.
+    const queue = ["node-0"];
+    visibleNodes.add("node-0");
+
+    // BFS to find visible nodes
+    // If a node is in collapsedIds, do NOT add its children to queue
+    while (queue.length > 0) {
+        const currentId = queue.shift()!;
+        if (collapsedIds.has(currentId)) continue; // Stop traversing this branch
+
+        // Find children
+        const children = allEdges
+            .filter(e => e.source === currentId)
+            .map(e => e.target);
+
+        children.forEach(childId => {
+            visibleNodes.add(childId);
+            queue.push(childId);
+        });
+    }
+
+    const filteredNodes = allNodes.filter(n => visibleNodes.has(n.id));
+    const filteredEdges = allEdges.filter(e => visibleNodes.has(e.source) && visibleNodes.has(e.target));
+
+    return { nodes: filteredNodes, edges: filteredEdges };
+};
+
+
+// 3. Run Layout on the VISIBLE graph
+const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
     const dagreGraph = new dagre.graphlib.Graph();
     dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-    // Improved layout settings
     dagreGraph.setGraph({
-        rankdir: direction,
-        ranksep: 120, // Increased separation between layers
-        nodesep: 50   // Increased separation between sibling nodes
+        rankdir: LAYOUT_DIRECTION,
+        ranksep: 100,
+        nodesep: 30,
     });
 
     nodes.forEach((node) => {
-        // Approximate node size for layout calculations
-        // This is hard since nodes are dynamic, but we can overestimate slightly
-        const height = node.type === 'object' ? 200 : 80;
-        dagreGraph.setNode(node.id, { width: 250, height: height });
+        // Calculate dynamic height based on content
+        // 40 header + 24 * items
+        let height = NODE_HEIGHT_BASE;
+        if (node.type === "object" && node.data.isExpanded) {
+            const entries = Object.entries(node.data.content as any);
+            const items = Math.min(entries.length, 15); // Matches MAX_VISIBLE_ITEMS
+            height += items * NODE_HEIGHT_ITEM + 10; // + padding
+        }
+
+        dagreGraph.setNode(node.id, { width: NODE_WIDTH, height: height });
     });
 
     edges.forEach((edge) => {
@@ -181,74 +266,115 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = "LR") => 
 
     dagre.layout(dagreGraph);
 
-    const layoutedNodes = nodes.map((node) => {
-        const nodeWithPosition = dagreGraph.node(node.id);
-        return {
-            ...node,
-            targetPosition: Position.Left,
-            sourcePosition: Position.Right,
-            position: {
-                x: nodeWithPosition.x - 125, // Center offset based on width/2
-                y: nodeWithPosition.y - 75,
-            },
-            style: { opacity: 1 }, // Ensure visible
-        };
-    });
-
-    return { nodes: layoutedNodes, edges };
+    return {
+        nodes: nodes.map((node) => {
+            const nodeWithPosition = dagreGraph.node(node.id);
+            return {
+                ...node,
+                targetPosition: Position.Left,
+                sourcePosition: Position.Right,
+                position: {
+                    x: nodeWithPosition.x - (NODE_WIDTH / 2),
+                    y: nodeWithPosition.y - (dagreGraph.node(node.id).height / 2),
+                },
+            };
+        }),
+        edges,
+    };
 };
 
 const JsonGraphInner = ({ data }: { data: unknown }) => {
+    const [fullNodes, setFullNodes] = React.useState<Node[]>([]);
+    const [fullEdges, setFullEdges] = React.useState<Edge[]>([]);
+
+    // Store localized toggle state (NodeID -> isExpanded)
+    const [collapsedIds, setCollapsedIds] = React.useState<Set<string>>(new Set());
+
+    // Explicitly type the state
     const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
     const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
     const { fitView } = useReactFlow();
 
+    // 1. Initial Graph Generation
     useEffect(() => {
         if (!data) return;
-
         let parsedData = data;
         if (typeof data === "string") {
-            try {
-                parsedData = JSON.parse(data);
-            } catch { return; }
+            try { parsedData = JSON.parse(data); } catch { return; }
         }
 
-        const { nodes: initialNodes, edges: initialEdges } = generateGraph(parsedData);
-        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
-            initialNodes,
-            initialEdges
-        );
+        const { nodes: initialNodes, edges: initialEdges } = generateFullGraph(parsedData);
+        setFullNodes(initialNodes);
+        setFullEdges(initialEdges);
+        setCollapsedIds(new Set()); // Reset on new data
+    }, [data]);
+
+    // 2. Handle Expand/Collapse Logic
+    const handleToggle = React.useCallback((nodeId: string, expanded: boolean) => {
+        setCollapsedIds(prev => {
+            const next = new Set(prev);
+            if (!expanded) {
+                next.add(nodeId);
+            } else {
+                next.delete(nodeId);
+            }
+            return next;
+        });
+    }, []);
+
+    // 3. Compute Layout whenever nodes/edges or collapsed state changes
+    useEffect(() => {
+        if (fullNodes.length === 0) return;
+
+        // A. Update local interaction data in fullNodes
+        const currentFullNodes = fullNodes.map(n => ({
+            ...n,
+            data: {
+                ...n.data,
+                isExpanded: !collapsedIds.has(n.id),
+                onToggle: handleToggle,
+            }
+        }));
+
+        // B. Filter visible
+        const { nodes: visibleNodes, edges: visibleEdges } = getVisibleElements(currentFullNodes, fullEdges, collapsedIds);
+
+        // C. Layout
+        const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(visibleNodes, visibleEdges);
 
         setNodes(layoutedNodes);
         setEdges(layoutedEdges);
 
-        setTimeout(() => {
-            fitView({ padding: 0.2 });
-        }, 50);
+    }, [fullNodes, fullEdges, collapsedIds, handleToggle, setNodes, setEdges]);
 
-    }, [data, setNodes, setEdges, fitView]);
+    // Initial Fit
+    useEffect(() => {
+        if (nodes.length > 0) {
+            const t = setTimeout(() => {
+                fitView({ padding: 0.2, duration: 800 });
+            }, 50);
+            return () => clearTimeout(t);
+        }
+    }, [data, fitView]);
 
     return (
-        <div className="w-full h-full bg-[#0a0a0f]">
+        <div className="w-full h-full bg-[#09090b]">
             <ReactFlow
                 nodes={nodes}
                 edges={edges}
                 onNodesChange={onNodesChange}
                 onEdgesChange={onEdgesChange}
                 nodeTypes={nodeTypes}
-                fitView
                 minZoom={0.1}
                 maxZoom={2}
                 defaultEdgeOptions={{
                     type: 'bezier',
-                    markerEnd: { type: MarkerType.ArrowClosed },
+                    animated: false,
                 }}
                 proOptions={{ hideAttribution: true }}
             >
-                <Background color="#1f1f2e" gap={25} size={1} />
-                <Controls
-                    className="!bg-[#1e1e2e] !border-[#2a2a35] !shadow-xl [&>button]:!fill-white [&>button]:!text-white hover:[&>button]:!bg-white/10"
-                />
+                <Background color="#27272a" gap={20} size={1} />
+                <Controls className="!bg-[#18181b] !border-zinc-700 [&>button]:!fill-zinc-400 [&>button:hover]:!fill-white [&>button:hover]:!bg-zinc-800" />
             </ReactFlow>
         </div>
     );
@@ -257,35 +383,6 @@ const JsonGraphInner = ({ data }: { data: unknown }) => {
 export default function JsonGraph({ data }: { data: unknown }) {
     return (
         <ReactFlowProvider>
-            <style>{`
-                .react-flow__controls {
-                    background-color: #1e1e2e !important;
-                    border: 1px solid #2a2a35 !important;
-                    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5) !important;
-                    overflow: hidden !important;
-                    border-radius: 8px !important;
-                }
-                .react-flow__controls-button {
-                    background-color: transparent !important;
-                    border-bottom: 1px solid #2a2a35 !important;
-                    width: 30px !important;
-                    height: 30px !important;
-                }
-                .react-flow__controls-button:last-child {
-                    border-bottom: none !important;
-                }
-                .react-flow__controls-button:hover {
-                    background-color: rgba(255, 255, 255, 0.1) !important;
-                }
-                .react-flow__controls-button svg {
-                    fill: #9ca3af !important; /* gray-400 */
-                    max-width: 14px !important;
-                    max-height: 14px !important;
-                }
-                .react-flow__controls-button:hover svg {
-                    fill: #ffffff !important;
-                }
-            `}</style>
             <JsonGraphInner data={data} />
         </ReactFlowProvider>
     )
