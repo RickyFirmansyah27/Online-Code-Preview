@@ -1,6 +1,6 @@
 "use client";
 
-import { JsonTreeMenu } from "@/components/tree";
+import JsonSplitView from "./JsonSplitView";
 import { JsonFile, JsonNode, JsonValue } from "@/components/tree/types/json.types";
 import { FileText, Upload, Plus } from "lucide-react";
 
@@ -27,18 +27,9 @@ export default function JsonTreeMainContent({
 }: JsonTreeMainContentProps) {
   if (activeFile) {
     return (
-      <JsonTreeMenu
-        files={jsonFiles}
+      <JsonSplitView
         activeFile={activeFile}
-        onFileSelect={onFileSelect}
-        onFileSave={onFileSave}
-        onNodeEdit={onNodeEdit}
-        showSearch={true}
-        showBreadcrumb={true}
-        showValidation={true}
-        enableDragDrop={false}
-        enableMultiSelect={false}
-        className="min-h-[600px]"
+        onSave={onFileSave}
       />
     );
   }
