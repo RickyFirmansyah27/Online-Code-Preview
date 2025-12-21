@@ -44,10 +44,10 @@ export default function JsonSplitView({ activeFile, onSave }: JsonSplitViewProps
     };
 
     return (
-        <div className="flex h-[calc(100vh-140px)] w-full overflow-hidden border border-gray-800 rounded-lg bg-[#0a0a0f]">
+        <div className="flex flex-col lg:flex-row h-[calc(100vh-140px)] w-full overflow-hidden border border-gray-800 rounded-lg bg-[#0a0a0f]">
             {/* Editor Pane */}
-            <div className="w-1/3 min-w-[300px] border-r border-gray-800 flex flex-col">
-                <div className="bg-[#1e1e2e] px-4 py-2 border-b border-gray-700 flex justify-between items-center">
+            <div className="w-full lg:w-1/3 h-[40%] lg:h-full border-b lg:border-b-0 lg:border-r border-gray-800 flex flex-col">
+                <div className="bg-[#1e1e2e] px-4 py-2 border-b border-gray-700 flex justify-between items-center shrink-0">
                     <span className="text-gray-300 font-medium font-mono text-sm">JSON Editor</span>
                     <button
                         onClick={handleSave}
@@ -57,7 +57,7 @@ export default function JsonSplitView({ activeFile, onSave }: JsonSplitViewProps
                         <Save className="w-4 h-4" />
                     </button>
                 </div>
-                <div className="flex-1 relative">
+                <div className="flex-1 relative min-h-0">
                     <Editor
                         height="100%"
                         defaultLanguage="json"
@@ -73,7 +73,7 @@ export default function JsonSplitView({ activeFile, onSave }: JsonSplitViewProps
                         }}
                     />
                     {error && (
-                        <div className="absolute bottom-4 left-4 right-4 bg-red-900/90 text-red-200 p-2 text-xs rounded border border-red-700 backdrop-blur">
+                        <div className="absolute bottom-4 left-4 right-4 bg-red-900/90 text-red-200 p-2 text-xs rounded border border-red-700 backdrop-blur z-10">
                             {error}
                         </div>
                     )}
@@ -81,7 +81,7 @@ export default function JsonSplitView({ activeFile, onSave }: JsonSplitViewProps
             </div>
 
             {/* Graph Pane */}
-            <div className="flex-1 bg-[#0f0f13] relative overflow-hidden">
+            <div className="flex-1 bg-[#0f0f13] relative overflow-hidden h-full">
                 <JsonGraph data={code} />
             </div>
         </div>
