@@ -104,7 +104,7 @@ export function ChatLayout({
                 </div>
               )}
 
-              <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
+              <div className="flex flex-col lg:flex-row lg:items-end gap-4 lg:gap-6">
                 <div className="flex-shrink-0 w-full lg:w-auto">
                   <UnifiedControl
                     selectedModel={selectedModel}
