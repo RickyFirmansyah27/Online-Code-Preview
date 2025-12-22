@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { JsonFile, JsonNode, JsonValue } from "@/components/tree/types/json.types";
+import { JsonFile, JsonNode, JsonValue } from "@/components/types/json.types";
 
 export function useJsonFileManager() {
   const [jsonFiles, setJsonFiles] = useState<JsonFile[]>([]);
@@ -130,7 +130,7 @@ export function useJsonFileManager() {
               size: file.size,
               lastModified: new Date(file.lastModified),
               type: file.name.includes('config') ? 'config' :
-                    file.name.includes('data') ? 'data' : 'other',
+                file.name.includes('data') ? 'data' : 'other',
               isDirty: false,
               isValid: true,
             };

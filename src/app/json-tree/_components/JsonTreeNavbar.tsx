@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Database, FileText, Upload, Plus } from "lucide-react";
-import { JsonFile } from "@/components/tree/types/json.types";
+import { JsonFile } from "@/components/types/json.types";
 
 interface JsonTreeNavbarProps {
     jsonFiles: JsonFile[];

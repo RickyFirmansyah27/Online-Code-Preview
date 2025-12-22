@@ -1,7 +1,7 @@
 "use client";
 
 import JsonSplitView from "./JsonSplitView";
-import { JsonFile, JsonNode, JsonValue } from "@/components/tree/types/json.types";
+import { JsonFile, JsonNode, JsonValue } from "@/components/types/json.types";
 import { FileText, Upload, Plus } from "lucide-react";
 
 interface JsonTreeMainContentProps {

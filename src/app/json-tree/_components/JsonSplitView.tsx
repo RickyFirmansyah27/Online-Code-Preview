@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Editor from "@monaco-editor/react";
-import { JsonFile } from "@/components/tree/types/json.types";
+import { JsonFile } from "@/components/types/json.types";
 import JsonGraph from "./JsonGraph";
 import { Save } from "lucide-react";
 

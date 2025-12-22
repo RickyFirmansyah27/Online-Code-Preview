@@ -33,9 +33,24 @@ const getValueColor = (value: unknown) => {
     return "text-gray-400";
 };
 
+// --- Type Definitions --- //
+interface ObjectNodeData {
+    label: string;
+    content: Record<string, unknown>;
+    isExpanded: boolean;
+    onToggle?: (id: string, expanded: boolean) => void;
+}
+
+interface ArrayNodeData {
+    label: string;
+    count: number;
+    isExpanded: boolean;
+    onToggle?: (id: string, expanded: boolean) => void;
+}
+
 // --- Node Components --- //
 
-const ObjectNode = ({ data, id }: { data: any; id: string }) => {
+const ObjectNode = ({ data, id }: { data: ObjectNodeData; id: string }) => {
     const entries = Object.entries(data.content || {});
     const isExpanded = data.isExpanded;
     const onToggle = data.onToggle;
@@ -105,7 +120,7 @@ const ObjectNode = ({ data, id }: { data: any; id: string }) => {
     );
 };
 
-const ArrayNode = ({ data, id }: { data: any; id: string }) => {
+const ArrayNode = ({ data, id }: { data: ArrayNodeData; id: string }) => {
     // Array node logic similar to object but simpler
     const isExpanded = data.isExpanded;
     const onToggle = data.onToggle;
@@ -252,7 +267,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
         // 40 header + 24 * items
         let height = NODE_HEIGHT_BASE;
         if (node.type === "object" && node.data.isExpanded) {
-            const entries = Object.entries(node.data.content as any);
+            const entries = Object.entries((node.data.content as Record<string, unknown>) || {});
             const items = Math.min(entries.length, 15); // Matches MAX_VISIBLE_ITEMS
             height += items * NODE_HEIGHT_ITEM + 10; // + padding
         }
@@ -355,7 +370,8 @@ const JsonGraphInner = ({ data }: { data: unknown }) => {
             }, 50);
             return () => clearTimeout(t);
         }
-    }, [data, fitView]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [data, fitView, nodes.length]);
 
     return (
         <div className="w-full h-full bg-[#09090b]">
