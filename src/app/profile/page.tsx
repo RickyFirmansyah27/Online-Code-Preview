@@ -1,6 +1,6 @@
 "use client";
 
-import { useUser } from "@clerk/nextjs";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import Header from "../(root)/_components/Header";
@@ -8,15 +8,15 @@ import {
   User,
   Mail,
   Calendar,
-  Crown,
   Settings,
   LogOut,
-  ExternalLink,
-  Shield
+  Shield,
+  ChevronRight
 } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, isLoaded } = useUser();
+  const { openUserProfile, signOut } = useClerk();
 
   const formatDate = (date?: Date | null) => {
     if (!date) return "Unknown";
@@ -118,7 +118,7 @@ export default function ProfilePage() {
           {/* Quick Actions */}
           <div className="bg-[#12121a] rounded-2xl border border-gray-800/50 divide-y divide-gray-800/50">
             <button
-              onClick={() => window.open('https://accounts.clerk.dev/user', '_blank')}
+              onClick={() => openUserProfile()}
               className="w-full flex items-center justify-between p-4 hover:bg-[#1a1a24] transition-colors group"
             >
               <div className="flex items-center gap-3">
@@ -127,14 +127,14 @@ export default function ProfilePage() {
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-medium text-gray-200">Account Settings</p>
-                  <p className="text-xs text-gray-500">Manage your account on Clerk</p>
+                  <p className="text-xs text-gray-500">Manage your account</p>
                 </div>
               </div>
-              <ExternalLink className="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition-colors" />
+              <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition-colors" />
             </button>
 
             <button
-              onClick={() => window.open('https://accounts.clerk.dev/user/security', '_blank')}
+              onClick={() => openUserProfile()}
               className="w-full flex items-center justify-between p-4 hover:bg-[#1a1a24] transition-colors group"
             >
               <div className="flex items-center gap-3">
@@ -146,13 +146,13 @@ export default function ProfilePage() {
                   <p className="text-xs text-gray-500">Password & two-factor authentication</p>
                 </div>
               </div>
-              <ExternalLink className="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition-colors" />
+              <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition-colors" />
             </button>
           </div>
 
           {/* Sign Out */}
           <button
-            onClick={() => window.location.href = '/sign-out'}
+            onClick={() => signOut({ redirectUrl: '/' })}
             className="w-full flex items-center justify-center gap-2 p-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 text-sm font-medium transition-colors"
           >
             <LogOut className="w-4 h-4" />
