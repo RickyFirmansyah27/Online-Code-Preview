@@ -5,20 +5,32 @@ import { motion } from "framer-motion";
 const FileCardSkeleton = () => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-4 bg-[#1a1a22] rounded-lg border border-gray-700 flex justify-between items-center animate-pulse"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="p-5 bg-gradient-to-br from-[#1a1a24] to-[#12121a] rounded-xl border border-gray-800/50"
     >
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        <div className="w-8 h-8 bg-gray-700 rounded"></div>
+      <div className="flex items-start gap-4">
+        {/* Icon skeleton */}
+        <div className="flex-shrink-0 p-3 rounded-xl bg-gray-800/50 animate-pulse">
+          <div className="w-6 h-6" />
+        </div>
+
         <div className="flex-1 min-w-0">
-          <div className="h-4 bg-gray-700 rounded w-3/4 mb-2"></div>
-          <div className="h-3 bg-gray-700 rounded w-1/2"></div>
+          {/* Title skeleton */}
+          <div className="h-4 w-3/4 bg-gray-800/50 rounded animate-pulse mb-3" />
+
+          {/* Meta info skeleton */}
+          <div className="flex items-center gap-3">
+            <div className="h-5 w-12 bg-gray-800/50 rounded animate-pulse" />
+            <div className="h-3 w-20 bg-gray-800/50 rounded animate-pulse" />
+          </div>
         </div>
       </div>
-      <div className="flex gap-2 shrink-0 ml-2">
-        <div className="w-8 h-8 bg-gray-700 rounded-full"></div>
-        <div className="w-8 h-8 bg-gray-700 rounded-full"></div>
+
+      {/* Action buttons skeleton */}
+      <div className="flex gap-2 mt-4 pt-4 border-t border-gray-800/50">
+        <div className="flex-1 h-9 bg-gray-800/50 rounded-lg animate-pulse" />
+        <div className="w-9 h-9 bg-gray-800/50 rounded-lg animate-pulse" />
       </div>
     </motion.div>
   );

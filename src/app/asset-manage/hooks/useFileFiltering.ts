@@ -18,14 +18,21 @@ export const useFileFiltering = ({
   const filteredFiles = useMemo(
     () =>
       files.filter((file) => {
+        // Filter out files without extensions
+        const hasExtension = file.name.includes('.') &&
+          file.name.lastIndexOf('.') < file.name.length - 1 &&
+          file.name.lastIndexOf('.') > 0;
+
+        if (!hasExtension) return false;
+
         const matchesSearch = file.name
           .toLowerCase()
           .includes(searchQuery.toLowerCase());
-        
+
         const matchesType = filterType
           ? file.name.toLowerCase().endsWith(`.${filterType.toLowerCase()}`)
           : true;
-        
+
         return matchesSearch && matchesType;
       }),
     [files, searchQuery, filterType]
