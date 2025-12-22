@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { api } from "../../../../convex/_generated/api";
 import { Id } from "../../../../convex/_generated/dataModel";
 import SnippetLoadingSkeleton from "./_components/SnippetLoadingSkeleton";
-import NavigationHeader from "@/components/NavigationHeader";
+import Header from "@/app/(root)/_components/Header";
 import { Clock, Code, MessageSquare, User } from "lucide-react";
 import { Editor } from "@monaco-editor/react";
 import { defineMonacoThemes, LANGUAGE_CONFIG } from "@/app/(root)/_constants";
@@ -22,7 +22,7 @@ function SnippetDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
-      <NavigationHeader />
+      <Header />
 
       <main className="max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
         <div className="max-w-[1200px] mx-auto">
