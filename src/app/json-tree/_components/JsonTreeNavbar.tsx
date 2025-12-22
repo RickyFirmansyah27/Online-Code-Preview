@@ -22,8 +22,8 @@ export default function JsonTreeNavbar({
     onCreateNewFile
 }: JsonTreeNavbarProps) {
     return (
-        <div className="w-full px-4 mb-4">
-            <div className="bg-[#12121a]/90 backdrop-blur border border-white/[0.05] rounded-lg p-3 flex flex-col md:flex-row items-center justify-between gap-4 max-w-[1920px] mx-auto">
+        <div className="w-full max-w-[1400px] mx-auto px-4 mb-4">
+            <div className="bg-[#12121a]/90 backdrop-blur border border-white/[0.05] rounded-lg p-3 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div className="flex items-center gap-2 shrink-0 border-b md:border-b-0 md:border-r border-white/[0.05] pb-3 md:pb-0 pr-0 md:pr-4 w-full md:w-auto">
                     <Database className="w-5 h-5 text-blue-400" />
                     <span className="font-semibold text-white">JSON Files</span>
