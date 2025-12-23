@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { Send, Loader, Image as ImageIcon, Sparkles } from "lucide-react";
 import { useRef, useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,7 +14,7 @@ interface InputFormProps {
   previewImages: string[];
 }
 
-export function InputForm({
+export const InputForm = React.memo(function InputForm({
   input,
   isLoading,
   handleSubmit,
@@ -186,4 +187,4 @@ export function InputForm({
       </motion.div>
     </form>
   );
-}
+});

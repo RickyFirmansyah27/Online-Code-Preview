@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { motion } from "framer-motion";
 import { BookOpen, Code } from "lucide-react";
 import { MessageContent } from "./MessageContent";
@@ -33,18 +34,18 @@ function formatJSON(jsonString: string): string {
 
 function isLikelyCode(text: string): boolean {
   const trimmed = text.trim();
-  
+
   // Check if it starts with a language identifier comment
   const languageComments = [
     /^\/\/\s*(javascript|js|typescript|ts|python|py|java|cpp|c\+\+|c#|cs|go|rust|ruby|rb|php|swift|kotlin|scala|haskell|hs)/i,
     /^#\s*(python|py|ruby|rb|perl|pl|bash|sh|shell)/i,
     /^\/\*\s*(javascript|js|typescript|ts|java|cpp|c\+\+|c#|cs|go|rust)/i
   ];
-  
+
   if (languageComments.some(regex => regex.test(trimmed))) {
     return true;
   }
-  
+
   // Check for common code keywords and patterns
   const codePatterns = [
     /\b(function|def|class|interface|enum|struct|let|const|var|import|export|require|from|public|private|protected|static|final|async|await|return|if|else|for|while|do|switch|case|break|continue|try|catch|finally|throw|new|this|super)\b/,
@@ -59,20 +60,20 @@ function isLikelyCode(text: string): boolean {
     /\/\/.*$/m, // Single line comments
     /\/\*[\s\S]*?\*\//, // Multi-line comments
   ];
-  
+
   const codePatternCount = codePatterns.filter(pattern => pattern.test(text)).length;
-  
+
   // Check for high density of operators
   const operators = text.match(/[=+\-*/%&|\^<>!~?:]/g) || [];
   const operatorDensity = operators.length / Math.max(1, text.length);
-  
+
   // If we have multiple code patterns or high operator density, it's likely code
   return codePatternCount >= 2 || operatorDensity > 0.05;
 }
 
 function detectLanguage(text: string): string {
   const trimmed = text.trim();
-  
+
   // Check for explicit language markers
   const languageMarkers = [
     { pattern: /^\/\/\s*(javascript|js)\b/i, lang: 'javascript' },
@@ -87,13 +88,13 @@ function detectLanguage(text: string): string {
     { pattern: /^\/\/\s*(php)\b/i, lang: 'php' },
     { pattern: /^\/\/\s*(swift)\b/i, lang: 'swift' },
   ];
-  
+
   for (const marker of languageMarkers) {
     if (marker.pattern.test(trimmed)) {
       return marker.lang;
     }
   }
-  
+
   // Fallback: try to infer from content
   if (text.includes('function') || text.includes('=>') || text.includes('const ') || text.includes('let ')) {
     return 'javascript';
@@ -102,11 +103,11 @@ function detectLanguage(text: string): string {
   } else if (text.includes('public ') || text.includes('class ') || text.includes('interface ')) {
     return 'java';
   }
-  
+
   return 'text'; // Default to text if we can't determine
 }
 
-export function Message({ role, content }: MessageProps) {
+export const Message = React.memo(function Message({ role, content }: MessageProps) {
   const isUser = role === "user";
   const Icon = isUser ? BookOpen : Code;
   const iconColor = isUser ? "text-blue-300" : "text-purple-300";
@@ -117,10 +118,10 @@ export function Message({ role, content }: MessageProps) {
   const processedContent = content.map((item) => {
     if (item.type === "text") {
       const text = item.content.trim();
-      
+
       // Filter out <think>...</think> tags
       const filteredText = text.replace(/<think>[\s\S]*?<\/think>/g, '').trim();
-      
+
       // Only check if the entire text is valid JSON
       if (isJSON(filteredText)) {
         return {
@@ -128,7 +129,7 @@ export function Message({ role, content }: MessageProps) {
           content: `\`\`\`json\n${formatJSON(filteredText)}\n\`\`\``,
         };
       }
-      
+
       // For user messages, detect if the content appears to be code
       if (isUser && filteredText.length > 0) {
         if (isLikelyCode(filteredText)) {
@@ -139,7 +140,7 @@ export function Message({ role, content }: MessageProps) {
           };
         }
       }
-      
+
       // Return filtered text if not code or not a user message
       return {
         ...item,
@@ -153,9 +154,8 @@ export function Message({ role, content }: MessageProps) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`flex items-start gap-3 sm:gap-4 mb-5 sm:mb-6 px-4 sm:px-5 ${
-        isUser ? "justify-end" : "justify-start"
-      }`}
+      className={`flex items-start gap-3 sm:gap-4 mb-5 sm:mb-6 px-4 sm:px-5 ${isUser ? "justify-end" : "justify-start"
+        }`}
     >
       {!isUser && (
         <div className="hidden sm:block flex-shrink-0">
@@ -168,11 +168,10 @@ export function Message({ role, content }: MessageProps) {
       )}
 
       <div
-        className={`p-4 sm:p-5 rounded-2xl ${
-          isUser
+        className={`p-4 sm:p-5 rounded-2xl ${isUser
             ? "max-w-[85%] sm:max-w-[70%]"
             : "max-w-[85%] sm:max-w-[70%]"
-        } ${bgColor} ${textColor} shadow-sm`}
+          } ${bgColor} ${textColor} shadow-sm`}
       >
         <div className="text-sm sm:text-base leading-relaxed whitespace-pre-wrap">
           <MessageContent content={processedContent} />
@@ -190,4 +189,4 @@ export function Message({ role, content }: MessageProps) {
       )}
     </motion.div>
   );
-}
+});

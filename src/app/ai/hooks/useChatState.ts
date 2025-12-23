@@ -19,6 +19,7 @@ export interface MessageContent {
 }
 
 export interface Message {
+  id: string;  // Unique ID for performance
   role: "user" | "assistant";
   content: MessageContent[];
 }
@@ -36,6 +37,13 @@ export function useChatState() {
   const [mode, setMode] = useState<ChatMode>("ask");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [memoryLimit, setMemoryLimit] = useState(6); // default 6 pairs
+
+  // Ref for messages to avoid recreating callbacks
+  const messagesRef = useRef<Message[]>(messages);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
+
+  // Generate unique ID
+  const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
   /* ---------- Dropdown ref for click-outside handling ---------- */
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -126,10 +134,12 @@ export function useChatState() {
       });
 
       /* Optimistically update UI */
-      const newMessages: Message[] = [
-        ...messages,
-        { role: "user" as const, content }
-      ];
+      const newMessage: Message = {
+        id: generateId(),
+        role: "user" as const,
+        content
+      };
+      const newMessages: Message[] = [...messagesRef.current, newMessage];
       setMessages(newMessages);
       setInput("");
       setUploadedImages([]);
@@ -153,18 +163,18 @@ export function useChatState() {
           throw new Error("Invalid response from AI service");
         }
 
-        const updatedMessages: Message[] = [
-          ...newMessages,
-          {
-            role: "assistant" as const,
-            content: [{ type: "text", content: assistantText }]
-          }
-        ];
+        const assistantMessage: Message = {
+          id: generateId(),
+          role: "assistant" as const,
+          content: [{ type: "text", content: assistantText }]
+        };
+        const updatedMessages: Message[] = [...newMessages, assistantMessage];
 
         setMessages(updatedMessages);
       } catch (err) {
         console.error("[Chat] sendMessage error:", err);
         const errorMsg: Message = {
+          id: generateId(),
           role: "assistant" as const,
           content: [
             {
@@ -177,8 +187,8 @@ export function useChatState() {
         setMessages(errorMessages);
       }
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [input, uploadedImages, messages, mode, sendMessage]
+    // Remove messages from dependency - use ref instead for performance
+    [input, uploadedImages, mode, sendMessage]
   );
 
   const handleImageUpload = useCallback(

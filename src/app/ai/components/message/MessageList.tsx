@@ -1,14 +1,14 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { Message } from "./Message";
 import { AnimatePresence } from "framer-motion";
 
 interface MessageListProps {
-  messages: { role: "user" | "assistant"; content: { type: "text" | "image"; content: string }[] }[];
+  messages: { id?: string; role: "user" | "assistant"; content: { type: "text" | "image"; content: string }[] }[];
 }
 
-export function MessageList({ messages }: MessageListProps) {
+export const MessageList = React.memo(function MessageList({ messages }: MessageListProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -24,7 +24,7 @@ export function MessageList({ messages }: MessageListProps) {
       <AnimatePresence>
         {messages.map((message, index) => (
           <Message
-            key={index}
+            key={message.id || `msg-${index}`}
             role={message.role}
             content={message.content}
           />
@@ -33,4 +33,4 @@ export function MessageList({ messages }: MessageListProps) {
       </AnimatePresence>
     </div>
   );
-}
+});
