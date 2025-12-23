@@ -55,13 +55,8 @@ const ObjectNode = ({ data, id }: { data: ObjectNodeData; id: string }) => {
     const isExpanded = data.isExpanded;
     const onToggle = data.onToggle;
 
-    // Limit visible items to avoid huge nodes
-    const MAX_VISIBLE_ITEMS = 15;
-    const visibleEntries = entries.slice(0, MAX_VISIBLE_ITEMS);
-    const hasMore = entries.length > MAX_VISIBLE_ITEMS;
-
     return (
-        <div className="w-[280px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group transition-all duration-200 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
+        <div className="min-w-[280px] w-auto max-w-[500px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group transition-all duration-200 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
             {/* Header */}
             <div
                 className="bg-zinc-800/50 px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
@@ -73,7 +68,7 @@ const ObjectNode = ({ data, id }: { data: ObjectNodeData; id: string }) => {
                     </svg>
                 </div>
                 <Braces className="w-3 h-3 text-cyan-400" />
-                <span className="font-semibold text-zinc-200 truncate flex-1">{data.label}</span>
+                <span className="font-semibold text-zinc-200 flex-1">{data.label}</span>
                 <span className="text-[10px] text-zinc-500 bg-zinc-900/50 px-1.5 py-0.5 rounded">
                     {entries.length} keys
                 </span>
@@ -82,7 +77,7 @@ const ObjectNode = ({ data, id }: { data: ObjectNodeData; id: string }) => {
             {/* Content - Only if expanded */}
             {isExpanded && (
                 <div className="p-2 space-y-0.5 bg-[#18181b]">
-                    {visibleEntries.map(([key, value]) => {
+                    {entries.map(([key, value]) => {
                         const isComplex = typeof value === "object" && value !== null;
                         return (
                             <div key={key} className="flex items-start gap-2 px-1 py-0.5 hover:bg-zinc-800/50 rounded">
@@ -92,18 +87,13 @@ const ObjectNode = ({ data, id }: { data: ObjectNodeData; id: string }) => {
                                         {Array.isArray(value) ? `Array(${value.length})` : `Object`}
                                     </span>
                                 ) : (
-                                    <span className={`${getValueColor(value)} truncate select-text break-all`}>
+                                    <span className={`${getValueColor(value)} select-text break-all whitespace-pre-wrap`}>
                                         {JSON.stringify(value)}
                                     </span>
                                 )}
                             </div>
                         );
                     })}
-                    {hasMore && (
-                        <div className="px-1 py-1 text-zinc-500 italic">
-                            ... {entries.length - MAX_VISIBLE_ITEMS} more
-                        </div>
-                    )}
                     {entries.length === 0 && (
                         <div className="px-1 text-zinc-500 italic">empty</div>
                     )}
@@ -268,7 +258,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
         let height = NODE_HEIGHT_BASE;
         if (node.type === "object" && node.data.isExpanded) {
             const entries = Object.entries((node.data.content as Record<string, unknown>) || {});
-            const items = Math.min(entries.length, 15); // Matches MAX_VISIBLE_ITEMS
+            const items = entries.length; // Render all items
             height += items * NODE_HEIGHT_ITEM + 10; // + padding
         }
 

@@ -2,6 +2,7 @@
   "name": "online-editor",
   "version": "0.1.0",
   "private": true,
+  "author": "Ricky Firmansyah",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
