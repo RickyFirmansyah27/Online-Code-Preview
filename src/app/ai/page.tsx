@@ -13,9 +13,11 @@ function AiPlayground() {
     isDropdownOpen,
     dropdownRef,
     isLoading,
+    memoryLimit,
     setSelectedModel,
     setMode,
     setIsDropdownOpen,
+    setMemoryLimit,
     handleSubmit,
     handleImageUpload,
     handleClearMessages,
@@ -28,9 +30,11 @@ function AiPlayground() {
       mode={mode}
       isDropdownOpen={isDropdownOpen}
       dropdownRef={dropdownRef}
+      memoryLimit={memoryLimit}
       setSelectedModel={setSelectedModel}
       setMode={setMode}
       setIsDropdownOpen={setIsDropdownOpen}
+      setMemoryLimit={setMemoryLimit}
       handleClearMessages={handleClearMessages}
       input={input}
       isLoading={isLoading}

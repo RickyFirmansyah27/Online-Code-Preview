@@ -13,6 +13,7 @@ import {
   ChatMessage,
   ChatMessageContent,
   ApiMessageContent,
+  ApiChatMessage,
   ChatRequest,
   ApiResponse,
   ConversationContext,
@@ -25,7 +26,8 @@ import { BASE_PATH, buildApiMessages, containsImage, DEFAULT_QUERY_OPTIONS, getH
 
 export const useConversationAi = (
   model: string,
-  name: string
+  name: string,
+  memoryLimit: number = 6
 ): {
   mutation: UseMutationResult<ApiResponse, unknown, string | ChatMessageContent[], unknown>;
   conversationContext: ConversationContext;
@@ -65,7 +67,28 @@ export const useConversationAi = (
     ...DEFAULT_QUERY_OPTIONS,
     mutationFn: async (content: string | ChatMessageContent[]) => {
       const userMessage: ChatMessage = { role: "user", content };
-      const updatedHistory = [...conversationHistory, userMessage];
+      const fullHistory = [...conversationHistory, userMessage];
+
+      // Truncate history: keep system prompt + last N pairs
+      const truncateHistory = (history: ChatMessage[], limit: number): ChatMessage[] => {
+        const systemMsg = history[0]; // Always keep system prompt
+        const pairs = history.slice(1);
+        const maxMessages = limit * 2; // user + assistant per pair
+        const truncated = pairs.slice(-maxMessages);
+        return [systemMsg, ...truncated];
+      };
+
+      // Estimate tokens (rough: 4 chars ≈ 1 token)
+      const estimateTokens = (messages: ApiChatMessage[]): number => {
+        return messages.reduce((total, msg) => {
+          const content = typeof msg.content === "string"
+            ? msg.content
+            : JSON.stringify(msg.content);
+          return total + Math.ceil(content.length / 4);
+        }, 0);
+      };
+
+      const updatedHistory = truncateHistory(fullHistory, memoryLimit);
 
       const apiMessages = buildApiMessages(updatedHistory);
 
@@ -85,12 +108,23 @@ export const useConversationAi = (
         )
         : apiMessages;
 
+      // Calculate max_tokens based on estimated input tokens
+      const MAX_CONTEXT = 32000;
+      const RESPONSE_BUFFER = 4000;
+      const SAFETY_MARGIN = 500;
+      const estimatedInput = estimateTokens(finalMessages);
+      const maxResponseTokens = Math.max(
+        1000, // minimum response tokens
+        Math.min(RESPONSE_BUFFER, MAX_CONTEXT - estimatedInput - SAFETY_MARGIN)
+      );
+
       const payload: ChatRequest = {
         model: effectiveModel,
         messages: finalMessages,
         temperature: 0.3,
         top_p: 0.9,
         stream: false,
+        max_tokens: maxResponseTokens,
       };
 
       const hasImageInContent = containsImage(content);

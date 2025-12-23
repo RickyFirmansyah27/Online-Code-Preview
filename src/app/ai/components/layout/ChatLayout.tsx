@@ -13,9 +13,11 @@ interface ChatLayoutProps {
   mode: ChatMode;
   isDropdownOpen: boolean;
   dropdownRef: React.RefObject<HTMLDivElement>;
+  memoryLimit: number;
   setSelectedModel: (model: ModelOption) => void;
   setMode: (mode: ChatMode) => void;
   setIsDropdownOpen: (open: boolean) => void;
+  setMemoryLimit: (limit: number) => void;
   handleClearMessages: () => void;
   input: string;
   isLoading: boolean;
@@ -31,9 +33,11 @@ export function ChatLayout({
   mode,
   isDropdownOpen,
   dropdownRef,
+  memoryLimit,
   setSelectedModel,
   setMode,
   setIsDropdownOpen,
+  setMemoryLimit,
   handleClearMessages,
   input,
   isLoading,
@@ -111,9 +115,11 @@ export function ChatLayout({
                     mode={mode}
                     isDropdownOpen={isDropdownOpen}
                     dropdownRef={dropdownRef}
+                    memoryLimit={memoryLimit}
                     setSelectedModel={setSelectedModel}
                     setMode={setMode}
                     setIsDropdownOpen={setIsDropdownOpen}
+                    setMemoryLimit={setMemoryLimit}
                     handleClearMessages={handleClearMessages}
                   />
                 </div>

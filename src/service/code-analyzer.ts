@@ -10,6 +10,7 @@ import { apiPost } from "./axios-client";
 import {
   ChatMessage,
   ChatRequest,
+  ApiChatMessage,
 } from "./ai-types";
 import { BASE_PATH, buildApiMessages, DEFAULT_QUERY_OPTIONS, getHeaders } from "./ai-service";
 import { debuggingPrompt } from "@/lib/debuging-prompt";
@@ -17,7 +18,7 @@ import { debuggingPrompt } from "@/lib/debuging-prompt";
 /* Hook: useCodeAnalyzer                                            */
 /* ------------------------------------------------------------------ */
 
-export const useCodeAnalyzer = (model: string) => {
+export const useCodeAnalyzer = (model: string, memoryLimit: number = 6) => {
   const systemPrompt = debuggingPrompt(model);
 
   const [conversationHistory, setConversationHistory] = useState<ChatMessage[]>(() => [
@@ -32,9 +33,39 @@ export const useCodeAnalyzer = (model: string) => {
     ...DEFAULT_QUERY_OPTIONS,
     mutationFn: async (content: string) => {
       const userMessage: ChatMessage = { role: "user", content };
-      const updatedHistory = [...conversationHistory, userMessage];
+      const fullHistory = [...conversationHistory, userMessage];
 
+      // Truncate history: keep system prompt + last N pairs
+      const truncateHistory = (history: ChatMessage[], limit: number): ChatMessage[] => {
+        const systemMsg = history[0];
+        const pairs = history.slice(1);
+        const maxMessages = limit * 2;
+        const truncated = pairs.slice(-maxMessages);
+        return [systemMsg, ...truncated];
+      };
+
+      // Estimate tokens (rough: 4 chars ≈ 1 token)
+      const estimateTokens = (messages: ApiChatMessage[]): number => {
+        return messages.reduce((total, msg) => {
+          const content = typeof msg.content === "string"
+            ? msg.content
+            : JSON.stringify(msg.content);
+          return total + Math.ceil(content.length / 4);
+        }, 0);
+      };
+
+      const updatedHistory = truncateHistory(fullHistory, memoryLimit);
       const apiMessages = buildApiMessages(updatedHistory);
+
+      // Calculate max_tokens based on estimated input
+      const MAX_CONTEXT = 32000;
+      const RESPONSE_BUFFER = 4000;
+      const SAFETY_MARGIN = 500;
+      const estimatedInput = estimateTokens(apiMessages);
+      const maxResponseTokens = Math.max(
+        1000,
+        Math.min(RESPONSE_BUFFER, MAX_CONTEXT - estimatedInput - SAFETY_MARGIN)
+      );
 
       const payload: ChatRequest = {
         model,
@@ -42,6 +73,7 @@ export const useCodeAnalyzer = (model: string) => {
         temperature: 0.3,
         top_p: 0.7,
         stream: false,
+        max_tokens: maxResponseTokens,
       };
 
       let response;

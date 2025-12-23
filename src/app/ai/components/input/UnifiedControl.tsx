@@ -8,6 +8,7 @@ import { DropdownHeader } from "../ui/DropdownHeader";
 import { ModelSelection } from "../ui/ModelSelection";
 import { ModeSelection } from "../ui/ModeSelection";
 import { ClearMessages } from "../ui/ClearMessages";
+import { MemorySettings } from "../ui/MemorySettings";
 import { ChatMode } from "../constants/controlConstants";
 
 interface UnifiedControlProps {
@@ -15,9 +16,11 @@ interface UnifiedControlProps {
   mode: ChatMode;
   isDropdownOpen: boolean;
   dropdownRef: React.RefObject<HTMLDivElement>;
+  memoryLimit: number;
   setSelectedModel: (model: ModelOption) => void;
   setMode: (mode: ChatMode) => void;
   setIsDropdownOpen: (open: boolean) => void;
+  setMemoryLimit: (limit: number) => void;
   handleClearMessages: () => void;
 }
 
@@ -26,9 +29,11 @@ export function UnifiedControl({
   mode,
   isDropdownOpen,
   dropdownRef,
+  memoryLimit,
   setSelectedModel,
   setMode,
   setIsDropdownOpen,
+  setMemoryLimit,
   handleClearMessages
 }: UnifiedControlProps) {
   const handleModelChange = (modelId: string) => {
@@ -86,6 +91,12 @@ export function UnifiedControl({
                 currentMode={mode}
                 onModeChange={setMode}
                 onClose={() => setIsDropdownOpen(false)}
+              />
+
+              {/* Memory Settings */}
+              <MemorySettings
+                memoryLimit={memoryLimit}
+                onMemoryLimitChange={setMemoryLimit}
               />
 
               {/* Clear Messages */}

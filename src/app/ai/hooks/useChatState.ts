@@ -35,6 +35,7 @@ export function useChatState() {
   );
   const [mode, setMode] = useState<ChatMode>("ask");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [memoryLimit, setMemoryLimit] = useState(6); // default 6 pairs
 
   /* ---------- Dropdown ref for click-outside handling ---------- */
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -57,18 +58,19 @@ export function useChatState() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isDropdownOpen]);
-  
+
   /* ---------- Refs to track previous model ---------- */
   const prevModelRef = useRef<string>(selectedModel.model);
   const prevNameRef = useRef<string>(selectedModel.name);
 
   /* ---------- AI hooks ---------- */
-  const coding = useCodingAssistant(selectedModel.model);
+  const coding = useCodingAssistant(selectedModel.model, memoryLimit);
   const conversation = useConversationAi(
     selectedModel.model,
-    selectedModel.name
+    selectedModel.name,
+    memoryLimit
   );
-  const analyzer = useCodeAnalyzer(selectedModel.model);
+  const analyzer = useCodeAnalyzer(selectedModel.model, memoryLimit);
 
   /* ---------- Effect: reset conversation on model change ---------- */
   useEffect(() => {
@@ -79,13 +81,13 @@ export function useChatState() {
     ) {
       conversation.resetConversation?.();
       coding.resetConversation?.();
-      
+
       // Update refs
       prevModelRef.current = selectedModel.model;
       prevNameRef.current = selectedModel.name;
     }
     // analyzer has no state
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedModel.model, selectedModel.name, conversation.resetConversation, coding.resetConversation]);
 
   /* ---------- Memoised hook selector ---------- */
@@ -238,6 +240,7 @@ export function useChatState() {
     isDropdownOpen,
     dropdownRef,
     isLoading,
+    memoryLimit,
 
     /* actions */
     setInput,
@@ -247,6 +250,7 @@ export function useChatState() {
     handleSubmit,
     handleImageUpload,
     handleClearMessages,
-    handleInputChange
+    handleInputChange,
+    setMemoryLimit
   };
 }
