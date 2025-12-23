@@ -73,16 +73,16 @@ export const useConversationAi = (
 
       const finalMessages = fallbackActive
         ? apiMessages.map((msg) =>
-            typeof msg.content === "string"
-              ? msg
-              : {
-                  ...msg,
-                  content: (msg.content as ApiMessageContent[])
-                    .filter((c) => c.type === "text")
-                    .map((c) => c.text ?? "")
-                    .join(" "),
-                }
-          )
+          typeof msg.content === "string"
+            ? msg
+            : {
+              ...msg,
+              content: (msg.content as ApiMessageContent[])
+                .filter((c) => c.type === "text")
+                .map((c) => c.text ?? "")
+                .join(" "),
+            }
+        )
         : apiMessages;
 
       const payload: ChatRequest = {
@@ -93,9 +93,16 @@ export const useConversationAi = (
         stream: false,
       };
 
-      const hasImage = containsImage(content);
+      const hasImageInContent = containsImage(content);
 
-      // Choose the model for image messages
+      // Check if any message in history contains an image
+      const hasImageInHistory = updatedHistory.some(msg =>
+        Array.isArray(msg.content) && msg.content.some(c => c.type === "image")
+      );
+
+      const hasImage = hasImageInContent || hasImageInHistory;
+
+      // Choose the vision model if any image exists in content or history
       const completionPayload = hasImage
         ? { ...payload, model: "qwen/qwen3-vl-235b-a22b-instruct" }
         : payload;
