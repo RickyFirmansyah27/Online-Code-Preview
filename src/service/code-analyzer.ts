@@ -35,6 +35,17 @@ export const useCodeAnalyzer = (model: string, memoryLimit: number = 6) => {
       const userMessage: ChatMessage = { role: "user", content };
       const fullHistory = [...conversationHistory, userMessage];
 
+      // Check if any message in history contains an image
+      const hasImageInHistory = fullHistory.some(msg =>
+        Array.isArray(msg.content) && msg.content.some(c => c.type === "image")
+      );
+
+      // Smart memory limit: reduce to 4 pairs max when images exist
+      const IMAGE_MEMORY_LIMIT = 4;
+      const effectiveMemoryLimit = hasImageInHistory
+        ? Math.min(memoryLimit, IMAGE_MEMORY_LIMIT)
+        : memoryLimit;
+
       // Truncate history: keep system prompt + last N pairs
       const truncateHistory = (history: ChatMessage[], limit: number): ChatMessage[] => {
         const systemMsg = history[0];
@@ -42,6 +53,34 @@ export const useCodeAnalyzer = (model: string, memoryLimit: number = 6) => {
         const maxMessages = limit * 2;
         const truncated = pairs.slice(-maxMessages);
         return [systemMsg, ...truncated];
+      };
+
+      // Strip old images: keep only the last user image
+      const stripOldImages = (history: ChatMessage[]): ChatMessage[] => {
+        let lastImageIndex = -1;
+
+        for (let i = history.length - 1; i >= 0; i--) {
+          const msg = history[i];
+          if (msg.role === "user" && Array.isArray(msg.content) &&
+            msg.content.some(c => c.type === "image")) {
+            lastImageIndex = i;
+            break;
+          }
+        }
+
+        return history.map((msg, index) => {
+          if (index === lastImageIndex) return msg;
+          if (!Array.isArray(msg.content)) return msg;
+
+          const hasImage = msg.content.some(c => c.type === "image");
+          if (!hasImage) return msg;
+
+          const textOnly = msg.content.filter(c => c.type === "text");
+          return {
+            ...msg,
+            content: textOnly.length > 0 ? textOnly : [{ type: "text" as const, content: "[Image removed from history]" }]
+          };
+        });
       };
 
       // Estimate tokens (rough: 4 chars ≈ 1 token)
@@ -54,8 +93,13 @@ export const useCodeAnalyzer = (model: string, memoryLimit: number = 6) => {
         }, 0);
       };
 
-      const updatedHistory = truncateHistory(fullHistory, memoryLimit);
-      const apiMessages = buildApiMessages(updatedHistory);
+      // Apply truncation first, then strip old images
+      const truncatedHistory = truncateHistory(fullHistory, effectiveMemoryLimit);
+      const optimizedHistory = hasImageInHistory
+        ? stripOldImages(truncatedHistory)
+        : truncatedHistory;
+
+      const apiMessages = buildApiMessages(optimizedHistory);
 
       // Calculate max_tokens based on estimated input
       const MAX_CONTEXT = 32000;
