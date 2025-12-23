@@ -20,6 +20,37 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Responsive base sizing for different screen sizes */
+html {
+  font-size: 14px; /* Base for small screens */
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 15px; /* Tablet and small laptops */
+  }
+}
+
+@media (min-width: 1280px) {
+  html {
+    font-size: 16px; /* Standard laptops and up */
+  }
+}
+
+/* Responsive container utility */
+.responsive-container {
+  width: 95%;
+  max-width: 1400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (min-width: 1440px) {
+  .responsive-container {
+    width: 90%;
+  }
+}
+
 /* Custom scrollbar */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;

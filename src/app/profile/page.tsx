@@ -53,7 +53,7 @@ export default function ProfilePage() {
     <div className="min-h-screen bg-[#0a0a0f]">
       <Header />
 
-      <main className="max-w-2xl mx-auto px-4 py-8">
+      <main className="max-w-[90%] laptop:max-w-xl lg:max-w-2xl mx-auto px-3 laptop:px-4 py-6 laptop:py-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

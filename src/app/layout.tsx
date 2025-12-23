@@ -5,7 +5,7 @@ import "katex/dist/katex.min.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import ConvexClientProvider from "@/components/providers/ConvexClientProvider";
 import ReactQueryProvider from "@/components/providers/QueryClientProvider";
-import Footer from "@/components/Footer";
+// import Footer from "@/components/Footer";
 import { Toaster } from "react-hot-toast";
 
 const geistSans = localFont({
@@ -41,7 +41,7 @@ export default function RootLayout({
             </ConvexClientProvider>
           </ReactQueryProvider>
 
-          <Footer />
+          {/* <Footer /> */}
 
           <Toaster />
         </body>

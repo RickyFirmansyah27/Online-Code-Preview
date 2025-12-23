@@ -41,7 +41,7 @@ export default function JsonTreePage() {
         />
       </div>
 
-      <main className="mx-auto w-full max-w-[1400px] px-4 pb-8 flex-1 flex flex-col min-h-0">
+      <main className="responsive-container px-3 laptop:px-4 pb-8 flex-1 flex flex-col min-h-0">
         <div className="flex-1 h-full min-h-0">
           <JsonTreeMainContent
             activeFile={activeFile}
