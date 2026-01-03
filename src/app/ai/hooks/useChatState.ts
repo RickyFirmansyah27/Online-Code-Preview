@@ -12,20 +12,27 @@ import {
 import {
   useConversationAi,
 } from "@/service/ai-conversation";
+import { Message, MessageContentItem, ChatMode } from "../types";
+import { DEFAULT_MEMORY_LIMIT } from "../constants";
 
-export interface MessageContent {
-  type: "text" | "image";
-  content: string;
-}
+// Re-export types for convenience
+export type { Message, MessageContentItem, ChatMode };
 
-export interface Message {
-  id: string;  // Unique ID for performance
-  role: "user" | "assistant";
-  content: MessageContent[];
-}
-
-export type ChatMode = "ask" | "debug" | "code";
-
+/**
+ * Custom hook for managing chat state and interactions with AI services.
+ * Handles message history, model selection, mode switching, and image uploads.
+ * 
+ * @example
+ * ```tsx
+ * const {
+ *   messages,
+ *   input,
+ *   handleSubmit,
+ *   handleInputChange,
+ *   // ...other state and handlers
+ * } = useChatState();
+ * ```
+ */
 export function useChatState() {
   /* ---------- State ---------- */
   const [input, setInput] = useState("");
@@ -36,7 +43,7 @@ export function useChatState() {
   );
   const [mode, setMode] = useState<ChatMode>("ask");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [memoryLimit, setMemoryLimit] = useState(6); // default 6 pairs
+  const [memoryLimit, setMemoryLimit] = useState(DEFAULT_MEMORY_LIMIT);
 
   // Ref for messages to avoid recreating callbacks
   const messagesRef = useRef<Message[]>(messages);
@@ -127,7 +134,7 @@ export function useChatState() {
       if (!input.trim() && uploadedImages.length === 0) return;
 
       /* Build message content */
-      const content: MessageContent[] = [];
+      const content: MessageContentItem[] = [];
       if (input.trim()) content.push({ type: "text", content: input });
       uploadedImages.forEach(image => {
         content.push({ type: "image", content: image });

@@ -4,8 +4,9 @@ import NavigationHeader from "../../../(root)/_components/Header";
 import { MessageList } from "../message/MessageList";
 import { InputForm } from "../input/InputForm";
 import { UnifiedControl } from "../input/UnifiedControl";
+import ImagePreview from "./ImagePreview";
 
-import { Message, ChatMode } from "../../hooks/useChatState";
+import { Message, ChatMode, ImageUploadAction } from "../../types";
 import { ModelOption } from "@/service/model-types";
 
 interface ChatLayoutProps {
@@ -23,7 +24,7 @@ interface ChatLayoutProps {
   isLoading: boolean;
   handleSubmit: (e: React.FormEvent) => void;
   handleInputChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
-  onImageUpload: (imageData: string[], action: "add" | "replace") => void;
+  onImageUpload: (imageData: string[], action: ImageUploadAction) => void;
   previewImages: string[];
   messages: Message[];
 }
@@ -66,47 +67,16 @@ export function ChatLayout({
         <div className="flex-shrink-0 bg-[#0a0a0f] border-t border-gray-800/50 overflow-visible relative z-10">
           <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-5 lg:py-6">
             <div className="max-w-6xl mx-auto">
-              {/* Image Preview - separated to prevent layout shift */}
-              {previewImages.length > 0 && (
-                <div className="mb-4 flex justify-center lg:justify-start gap-4">
-                  {previewImages.map((image, index) => (
-                    <div
-                      key={index}
-                      className="relative inline-block max-w-full lg:max-w-md"
-                    >
-                      <img
-                        src={image}
-                        alt={`Preview ${index + 1}`}
-                        className="max-w-full h-32 sm:h-40 object-contain rounded-lg border border-gray-700"
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          onImageUpload(
-                            previewImages.filter((_, i) => i !== index),
-                            "replace"
-                          )
-                        }
-                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 transition-colors"
-                      >
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
+              {/* Image Preview - using extracted component */}
+              <ImagePreview
+                images={previewImages}
+                onRemoveImage={(index) =>
+                  onImageUpload(
+                    previewImages.filter((_, i) => i !== index),
+                    "replace"
+                  )
+                }
+              />
 
               <div className="flex flex-col lg:flex-row lg:items-end gap-4 lg:gap-6">
                 <div className="flex-shrink-0 w-full lg:w-auto">

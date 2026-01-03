@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useUser } from "@clerk/nextjs";
 import { get } from "lodash";
 import Header from "../(root)/_components/Header";
@@ -10,25 +10,22 @@ import FileManagementControls from "./components/controls/FileManagementControls
 import FileList from "./components/file/FileList";
 import Pagination from "./components/layout/Pagination";
 import ConfirmationDialog from "./components/ui/ConfirmationDialog";
+import ErrorNotification from "./components/ui/ErrorNotification";
 import { useFileOperations } from "./hooks/useFileOperations";
 import { useFileFiltering } from "./hooks/useFileFiltering";
-import { FileType } from "./components/controls/FileTypeFilter";
+import { usePagination } from "./hooks/usePagination";
+import { DeleteDialogState, FileType } from "./types";
 import { ApiFile } from "@/service/model-types";
 
 const FileManagement = () => {
   // State management
   const [searchQuery, setSearchQuery] = useState("");
   const [filterType, setFilterType] = useState<FileType | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [isPageChanging, setIsPageChanging] = useState(false);
-  const [deleteDialog, setDeleteDialog] = useState<{
-    isOpen: boolean;
-    filename: string;
-  }>({ isOpen: false, filename: "" });
+  const [deleteDialog, setDeleteDialog] = useState<DeleteDialogState>({
+    isOpen: false,
+    filename: "",
+  });
   const { user } = useUser();
-  console.log("User:", user);
-
-  const itemsPerPage = 6;
 
   // Data fetching
   const { data: filesResponse, isLoading, refetch } = useGetFiles(
@@ -36,7 +33,7 @@ const FileManagement = () => {
     { enabled: user === null || !!user?.firstName }
   );
   const filesData: ApiFile[] = get(filesResponse, "data.files", []);
-  console.log("Files Data:", filesResponse);
+
   // File operations
   const {
     isUploading,
@@ -58,24 +55,17 @@ const FileManagement = () => {
     filterType,
   });
 
-  // Pagination
-  const totalPages = Math.ceil(filteredFiles.length / itemsPerPage);
-  const paginatedFiles = filteredFiles.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Reset page when filters change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [searchQuery, filterType]);
-
-  // Handle page change with loading state
-  const handlePageChange = (page: number) => {
-    setIsPageChanging(true);
-    setCurrentPage(page);
-    setTimeout(() => setIsPageChanging(false), 300);
-  };
+  // Pagination (using custom hook)
+  const {
+    currentPage,
+    totalPages,
+    paginatedItems: paginatedFiles,
+    isPageChanging,
+    handlePageChange,
+  } = usePagination({
+    items: filteredFiles,
+    resetDependencies: [searchQuery, filterType],
+  });
 
   // Event handlers
   const handleUploadStart = useCallback(() => {
@@ -105,7 +95,7 @@ const FileManagement = () => {
   }, [error, clearError]);
 
   return (
-    <div 
+    <div
       className="min-h-screen bg-[#0a0a0f] overflow-x-hidden"
       onClick={handleInteraction}
       onKeyDown={handleInteraction}
@@ -169,15 +159,8 @@ const FileManagement = () => {
           isLoading={deletingFiles.has(deleteDialog.filename)}
         />
 
-        {/* Error Display */}
-        {error && (
-          <div className="fixed bottom-4 right-4 max-w-md">
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
-              <p className="font-medium">Error</p>
-              <p className="text-sm">{error}</p>
-            </div>
-          </div>
-        )}
+        {/* Error Notification */}
+        <ErrorNotification error={error} />
       </main>
     </div>
   );
