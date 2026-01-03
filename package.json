@@ -27,7 +27,7 @@
     "lodash": "^4.17.21",
     "lucide-react": "^0.464.0",
     "monaco-editor": "^0.49.0",
-    "next": "^15.5.7",
+    "next": "15.5.9",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "react-hot-toast": "^2.4.1",
