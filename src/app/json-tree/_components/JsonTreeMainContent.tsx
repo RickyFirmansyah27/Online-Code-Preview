@@ -30,6 +30,8 @@ export default function JsonTreeMainContent({
       <JsonSplitView
         activeFile={activeFile}
         onSave={onFileSave}
+        onFileUpload={onFileUpload}
+        onCreate={onCreateNewFile}
       />
     );
   }

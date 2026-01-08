@@ -14,9 +14,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "AI Coding Assistant Pintar",
-    id: "nova-2-lite",
-    name: "Nova 2 Lite",
-    model: "amazon/nova-2-lite-v1:free",
+    id: "devstral-2512",
+    name: "DevStral 2512",
+    model: "mistralai/devstral-2512:free",
   },
    {
     category: "AI Coding Assistant Pintar",
@@ -56,9 +56,9 @@ export const MODEL_OPTIONS: ModelOption[] = [
   },
   {
     category: "Live Coding Cepat, Responsif",
-    id: "kat-pilot",
-    name: "KAT Pilot",
-    model: "kwaipilot/kat-coder-pro:free",
+    id: "llama-3.3-70b-instruct",
+    name: "Llama 3.3 70B Instruct",
+    model: "meta-llama/llama-3.3-70b-instruct:free",
   },
 ];
 

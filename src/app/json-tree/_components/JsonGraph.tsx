@@ -21,12 +21,15 @@ import { Braces, Brackets } from "lucide-react";
 
 // --- Constants & Helper Config --- //
 const LAYOUT_DIRECTION = "LR";
-const NODE_WIDTH = 280;
-const NODE_HEIGHT_BASE = 50;
+const NODE_WIDTH = 200;
+const NODE_HEIGHT_BASE = 40;
 const NODE_HEIGHT_ITEM = 24;
+const MAX_NODE_HEIGHT = 300;
 
 // Helper to determine value color based on type
+// Helper to determine value color based on type
 const getValueColor = (value: unknown) => {
+    if (value === null) return "text-red-400"; // Null
     if (typeof value === "string") return "text-emerald-400"; // Strings: Green
     if (typeof value === "number") return "text-orange-400";  // Numbers: Orange
     if (typeof value === "boolean") return "text-blue-400";   // Booleans: Blue
@@ -56,7 +59,7 @@ const ObjectNode = ({ data, id }: { data: ObjectNodeData; id: string }) => {
     const onToggle = data.onToggle;
 
     return (
-        <div className="min-w-[280px] w-auto max-w-[500px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group transition-all duration-200 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
+        <div className="min-w-[200px] w-auto max-w-[400px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group transition-all duration-200 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
             {/* Header */}
             <div
                 className="bg-zinc-800/50 px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
@@ -116,7 +119,7 @@ const ArrayNode = ({ data, id }: { data: ArrayNodeData; id: string }) => {
     const onToggle = data.onToggle;
 
     return (
-        <div className="min-w-[180px] w-auto max-w-[280px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-200">
+        <div className="min-w-[160px] w-auto max-w-[220px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)] transition-all duration-200">
             <div
                 className="bg-zinc-800/50 px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
                 onClick={() => onToggle && onToggle(id, !isExpanded)}
@@ -248,8 +251,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
 
     dagreGraph.setGraph({
         rankdir: LAYOUT_DIRECTION,
-        ranksep: 100,
-        nodesep: 30,
+        ranksep: 60,
+        nodesep: 15,
     });
 
     nodes.forEach((node) => {
@@ -258,8 +261,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[]) => {
         let height = NODE_HEIGHT_BASE;
         if (node.type === "object" && node.data.isExpanded) {
             const entries = Object.entries((node.data.content as Record<string, unknown>) || {});
-            const items = entries.length; // Render all items
-            height += items * NODE_HEIGHT_ITEM + 10; // + padding
+            const items = entries.length;
+            height += items * NODE_HEIGHT_ITEM + 10;
         }
 
         dagreGraph.setNode(node.id, { width: NODE_WIDTH, height: height });
@@ -372,7 +375,7 @@ const JsonGraphInner = ({ data }: { data: unknown }) => {
                 onEdgesChange={onEdgesChange}
                 nodeTypes={nodeTypes}
                 minZoom={0.1}
-                maxZoom={2}
+                maxZoom={1}
                 defaultEdgeOptions={{
                     type: 'bezier',
                     animated: false,
