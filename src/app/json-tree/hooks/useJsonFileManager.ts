@@ -3,9 +3,51 @@
 import { useState, useCallback } from "react";
 import { JsonFile, JsonNode, JsonValue } from "@/components/types/json.types";
 
+// Sample JSON data to show on initial load
+const sampleJsonContent = JSON.stringify({
+  "name": "my-project",
+  "version": "1.0.0",
+  "description": "A sample JSON file for demonstration",
+  "dependencies": {
+    "@monaco-editor/react": "^4.5.1",
+    "@tailwindcss/forms": "^0.5.4",
+    "next": "13.4.7",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "eslint": "^8.43.0",
+    "postcss": "^8.4.24"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "author": {
+    "name": "Developer",
+    "email": "dev@example.com"
+  },
+  "license": "MIT"
+}, null, 2);
+
+const sampleFile: JsonFile = {
+  id: "sample-json-file",
+  name: "sample.json",
+  content: sampleJsonContent,
+  parsedData: JSON.parse(sampleJsonContent),
+  size: sampleJsonContent.length,
+  lastModified: new Date(),
+  type: "config",
+  isDirty: false,
+  isValid: true,
+};
+
 export function useJsonFileManager() {
-  const [jsonFiles, setJsonFiles] = useState<JsonFile[]>([]);
-  const [activeFile, setActiveFile] = useState<JsonFile | null>();
+  const [jsonFiles, setJsonFiles] = useState<JsonFile[]>([sampleFile]);
+  const [activeFile, setActiveFile] = useState<JsonFile | null>(sampleFile);
   const [isUploading, setIsUploading] = useState(false);
   const [showNewFileDialog, setShowNewFileDialog] = useState(false);
   const [newFileJson, setNewFileJson] = useState(`{\n  "key": "value"\n}`);
