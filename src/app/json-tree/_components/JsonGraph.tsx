@@ -59,7 +59,7 @@ const ObjectNode = ({ data, id }: { data: ObjectNodeData; id: string }) => {
     const onToggle = data.onToggle;
 
     return (
-        <div className="min-w-[200px] w-auto max-w-[400px] bg-[#18181b] rounded-md border border-zinc-700 shadow-xl overflow-hidden font-mono text-[11px] group transition-all duration-200 hover:border-blue-500 hover:shadow-[0_0_20px_rgba(59,130,246,0.4)]">
+        <div className="min-w-[160px] w-auto max-w-[280px] bg-[#18181b] rounded border border-zinc-700/80 shadow-lg overflow-hidden font-mono text-[10px] group transition-all duration-200 hover:border-blue-500/70 hover:shadow-[0_0_15px_rgba(59,130,246,0.3)]">
             {/* Header */}
             <div
                 className="bg-zinc-800/50 px-3 py-2 flex items-center gap-2 cursor-pointer hover:bg-zinc-800 transition-colors"
@@ -375,7 +375,7 @@ const JsonGraphInner = ({ data }: { data: unknown }) => {
                 onEdgesChange={onEdgesChange}
                 nodeTypes={nodeTypes}
                 minZoom={0.1}
-                maxZoom={1}
+                maxZoom={3}
                 defaultEdgeOptions={{
                     type: 'bezier',
                     animated: false,

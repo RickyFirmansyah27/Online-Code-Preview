@@ -26,11 +26,11 @@ export default function JsonTreePage() {
   } = useJsonFileManager();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] overflow-x-hidden flex flex-col">
+    <div className="h-screen bg-[#0a0a0f] overflow-hidden flex flex-col">
       <Header />
 
-      <main className="responsive-container px-3 laptop:px-4 pb-4 flex-1 flex flex-col min-h-0 pt-4">
-        <div className="flex-1 h-full min-h-0">
+      <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
+        <div className="flex-1 min-h-0">
           <JsonTreeMainContent
             activeFile={activeFile}
             jsonFiles={jsonFiles}

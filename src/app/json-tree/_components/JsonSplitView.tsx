@@ -45,68 +45,81 @@ export default function JsonSplitView({ activeFile, onSave, onFileUpload, onCrea
         }
     };
 
+    // Scale factor: 0.8 = 80% (similar to 80% browser zoom for professional look)
+    const SCALE_FACTOR = 0.8;
+    const INVERSE_SCALE = `${100 / SCALE_FACTOR}%`; // 125%
+
     return (
-        <div className="flex flex-col lg:flex-row h-[calc(100vh-120px)] w-full overflow-hidden border border-gray-800 rounded-lg bg-[#0a0a0f]">
-            {/* Editor Pane */}
-            <div className="w-full lg:w-1/3 h-[40%] lg:h-full border-b lg:border-b-0 lg:border-r border-gray-800 flex flex-col">
-                <div className="bg-[#1e1e2e] px-4 py-2 border-b border-gray-700 flex justify-between items-center shrink-0">
-                    <span className="text-gray-300 font-medium font-mono text-sm">JSON Editor</span>
-                    <div className="flex items-center gap-1">
-                        <label
-                            className="p-1 hover:bg-white/10 rounded text-blue-400 cursor-pointer"
-                            title="Upload"
-                        >
-                            <Upload className="w-4 h-4" />
-                            <input
-                                type="file"
-                                multiple
-                                accept=".json,application/json"
-                                onChange={onFileUpload}
-                                className="hidden"
-                            />
-                        </label>
-                        <button
-                            onClick={onCreate}
-                            className="p-1 hover:bg-white/10 rounded text-green-400"
-                            title="New File"
-                        >
-                            <Plus className="w-4 h-4" />
-                        </button>
-                        <button
-                            onClick={handleSave}
-                            className="p-1 hover:bg-white/10 rounded text-blue-400"
-                            title="Save"
-                        >
-                            <Save className="w-4 h-4" />
-                        </button>
+        <div className="h-full w-full overflow-hidden bg-[#0a0a0f]">
+            <div
+                className="flex flex-col lg:flex-row overflow-hidden bg-[#0a0a0f] origin-top-left"
+                style={{
+                    transform: `scale(${SCALE_FACTOR})`,
+                    width: INVERSE_SCALE,
+                    height: INVERSE_SCALE
+                }}
+            >
+                {/* Editor Pane */}
+                <div className="w-full lg:w-1/3 h-[40%] lg:h-full border-b lg:border-b-0 lg:border-r border-gray-800 flex flex-col">
+                    <div className="bg-[#1e1e2e] px-4 py-2 border-b border-gray-700 flex justify-between items-center shrink-0">
+                        <span className="text-gray-300 font-medium font-mono text-sm">JSON Editor</span>
+                        <div className="flex items-center gap-1">
+                            <label
+                                className="p-1 hover:bg-white/10 rounded text-blue-400 cursor-pointer"
+                                title="Upload"
+                            >
+                                <Upload className="w-4 h-4" />
+                                <input
+                                    type="file"
+                                    multiple
+                                    accept=".json,application/json"
+                                    onChange={onFileUpload}
+                                    className="hidden"
+                                />
+                            </label>
+                            <button
+                                onClick={onCreate}
+                                className="p-1 hover:bg-white/10 rounded text-green-400"
+                                title="New File"
+                            >
+                                <Plus className="w-4 h-4" />
+                            </button>
+                            <button
+                                onClick={handleSave}
+                                className="p-1 hover:bg-white/10 rounded text-blue-400"
+                                title="Save"
+                            >
+                                <Save className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+                    <div className="flex-1 relative min-h-0">
+                        <Editor
+                            height="100%"
+                            defaultLanguage="json"
+                            theme="vs-dark"
+                            value={code}
+                            onChange={handleEditorChange}
+                            options={{
+                                minimap: { enabled: false },
+                                fontSize: 13,
+                                scrollBeyondLastLine: false,
+                                wordWrap: "on",
+                                automaticLayout: true,
+                            }}
+                        />
+                        {error && (
+                            <div className="absolute bottom-4 left-4 right-4 bg-red-900/90 text-red-200 p-2 text-xs rounded border border-red-700 backdrop-blur z-10">
+                                {error}
+                            </div>
+                        )}
                     </div>
                 </div>
-                <div className="flex-1 relative min-h-0">
-                    <Editor
-                        height="100%"
-                        defaultLanguage="json"
-                        theme="vs-dark"
-                        value={code}
-                        onChange={handleEditorChange}
-                        options={{
-                            minimap: { enabled: false },
-                            fontSize: 13,
-                            scrollBeyondLastLine: false,
-                            wordWrap: "on",
-                            automaticLayout: true,
-                        }}
-                    />
-                    {error && (
-                        <div className="absolute bottom-4 left-4 right-4 bg-red-900/90 text-red-200 p-2 text-xs rounded border border-red-700 backdrop-blur z-10">
-                            {error}
-                        </div>
-                    )}
-                </div>
-            </div>
 
-            {/* Graph Pane */}
-            <div className="flex-1 bg-[#0f0f13] relative overflow-hidden h-full">
-                <JsonGraph data={code} />
+                {/* Graph Pane */}
+                <div className="flex-1 bg-[#0f0f13] relative overflow-hidden h-full">
+                    <JsonGraph data={code} />
+                </div>
             </div>
         </div>
     );
