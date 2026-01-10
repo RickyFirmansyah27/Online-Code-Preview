@@ -10,7 +10,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
     category: "AI Coding Assistant Pintar",
     id: "gpt-5",
     name: "GPT 5",
-    model: "openai/gpt-oss-20b:free",
+    model: "openai/gpt-oss-120b:free",
   },
   {
     category: "AI Coding Assistant Pintar",
@@ -18,7 +18,7 @@ export const MODEL_OPTIONS: ModelOption[] = [
     name: "DevStral 2512",
     model: "mistralai/devstral-2512:free",
   },
-   {
+  {
     category: "AI Coding Assistant Pintar",
     id: "xiaomi-mimo-v2-flash",
     name: "Xiaomi Mimo V2 Flash",
