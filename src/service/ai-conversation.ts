@@ -175,17 +175,8 @@ export const useConversationAi = (
         max_tokens: maxResponseTokens,
       };
 
-      const hasImageInContent = containsImage(content);
-
-      // Also check in finalMessages (API format) for image_url type
-      const hasImageInFinalMessages = finalMessages.some(msg =>
-        Array.isArray(msg.content) && (msg.content as { type: string }[]).some(c =>
-          c.type === "image_url"
-        )
-      );
-
-      // Use the already-computed hasImageInHistory from above, plus check API format
-      const hasImage = hasImageInContent || hasImageInHistory || hasImageInFinalMessages;
+      // Simple and reliable: check if finalMessages contains any image_url
+      const hasImage = JSON.stringify(finalMessages).includes('"type":"image_url"');
 
       // Choose the vision model if any image exists in content or history
       const completionPayload = hasImage
