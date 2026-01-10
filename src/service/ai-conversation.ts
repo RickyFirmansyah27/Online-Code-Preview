@@ -69,9 +69,10 @@ export const useConversationAi = (
       const userMessage: ChatMessage = { role: "user", content };
       const fullHistory = [...conversationHistory, userMessage];
 
-      // Check if any message in history contains an image
       const hasImageInHistory = fullHistory.some(msg =>
-        Array.isArray(msg.content) && msg.content.some(c => c.type === "image")
+        Array.isArray(msg.content) && msg.content.some(c =>
+          c.type === "image" || (c as { type: string }).type === "image_url"
+        )
       );
 
       // Smart memory limit: reduce to 4 pairs max when images exist
@@ -176,12 +177,19 @@ export const useConversationAi = (
 
       const hasImageInContent = containsImage(content);
 
-      // Use the already-computed hasImageInHistory from above
-      const hasImage = hasImageInContent || hasImageInHistory;
+      // Also check in finalMessages (API format) for image_url type
+      const hasImageInFinalMessages = finalMessages.some(msg =>
+        Array.isArray(msg.content) && (msg.content as { type: string }[]).some(c =>
+          c.type === "image_url"
+        )
+      );
+
+      // Use the already-computed hasImageInHistory from above, plus check API format
+      const hasImage = hasImageInContent || hasImageInHistory || hasImageInFinalMessages;
 
       // Choose the vision model if any image exists in content or history
       const completionPayload = hasImage
-        ? { ...payload, model: "qwen/qwen3-vl-235b-a22b-instruct" }
+        ? { ...payload, model: "meta-llama/llama-4-scout-17b-16e-instruct" }
         : payload;
 
       let response;
